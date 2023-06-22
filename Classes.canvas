@@ -1,11 +1,11 @@
 {
 	"nodes":[
-		{"id":"ac886e68c1a93f2c","x":-1140,"y":300,"width":250,"height":60,"type":"text","text":"Figure"},
-		{"id":"00987a8be4b0be06","x":-1420,"y":300,"width":250,"height":60,"type":"text","text":"Athlète"},
-		{"id":"5efbd4f40a131bf4","x":-860,"y":300,"width":250,"height":60,"type":"text","text":"Case"},
-		{"id":"b2c20510cb879383","x":-580,"y":300,"width":250,"height":60,"type":"text","text":"Terrain"},
-		{"id":"2202444e477f33ab","x":131,"y":270,"width":250,"height":60,"type":"text","text":"Chromosome"},
-		{"id":"d1f1d4a85132216e","x":131,"y":378,"width":250,"height":60,"type":"text","text":"GeneticAlgorithm"},
+		{"type":"text","text":"Figure","id":"ac886e68c1a93f2c","x":-1140,"y":300,"width":250,"height":60},
+		{"type":"text","text":"Athlète","id":"00987a8be4b0be06","x":-1420,"y":300,"width":250,"height":60},
+		{"type":"text","text":"Case","id":"5efbd4f40a131bf4","x":-860,"y":300,"width":250,"height":60},
+		{"type":"text","text":"Terrain","id":"b2c20510cb879383","x":-580,"y":300,"width":250,"height":60},
+		{"type":"text","text":"Chromosome","id":"2202444e477f33ab","x":131,"y":270,"width":250,"height":60},
+		{"type":"text","text":"GeneticAlgorithm","id":"d1f1d4a85132216e","x":131,"y":378,"width":250,"height":60},
 		{"type":"text","text":"Freestyle contest","id":"f19936e4c4d68ff7","x":-79,"y":-320,"width":250,"height":60},
 		{"type":"text","text":"Modèles","id":"5b2a175c0208228f","x":-400,"y":-116,"width":250,"height":60},
 		{"type":"text","text":"Algorithmes","id":"a32446755bf9d48d","x":226,"y":-106,"width":250,"height":60}

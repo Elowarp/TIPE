@@ -159,7 +159,7 @@ Il faut
 - Ajout du paramètre tick à takeAction et du tick aux combos
 - Ajout du fonctionnement de l’algo génétique avec le modèle
 
-Comment représenter un Genes ? [(x,y), fig] comme les combos
+Comment représenter un Genes ? `[(x,y), fig]` comme les combos
 
 Génération de 100 athlètes
 → Changement chemin et de figures
