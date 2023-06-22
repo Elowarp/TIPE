@@ -11,8 +11,12 @@
             "id": "749721464c6823c0",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {}
+              "type": "markdown",
+              "state": {
+                "file": "Brouillon.md",
+                "mode": "source",
+                "source": false
+              }
             }
           }
         ]
@@ -81,6 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
+                "file": "Brouillon.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -97,6 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
+                "file": "Brouillon.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -118,7 +124,9 @@
             "type": "leaf",
             "state": {
               "type": "outline",
-              "state": {}
+              "state": {
+                "file": "Brouillon.md"
+              }
             }
           }
         ]
@@ -139,8 +147,21 @@
   },
   "active": "749721464c6823c0",
   "lastOpenFiles": [
-    "Classes.canvas",
+    "Code/Terrain.py",
+    "Code/README.md",
+    "Code/Models.py",
+    "Code/main.py",
+    "Code/Genetic.py",
+    "Code/Game.py",
+    "Code/__pycache__/Terrain.cpython-310.pyc",
+    "Code/__pycache__/main.cpython-310.pyc",
+    "Code/__pycache__/Models.cpython-310.pyc",
+    "Code/__pycache__/Genetic.cpython-310.pyc",
+    "Code/__pycache__/Game.cpython-310.pyc",
+    "Code/__pycache__",
+    "Code-TIPE/README.md",
     "Brouillon.md",
+    "Classes.canvas",
     "Python.md",
     "Python Classes.md",
     "Sans titre 1.canvas",
