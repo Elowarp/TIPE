@@ -1,0 +1,12 @@
+{
+	"nodes":[
+		{"type":"text","text":"jukuujkuuk","id":"3925cd68af7a3eba","x":-195,"y":-106,"width":250,"height":60},
+		{"type":"text","text":"yigiygyyig6\n\nç\nyhu\nçh\n\nyh\n","id":"afbf1f4b486294a8","x":200,"y":-240,"width":250,"height":60},
+		{"type":"file","file":"Brouillon.md","id":"e092398e27657bb6","x":-640,"y":-321,"width":400,"height":430},
+		{"type":"text","text":"","id":"0e6fe1c32fcee460","x":-195,"y":120,"width":250,"height":60}
+	],
+	"edges":[
+		{"id":"6ee744bb74446fd4","fromNode":"afbf1f4b486294a8","fromSide":"bottom","toNode":"3925cd68af7a3eba","toSide":"right"},
+		{"id":"bc527a2c6d80a036","fromNode":"e092398e27657bb6","fromSide":"bottom","toNode":"0e6fe1c32fcee460","toSide":"bottom"}
+	]
+}
