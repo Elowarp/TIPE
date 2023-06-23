@@ -1,11 +1,13 @@
 '''
  Name : Elowan
  Creation : 08-06-2023 10:00:40
- Last modified : 16-06-2023 14:39:55
+ Last modified : 23-06-2023 12:02:20
 '''
 import random 
 import json
 import os
+
+NUMBER_OF_CHROMOSOME_TO_KEEP = 20
 
 class Chromosome:
     """
@@ -79,10 +81,10 @@ class GeneticAlgorithm:
             # Sauvegarde des données pour la sérialisation
             self.populationOverTime.append(self.population)
 
-        self.save("output")
+        self.save()
         return callback(self.population)
     
-    def save(self, filename="output"):
+    def save(self, filename=""):
         """
         Sauvegarde en Json les données de la population à chaque itération
         en plus des informations sur l'athlète original
@@ -90,12 +92,22 @@ class GeneticAlgorithm:
         if not os.path.exists("data"):
             os.mkdir("data")
 
+        if filename == "":
+            filename = "{}xp_{}".format(self.population[0].athlete.xp, self.population[0].athlete.figureFav.name)
+
+            if os.path.exists("data/{}.json".format(filename)):
+                i = 1
+                while os.path.exists("data/{}_{}.json".format(filename, i)):
+                    i += 1
+                filename += "_{}".format(i)
+
         # Formatage des données
         dataSerialized = []
         for i in range(len(self.populationOverTime)):
-            for j in range(len(self.populationOverTime[i])):
+            for j in range(NUMBER_OF_CHROMOSOME_TO_KEEP):
                 genes = self.populationOverTime[i][j].genes
                 genesSerialized = []
+                
                 for k in range(len(genes)):
                     genesSerialized.append((genes[k][0], genes[k][1].id, genes[k][2]))
                     

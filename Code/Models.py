@@ -1,7 +1,7 @@
 '''
  Name : Elowan
  Creation : 02-06-2023 11:00:02
- Last modified : 16-06-2023 14:22:01
+ Last modified : 23-06-2023 10:45:52
 '''
 from random import randint, choice
 
@@ -14,6 +14,14 @@ class Figure:
         self.duration = duration
         self.complexity = complexity
         Figure.instanceCount += 1
+
+    def getFigureById(id):
+        """Retourne la figure en fonction de son id, None sinon"""
+        for figure in FIGURES.values():
+            if figure.id == id:
+                return figure
+
+        return None
     
     def __repr__(self) -> str:
         return self.name    
@@ -56,7 +64,8 @@ class Athlete:
         """
 
         if self.state["movement"] != FIGURES["do_nothing"]:
-            if self.state["ticksSinceStartedMoving"]+1 >= self.state["movement"].duration:
+            if self.state["ticksSinceStartedMoving"]+1 >= \
+              self.state["movement"].duration:
                 self._endMovement()
             
             else:

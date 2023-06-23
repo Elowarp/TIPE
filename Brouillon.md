@@ -214,3 +214,33 @@ Sérialisation :
 Pour 101199 athlètes (505 itérations de 200 athlètes), on a un fichier de 34mo, voir s’il ne vaut mieux par reduire par au lieu de prendre tous les chromosomes, on prend tous les premiers chromosomes et prend ~10s pour sérialiser toutes les données
 
 Python prend ~234mo de ram
+
+# 23/06/2023
+J'essaye de faire mes premiers traitements de ma data avec le fichier `traitement.py`
+
+#### Changelog
+- Changement de la façon de stocker les données (on ne stock plus que les 20 meilleurs de chaque générations et non plus tout le monde) 
+  Variable `NUMBER_OF_CHROMOSOME_TO_KEEP` pour changer combien on veut en garder par génération
+- Création du graphe de la fréquence des figures les plus utilisées
+- Enregistrement des images dans le dossier traitement
+- Changement du nom des fichiers json de sortie par leurs caractéristiques
+
+![[1_freq.png]]
+Premiere image du traitement des données, c'est la fréquence d'utilisation de chaque figure 
+
+Enlever le fait de ne rien faire (do_nothing) ?
+
+Deuxieme schema :
+![[1_evol_fitness.png]]
+Qui montre l'avancement du score en fonction du nb de générations
+
+![[1_cases.png]]
+Sorte de gradiant qui montre a quel point chaque cases est utililisée
+
+### Trucs à faire
+- Algo glouton
+- Prendre un vrai terrain [[Notation du score.pdf]]
+- Optimisation de l'algo génétic [[Genetic Algorithms in Elixir Solve Problems Using Evolution (Sean Moriarity) (Z-Library).pdf]]
+- Un meilleur scorage [[Notation du score.pdf]]
+- Refaire le schema des classes [[Classes.canvas|Classes]]
+- Faire une grille rectangulaire et non carré

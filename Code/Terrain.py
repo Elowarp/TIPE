@@ -1,7 +1,7 @@
 '''
  Name : Elowan
  Creation : 02-06-2023 11:01:13
- Last modified : 16-06-2023 14:40:58
+ Last modified : 23-06-2023 10:47:15
 '''
 
 from Models import Figure, FIGURES
@@ -17,6 +17,14 @@ class Case:
         self.name = name
         self.figuresPossible = figuresPossible
         Case.instanceCount += 1
+
+    def getCaseById(id):
+        """Retourne la case en fonction de son id, None sinon"""
+        for case in CASES.values():
+            if case.id == id:
+                return case
+
+        return None
 
     def __repr__(self) -> str:
         return str(self.id)
