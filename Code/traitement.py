@@ -1,12 +1,13 @@
 '''
  Name : Elowan
  Creation : 23-06-2023 10:35:11
- Last modified : 23-06-2023 12:58:27
+ Last modified : 23-06-2023 14:00:21
 '''
 
 from json import dump, load
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
 import os
 
 from Models import Figure, FIGURES
@@ -74,8 +75,10 @@ def unserializeJson(filename):
 if __name__ == "__main__":
     filename = "5xp_frontflip_1"
 
-    
+    # Récupère les données
     data = unserializeJson("data/{}.json".format(filename))
+
+    # Création des dossiers
     if not os.path.exists("traitement"):
         os.mkdir("traitement")
 
@@ -112,11 +115,14 @@ if __name__ == "__main__":
         len(data["dataGenerations"]), POPULATION_NUMBER
     )
 
+    # Affichage de l'histogramme
     plt.bar(list_figures, list_count)
     plt.suptitle(name)
     plt.xlabel("Figures")
     plt.ylabel("Fréquence")
     plt.title(characteristics)
+
+    # Sauvegarde
     plt.savefig("traitement/{}_images/freq.png".format(filename))
     plt.close()
     
@@ -133,11 +139,14 @@ if __name__ == "__main__":
         len(data["dataGenerations"]), POPULATION_NUMBER
     )
 
+    # Affichage de la courbe
     plt.plot(list_fitness)
     plt.xlabel("Nb générations")
     plt.ylabel("Score")
     plt.suptitle(name)
     plt.title(characteristics)
+
+    # Sauvegarde
     plt.savefig("traitement/{}_images/evol_fitness.png".format(filename))
     plt.close()
     
@@ -159,14 +168,37 @@ if __name__ == "__main__":
             cases[i][j] = cases[i][j]/max_case
 
     # Création de la matrice d'utilisation des cases
-    m = np.zeros((len(cases), len(cases[0])))
+    freq_matrice = np.zeros((len(cases), len(cases[0])))
     for i in range(len(cases)):
         for j in range(len(cases[i])):
-            m[i][j] = cases[i][j]
+            freq_matrice[i][j] = cases[i][j]
 
-    plt.matshow(m, cmap=plt.get_cmap('OrRd'), vmin=0, vmax=1)
-    plt.colorbar()
-    plt.suptitle("Utilisation des cases au cours des générations")
+    # Creation d'une matrice représentant le mobilier du terrain
+    terrain_matrice = np.zeros((len(data["field"]), len(data["field"][0])))
+    for i in range(len(data["field"])):
+        for j in range(len(data["field"][i])):
+            terrain_matrice[i][j] = data["field"][i][j].id
 
-    plt.savefig("traitement/{}_images/cases.png".format(filename))
+    # Affichage des deux matrices
+    plt.subplot(1, 2, 1)
+    plt.matshow(freq_matrice, cmap=plt.get_cmap('OrRd'), vmin=0, vmax=1, fignum=False)
+    plt.colorbar(ax=plt.gca(), fraction=0.046, pad=0.04)
+    plt.title("Utilisation des cases au cours\ndes générations")
+
+    plt.subplot(1, 2, 2, aspect='equal')
+    plt.matshow(terrain_matrice, cmap=plt.get_cmap('gray'), fignum=False)
+
+    # Création de la légende
+    empty_patch = mpatches.Patch(color='black', label='Case vide')
+    wall_patch = mpatches.Patch(color='grey', label='Case mur')
+    hole_patch = mpatches.Patch(color='white', label='Case trou')
+    plt.legend(handles=[empty_patch, wall_patch, hole_patch])
+
+    plt.title("Mobilier du terrain")
+
+    # Marges
+    plt.subplots_adjust(bottom=0.1, right=1.5, top=0.9)
+
+    # Sauvegarde
+    plt.savefig("traitement/{}_images/cases.png".format(filename), bbox_inches='tight',dpi=100)
     plt.close()

@@ -133,7 +133,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 300,
+    "collapsed": true
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -149,6 +150,17 @@
   "lastOpenFiles": [
     "Classes.canvas",
     "Brouillon.md",
+    "Code/images/1_cases.png",
+    "Code/images/cases.png",
+    "Code/traitement/5xp_frontflip_2_images/cases.png",
+    "Code/traitement/5xp_frontflip_2_images/evol_fitness.png",
+    "Code/traitement/5xp_frontflip_2_images/freq.png",
+    "Code/traitement/5xp_frontflip_2_images",
+    "Code/data/5xp_frontflip_2.json",
+    "Ressources/Genetic Algorithms in Search, Optimization, and Machine Learning (David E. Goldberg) (Z-Library).djvu",
+    "Ressources/Practical Genetic Algorithms (Randy L. Haupt, Sue Ellen Haupt) (Z-Library).pdf",
+    "Ressources/Algorithms illuminated. Part 3. Greedy algorithms and dynamic programming (Roughgarden T) (Z-Library).pdf",
+    "Readme.md",
     "Ressources/Notation du score.pdf",
     "Ressources/Genetic Algorithms in Elixir Solve Problems Using Evolution (Sean Moriarity) (Z-Library).pdf",
     "Genetic Algorithms in Elixir Solve Problems Using Evolution (Sean Moriarity) (Z-Library).pdf",
@@ -156,19 +168,9 @@
     "Pasted image 20230623111644.png",
     "Code/images/1_freq.png",
     "Code/images/1_evol_fitness.png",
-    "Code/images/1_cases.png",
     "Code/images/freq.png",
     "Code/images/evol_fitness.png",
-    "Code/images/cases.png",
     "Code/images",
-    "Code/5xp_frontflip_images/cases.png",
-    "Code/5xp_frontflip_images/freq.png",
-    "Code/5xp_frontflip_images/evol_fitness.png",
-    "Code/5xp_frontflip_images",
-    "Code/traitement/5xp_frontflip_1_images",
-    "Code/data/5xp_frontflip_1.json",
-    "Code/traitement/5xp_frontflip_images",
-    "Code/traitement",
     "Code/README.md",
     "Code-TIPE/README.md",
     "Python.md",

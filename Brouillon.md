@@ -237,6 +237,8 @@ Qui montre l'avancement du score en fonction du nb de générations
 ![[1_cases.png]]
 Sorte de gradiant qui montre a quel point chaque cases est utililisée
 
+J'ai téléchargé deux nouveaux livres sur les algos gloutons (mais c'est pas des vrais search paper donc pas fou faut trouver mieux elo) et sur les algo génétiques
+
 ### Trucs à faire
 - Algo glouton
 - Prendre un vrai terrain [[Notation du score.pdf]]
@@ -244,3 +246,7 @@ Sorte de gradiant qui montre a quel point chaque cases est utililisée
 - Un meilleur scorage [[Notation du score.pdf]]
 - Refaire le schema des classes [[Classes.canvas|Classes]]
 - Faire une grille rectangulaire et non carré
+- Ajouter des infos supplémentaires dans le json (informatiosn sur la taille du terrain, sur les paramètres utilisés comme la position initiale et tout)
+- Pouvoir faire un tas de mesures et faire une moyenne de tout 
+- Moyenne de nombre de combos par partie
+
