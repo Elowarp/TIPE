@@ -1,13 +1,14 @@
 '''
  Name : Elowan
  Creation : 02-06-2023 11:01:13
- Last modified : 23-06-2023 10:47:15
+ Last modified : 27-06-2023 21:06:23
 '''
 
 from Models import Figure, FIGURES
 from random import choice
 
-SIZE_GRILLE = 5
+SIZE_X = 10
+SIZE_Y = 15
 
 class Case:
     instanceCount = 0
@@ -33,12 +34,13 @@ class Case:
         return self.__repr__()
 
 class Field:
-    def __init__(self, grille = [[None for i in range(SIZE_GRILLE)] for j in range(SIZE_GRILLE)]):
+    def __init__(self, grille = [[None for j in range(SIZE_X)] 
+                                 for i in range(SIZE_Y)]):
         self.grille = grille
 
     def createField(self):
-        for i in range(SIZE_GRILLE):
-            for j in range(SIZE_GRILLE):
+        for i in range(SIZE_Y):
+            for j in range(SIZE_X):
                 self.grille[i][j] = choice(list(CASES.values()))
 
     def getCase(self, positions) -> Case:

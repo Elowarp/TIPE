@@ -11,6 +11,21 @@
             "id": "749721464c6823c0",
             "type": "leaf",
             "state": {
+              "type": "canvas",
+              "state": {
+                "file": "Classes.canvas",
+                "viewState": {
+                  "x": 1766.4336101612869,
+                  "y": 603.6152361022486,
+                  "zoom": -1.4487449188526997
+                }
+              }
+            }
+          },
+          {
+            "id": "48026874373e9b6e",
+            "type": "leaf",
+            "state": {
               "type": "markdown",
               "state": {
                 "file": "Brouillon.md",
@@ -19,7 +34,8 @@
               }
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -146,31 +162,31 @@
       "command-palette:Ouvrir la palette de commandes": false
     }
   },
-  "active": "749721464c6823c0",
+  "active": "48026874373e9b6e",
   "lastOpenFiles": [
+    "Code/traitement/5xp_frontflip_3_images/cases.png",
     "Classes.canvas",
-    "Brouillon.md",
-    "Code/images/1_cases.png",
-    "Code/images/cases.png",
-    "Code/traitement/5xp_frontflip_2_images/cases.png",
-    "Code/traitement/5xp_frontflip_2_images/evol_fitness.png",
-    "Code/traitement/5xp_frontflip_2_images/freq.png",
-    "Code/traitement/5xp_frontflip_2_images",
-    "Code/data/5xp_frontflip_2.json",
-    "Ressources/Genetic Algorithms in Search, Optimization, and Machine Learning (David E. Goldberg) (Z-Library).djvu",
-    "Ressources/Practical Genetic Algorithms (Randy L. Haupt, Sue Ellen Haupt) (Z-Library).pdf",
-    "Ressources/Algorithms illuminated. Part 3. Greedy algorithms and dynamic programming (Roughgarden T) (Z-Library).pdf",
-    "Readme.md",
-    "Ressources/Notation du score.pdf",
-    "Ressources/Genetic Algorithms in Elixir Solve Problems Using Evolution (Sean Moriarity) (Z-Library).pdf",
-    "Genetic Algorithms in Elixir Solve Problems Using Evolution (Sean Moriarity) (Z-Library).pdf",
-    "Ressources",
-    "Pasted image 20230623111644.png",
-    "Code/images/1_freq.png",
-    "Code/images/1_evol_fitness.png",
+    "Code/images/2_freq.png",
+    "Code/images/2_evol_fitness.png",
     "Code/images/freq.png",
     "Code/images/evol_fitness.png",
-    "Code/images",
+    "Code/images/2_cases.png",
+    "Code/images/cases.png",
+    "Brouillon.md",
+    "Code/traitement/5xp_frontflip_3_images/evol_fitness.png",
+    "Code/traitement/5xp_frontflip_3_images/freq.png",
+    "Code/traitement/5xp_frontflip_3_images",
+    "Code/data/5xp_frontflip_3.json",
+    "Code/data/5xp_frontflip_2.json",
+    "Code/__pycache__/Genetic.cpython-310.pyc.140204648123696",
+    "Ressources/Practical Genetic Algorithms (Randy L. Haupt, Sue Ellen Haupt) (Z-Library).pdf",
+    "Ressources/Notation du score.pdf",
+    "Readme.md",
+    "Code/images/1_cases.png",
+    "Code/traitement/5xp_frontflip_2_images",
+    "Ressources/Genetic Algorithms in Search, Optimization, and Machine Learning (David E. Goldberg) (Z-Library).djvu",
+    "Ressources/Algorithms illuminated. Part 3. Greedy algorithms and dynamic programming (Roughgarden T) (Z-Library).pdf",
+    "Ressources/Genetic Algorithms in Elixir Solve Problems Using Evolution (Sean Moriarity) (Z-Library).pdf",
     "Code/README.md",
     "Code-TIPE/README.md",
     "Python.md",

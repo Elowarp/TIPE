@@ -1,7 +1,7 @@
 '''
  Name : Elowan
  Creation : 02-06-2023 11:00:02
- Last modified : 23-06-2023 10:45:52
+ Last modified : 27-06-2023 21:06:11
 '''
 from random import randint, choice
 
@@ -155,14 +155,15 @@ class Athlete:
         positionToRemove = []
 
         # Dernier x/y qui est encore sans le terrain
-        lastCoordPossible = len(self.field)-1 
+        lastCoordPossibleY = len(self.field.grille[0])-1 
+        lastCoordPossibleX = len(self.field.grille)-1 
 
         if self.position[0] == 0:
             if 0 not in positionToRemove: positionToRemove.append(0)
             if 7 not in positionToRemove: positionToRemove.append(7)
             if 6 not in positionToRemove: positionToRemove.append(6)
             
-        elif self.position[0] == lastCoordPossible:
+        elif self.position[0] == lastCoordPossibleY:
             if 2 not in positionToRemove: positionToRemove.append(2)
             if 3 not in positionToRemove: positionToRemove.append(3)
             if 4 not in positionToRemove: positionToRemove.append(4)
@@ -172,7 +173,7 @@ class Athlete:
             if 1 not in positionToRemove: positionToRemove.append(1)
             if 2 not in positionToRemove: positionToRemove.append(2)
 
-        elif self.position[1] == lastCoordPossible:
+        elif self.position[1] == lastCoordPossibleX:
             if 4 not in positionToRemove: positionToRemove.append(4)
             if 5 not in positionToRemove: positionToRemove.append(5)
             if 6 not in positionToRemove: positionToRemove.append(6)

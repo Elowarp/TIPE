@@ -1,7 +1,7 @@
 '''
  Name : Elowan
  Creation : 02-06-2023 10:59:30
- Last modified : 16-06-2023 14:42:11
+ Last modified : 27-06-2023 21:16:16
 '''
 from Terrain import Field, Figure, FIGURES, CASES
 from Models import Athlete
@@ -170,15 +170,15 @@ def termination(population:list) -> bool:
     Returns:
         (bool): True si l'algorithme doit s'arrêter, False sinon
     """
-    return population[0].fitness >= 109
+    return population[0].fitness >= 102
 
 if __name__ == "__main__":
     ### Creation de la population
     
     # POPULATION_NUMBER de fois le meme athlete 
     population = [AthleteChromosome(Athlete(5, FIGURES["frontflip"])) 
-                  for _ in range(POPULATION_NUMBER)]
     
+                  for _ in range(POPULATION_NUMBER)]
     playAllGames(population)
     
     ### Algorithme génétique

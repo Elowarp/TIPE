@@ -1,7 +1,7 @@
 '''
  Name : Elowan
  Creation : 08-06-2023 10:00:40
- Last modified : 23-06-2023 12:02:20
+ Last modified : 27-06-2023 21:17:29
 '''
 import random 
 import json
@@ -123,14 +123,20 @@ class GeneticAlgorithm:
             "FigureFav": self.population[0].athlete.figureFav.id,   
         }
 
-        fieldSerialized = []
+        fieldCases = []
         for i in range(len(self.population[0].athlete.field.grille)):
             ligne = []
             for j in range(len(self.population[0].athlete.field.grille[i])):
                 caseId = self.population[0].athlete.field.grille[i][j].id
                 ligne.append(caseId)
 
-            fieldSerialized.append(ligne)
+            fieldCases.append(ligne)
+
+        fieldSerialized = {
+            "cases": fieldCases,
+            "width": len(self.population[0].athlete.field.grille),
+            "height": len(self.population[0].athlete.field.grille[0])
+        }
 
         data = {
             "athlete": athleteSerialized,
@@ -139,6 +145,8 @@ class GeneticAlgorithm:
         }
         with open("data/{}.json".format(filename), "w") as f:
             json.dump(data, f)
+
+        print("Data saved in data/{}.json".format(filename))
 
 if __name__ == "__main__":
     random.seed(22)

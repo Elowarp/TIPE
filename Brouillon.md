@@ -250,3 +250,12 @@ J'ai téléchargé deux nouveaux livres sur les algos gloutons (mais c'est pas d
 - Pouvoir faire un tas de mesures et faire une moyenne de tout 
 - Moyenne de nombre de combos par partie
 
+# 27/06/2023
+### Done
+- Refont du diagramme de classe
+- Ajout d'un terrain de 10x15 et de son traitement
+
+#### Traitement cases 10x15
+On peut voir que même après l'ajout d'un terrain bcp plus grand, les cases utilisées ne bougent pas beaucoup et ça reste dans la zone de départ
+
+![[2_cases.png]]

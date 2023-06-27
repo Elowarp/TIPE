@@ -1,7 +1,7 @@
 '''
  Name : Elowan
  Creation : 23-06-2023 10:35:11
- Last modified : 23-06-2023 14:00:21
+ Last modified : 27-06-2023 21:33:54
 '''
 
 from json import dump, load
@@ -11,7 +11,7 @@ import matplotlib.patches as mpatches
 import os
 
 from Models import Figure, FIGURES
-from Terrain import Field, Case, SIZE_GRILLE
+from Terrain import Field, Case
 
 from main import POPULATION_NUMBER
 from Genetic import NUMBER_OF_CHROMOSOME_TO_KEEP
@@ -43,16 +43,20 @@ def unserializeJson(filename):
                 "xp": data["athlete"]["xp"],
                 "FigureFav": Figure.getFigureById(data["athlete"]["FigureFav"])
             },
-            "field": [],
+            "field": {
+                "cases": [],
+                "width": data["field"]["width"],
+                "height": data["field"]["height"]
+            },
             "dataGenerations": []
         }
 
-        for lines in data["field"]:
+        for lines in data["field"]["cases"]:
             parsed_line = []
             for case in lines:
                 parsed_line.append(Case.getCaseById(case))
             
-            parsed_data["field"].append(parsed_line)
+            parsed_data["field"]["cases"].append(parsed_line)
 
         for generation in data["dataGenerations"]:
             parsed_generation = {
@@ -73,7 +77,7 @@ def unserializeJson(filename):
         return parsed_data
     
 if __name__ == "__main__":
-    filename = "5xp_frontflip_1"
+    filename = "5xp_frontflip_3"
 
     # Récupère les données
     data = unserializeJson("data/{}.json".format(filename))
@@ -151,7 +155,8 @@ if __name__ == "__main__":
     plt.close()
     
     ### Utilisation des cases au cours des générations
-    cases = [[0 for _ in range(SIZE_GRILLE)] for _ in range(SIZE_GRILLE)]
+    cases = [[0 for _ in range(data["field"]["height"])] 
+             for _ in range(data["field"]["width"])]
 
     # Comptage du nombre de fois que chaque case est utilisée
     for generation in data["dataGenerations"]:
@@ -174,10 +179,10 @@ if __name__ == "__main__":
             freq_matrice[i][j] = cases[i][j]
 
     # Creation d'une matrice représentant le mobilier du terrain
-    terrain_matrice = np.zeros((len(data["field"]), len(data["field"][0])))
-    for i in range(len(data["field"])):
-        for j in range(len(data["field"][i])):
-            terrain_matrice[i][j] = data["field"][i][j].id
+    terrain_matrice = np.zeros((data["field"]["width"], data["field"]["height"]))
+    for i in range(data["field"]["width"]):
+        for j in range(data["field"]["height"]):
+            terrain_matrice[i][j] = data["field"]["cases"][i][j].id
 
     # Affichage des deux matrices
     plt.subplot(1, 2, 1)
