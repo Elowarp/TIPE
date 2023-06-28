@@ -251,11 +251,171 @@ J'ai téléchargé deux nouveaux livres sur les algos gloutons (mais c'est pas d
 - Moyenne de nombre de combos par partie
 
 # 27/06/2023
-### Done
-- Refont du diagramme de classe
-- Ajout d'un terrain de 10x15 et de son traitement
 
 #### Traitement cases 10x15
 On peut voir que même après l'ajout d'un terrain bcp plus grand, les cases utilisées ne bougent pas beaucoup et ça reste dans la zone de départ
 
 ![[2_cases.png]]
+Autres graphes :
+![[2_freq.png]]
+![[2_evol_fitness.png]]
+
+On aurait pas un biais des stats ? en mode on va avoir jsp cb de corks mais c'est pcq on a jsp cb de fois le même parent qui a fait un cork et qui a donné naissance a d'autres golmon de gosses
+
+1 milliard de générations = 7.8Go de ram, c'est pas viable donc faudrait voir pour faire une interface ou faire une sauvegarde temporaire tous les x générations dans un json pour vider la ram
+
+Utiliser de la quantization ? 
+> **Quantization**, in mathematics and [digital signal processing](https://en.wikipedia.org/wiki/Digital_signal_processing "Digital signal processing"), is the process of mapping input values from a large set (often a continuous set) to output values in a (countable) smaller set, often with a finite [number of elements](https://en.wikipedia.org/wiki/Cardinality "Cardinality"). [Rounding](https://en.wikipedia.org/wiki/Rounding "Rounding") and [truncation](https://en.wikipedia.org/wiki/Truncation "Truncation") are typical examples of quantization processes. (Wikipédia)
+
+> If one does not know the initial search region, there must be enough diversity in the initial population to explore a reasonably sized variable space before focusing on the most promising regions
+
+Positions de départ, milieu de map ?
+
+The traditional handwaving proof of convergence for the binary GA is called the schema theorem
+
+Changer la terminaison par une détection de variation 
+
+Commencer d'un point différent de la carte pour chaque athlète (est ce que c'est le cas des vrais competitions ?)
+Uniforme sampling 
+La mutation est pas opti mais comment jpeux faire mieux ?
+
+Fonction d'arret : Si le score max n'a pas été changé depuis au moins 5k générations, on stop 
+
+#### Score 
+Ya 6 juges pour 3 par critères, chaque critère vaut au maximum 15pts (donc un total de 30 pts max) :
+- Execution
+	- Surete 
+		-  Surete : Enlever 1 pt pour de grosses erreurs, et 1/2 pour les plus petite (Mauvais attérissage, vitesse et le fait des froler les obstacles/gens)(Nb de pts de départ 3pts, max 3)
+		- Presentation : Ajouter 1pt pour avoir prit du mobilier (utiliser une barre par ex)(Nb pts départ :0 max 2)
+	- Flow
+		- Flow : Enlever un point a chaque fois qu'on s'arrete completement, un demi point si on marchouille un peu (Nb pts départ : 3 max 3)
+		- Connexion : Ajouter un demi/complet point pour le nb d'elements liés avec la liste de référence (Table des tricks changeant toutes les années) (Nb depart 0 max 2)
+	- Course
+		- Parts : Ajouter un point pour chaque parties définies où l'athlète fait un trick (Nb depart 0 max 3)
+		- Types : Ajouter un demi point pour chaque trick fait en intéraction avec le sol, un rebord, une bar ou un mur (Nb depart 0 max 2)
+- Difficulté
+	- Trick
+		- Table des tricks : Scoring accordé à une liste de référence, le score attribué au trick est au depart celui de la feuille avec un potentiel plus en fct de l'endroit fait. Lier 2 mouv entraine l'ajout du score de 2 mouv liés (Nb depart 0 max 5)
+	- Run
+		- Placement : Ajouter un point pour un trick fait au debut du run, au milieu et a la fin du run(Nb de depart 0 max 3)
+		- Temps : Ajouter un demi point pour la longueur du run selon la liste reference(Nb depart 0 max 2)
+	- Variete
+		- Variete : Ajoute un demi point pour un trick fait en dehors de la category de parlour classic, rotations forward, rotation sideways, rotation backwards, twist, spin (Nb depart 0 max 3)
+		- Technique : Ajouter un point ou demi pour la qualité technique de l'élément clé comme une montée ou un twists (Nb depart 0 max 2)
+
+### Done
+- Refont du diagramme de classe
+- Ajout d'un terrain de 10x15 et de son traitement (10 par 15m c'est qui est pas déconnant)
+- Nouvelle fonction d'arret qui s'arrete des que ça fait 5000 générations qu'on a pas touché au résultat
+
+### To do:
+- Evaluer la complexité de mes fonctions
+- Algo glouton
+- Optimisation de l'algo génétic [[Genetic Algorithms in Elixir Solve Problems Using Evolution (Sean Moriarity) (Z-Library).pdf]]
+- Un meilleur scorage [[Notation du score.pdf]]
+- Ajouter des infos supplémentaires dans le json (informatiosn sur la taille du terrain, sur les paramètres utilisés comme la position initiale et tout)
+- Pouvoir faire un tas de mesures et faire une moyenne de tout 
+- Moyenne de nombre de combos par partie
+
+# 28/06/2023
+Concentration maximale sur le score
+
+Pour modéliser les passements, chaque combo différent on fait un passement (soit 0.5 pts de plus ?)
+
+Longueur d'un run = temps écoulé entre deux arrets/courses ou deux accros sols (vaut pour les connexions entre figures)
+Surete aléatoire (no peut louper une fig sans faire expres, mais chances moindre si cest notre fig pref)
+Ajout d'un demi point pour si on fait un tricks rare (donc distribution de probabilité ?)
+Ajout du nb de points associée 
+Version homme femme ?
+
+`Complexity` d'une figure devient les points initiaux associés par la table des tricks
+
+Ajout des figures suivantes : 
+```python
+FIGURES = {
+
+"do_nothing": Figure("do_nothing", 1, 0), # Ne rien faire pendant 1s
+"run": Figure("run", 1, 0), # Courir pendant 1s
+"jump": Figure("jump", 1, 0), # Sauter pendant 1s
+
+"180": Figure("180", 1, 0.5), # Faire un 180 pendant 1s
+"frontflip": Figure("frontflip", 1, 0.5), # Faire un frontflip pendant 1s
+"backflip": Figure("backflip", 1, 0.5), # Faire un backflip pendant 1s
+"gaet_flip": Figure("gaet_flip", 1, 0.5), # Faire un gaet flip (back en appui sur un coin de mur) pendant 1s
+
+"cork": Figure("360", 1, 1), # Faire un cork pendant 1s
+"cast_backflip": Figure("cast_backflip", 1, 1), # Faire un cast backflip (backflip en appui sur un mur) pendant 1s
+"inward_flip": Figure("inward_flip", 1, 1), # Faire un inward flip (front qui te fait reculer) pendant 1s
+
+"540": Figure("540", 1, 1.5), # Faire un 540 pendant 1s
+
+"double_cork": Figure("double_cork", 2, 2), # Faire un double cork
+"kong_gainer": Figure("kong_gainer", 1, 2), # Faire un kong gainer
+
+"cast_backflip": Figure("cast_backflip", 2, 2.5), # Faire un cast backflip 360
+
+"double_swing_gainer": Figure("double_swing_gainer", 2, 3), # back sur une barre
+
+"double_front": Figure("double_front", 2, 4), # Faire un double front
+"double_back": Figure("double_back", 2, 4), # Faire un double back
+
+"double_flip_360": Figure("double_flip_360", 2, 4.5), # Faire un double flip 360
+}
+```
+
+Résultat de l'ajout de toutes les figures sans changer la façon de noter :
+
+![[Code/images/1er load des 15 figures/cases.png]]
+![[Code/images/1er load des 15 figures/evol_fitness.png]]
+![[Code/images/1er load des 15 figures/freq.png]]
+
+Ajouter 15 figures a fait faire 1Milliards d'athlètes (~8000 générations) et un fichier de 100mo
+
+On peut calculer le nombre de possibilité de combinaison (drole)
+
+>[!caution] 
+>protentiel probleme avec le fait qu'on reste sur les mêmes chemins a partir du moment ou on atteint le pic de score
+
+Maintenant va pour le meilleur scoring
+Tout ce qui est impossible a modeliser on fait jouer un `randint` ou `weightes_random` qui est un random avec plus de chance d'obtenir le haut de panier que le bas (ou l'inverse)
+
+>[!info] Première exécution
+> On a une alternance entre 60, 61 et 62.5, ce que fait que le programme ne s'arretera jamais, de plus, la fonction ne marche plus, il faudrait faire quelque chose qui detecte le mouvement, comme une dérivée
+> Fun fact le max de score c'est 30, on a le double. Et le temps d'exécution pour parvenir a 1milliards d'athlète à facilement tripellé voir quadrupelé 
+
+>[!info] Deuxieme execution
+>Au final l'algorithme s'arrête, vu que c'est l'atteinte d'un max, si on ne tape pas plus haut que le max pendant 5000 generations alors il s'arrete qd meme
+
+Traitement de la deuxieme execution :
+![[Code/images/1 Generation avec nv scoring/cases.png]]
+![[Code/images/1 Generation avec nv scoring/evol_fitness.png]]
+![[Code/images/1 Generation avec nv scoring/freq.png]]
+
+### Generation avec un athlète d'xp = 2
+![[Code/images/2XP/cases.png]]
+![[Code/images/2XP/evol_fitness.png]]
+![[Code/images/2XP/freq.png]]
+### Generation avec xp=10
+![[Code/images/10XP/cases.png]]
+![[Code/images/10XP/evol_fitness.png]]
+![[Code/images/10XP/freq.png]]
+Ce qu'on voit surtout c'est l'invariance des résultats quasiment malgré le fait que le niveau soit très bas
+
+> [!info] Conclusion :
+>  l'exprerience n'affecte en rien la technique utilisé pour gagner, elle influence que de peu le score 
+Ainsi on voit qu'il y a changement à faire (je pense au niveau de l'enchainement des passements) et potentiellement TROP d'aléatoire
+
+De plus si on regarde les images pour une mutation  de resp 3 et 7% on obtient les mêmes resultats (diff de 0.02 de moyenne) sauf pour l'utilisation des cases
+![[Code/images/mutation 3%/cases.png]]
+![[Code/images/mutation 7%/cases.png]]
+
+J'ai une trop grosse convergence des cas, fin, un algo trop généralisé et je peux rien trop en tirer pour l'instant
+
+### To do:
+- Baisser le taux d'aléatoire et faire un lock (pas de grosses acrobaties pour les petits niveaux)
+- Evaluer la complexité de mes fonctions
+- Ajouter des infos supplémentaires dans le json (informatiosn sur les paramètres utilisés comme la position initiale, la mutation, etc)
+- Pouvoir faire un tas de mesures et faire une moyenne de tout 
+- Moyenne de nombre de combos par partie
+- Nombre de combinaisons possibles
+- Faire un vrai terrain

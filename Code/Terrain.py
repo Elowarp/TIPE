@@ -1,7 +1,7 @@
 '''
  Name : Elowan
  Creation : 02-06-2023 11:01:13
- Last modified : 27-06-2023 21:06:23
+ Last modified : 28-06-2023 18:31:02
 '''
 
 from Models import Figure, FIGURES
@@ -71,19 +71,38 @@ class Field:
 CASES = {
     "empty": Case("empty", [                        # Sol plat vide
         FIGURES["do_nothing"], 
+        FIGURES["run"],
+        FIGURES["jump"],
+        FIGURES["180"],
         FIGURES["backflip"], 
         FIGURES["frontflip"], 
-        FIGURES["cork"]
+        FIGURES["gaet_flip"],
+        FIGURES["cork"],
+        FIGURES["inward_flip"],
+        FIGURES["540"],
+        FIGURES["double_cork"],
+        FIGURES["double_frontflip"],
+        FIGURES["double_backflip"],
+        FIGURES["double_flip_360"]
     ]),           
     "wall":  Case("wall", [                         # Mur 
         FIGURES["do_nothing"], 
         FIGURES["jump"], 
-        FIGURES["palm_flip"],
+        FIGURES["run"],
+        FIGURES["cast_backflip"],
+        FIGURES["gainer"],
+        FIGURES["kong_gainer"],
+        FIGURES["cast_backflip_360"],
     ]),            
-    "hole":  Case("hole", [                         # Trou
+    "bar":  Case("bar", [                         # Trou
         FIGURES["do_nothing"], 
         FIGURES["jump"],
-        FIGURES["frontflip"],
+        FIGURES["run"],
+        FIGURES["cast_backflip"],
+        FIGURES["gainer"],
+        FIGURES["cast_backflip_360"],
+        FIGURES["double_swing_gainer"],
+        FIGURES["double_backflip"],
     ]),               
 }
 

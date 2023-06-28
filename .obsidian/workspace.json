@@ -11,21 +11,6 @@
             "id": "749721464c6823c0",
             "type": "leaf",
             "state": {
-              "type": "canvas",
-              "state": {
-                "file": "Classes.canvas",
-                "viewState": {
-                  "x": 1766.4336101612869,
-                  "y": 603.6152361022486,
-                  "zoom": -1.4487449188526997
-                }
-              }
-            }
-          },
-          {
-            "id": "48026874373e9b6e",
-            "type": "leaf",
-            "state": {
               "type": "markdown",
               "state": {
                 "file": "Brouillon.md",
@@ -33,9 +18,28 @@
                 "source": false
               }
             }
+          },
+          {
+            "id": "bae49ed066f8bb0c",
+            "type": "leaf",
+            "state": {
+              "type": "image",
+              "state": {
+                "file": "Code/images/1er load des 15 figures/cases.png"
+              }
+            }
+          },
+          {
+            "id": "05009b740f4d6c55",
+            "type": "leaf",
+            "state": {
+              "type": "pdf",
+              "state": {
+                "file": "Ressources/Notation du score.pdf"
+              }
+            }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -85,7 +89,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 300,
+    "collapsed": true
   },
   "right": {
     "id": "cac7d68219559364",
@@ -162,31 +167,33 @@
       "command-palette:Ouvrir la palette de commandes": false
     }
   },
-  "active": "48026874373e9b6e",
+  "active": "749721464c6823c0",
   "lastOpenFiles": [
-    "Code/traitement/5xp_frontflip_3_images/cases.png",
-    "Classes.canvas",
-    "Code/images/2_freq.png",
-    "Code/images/2_evol_fitness.png",
-    "Code/images/freq.png",
-    "Code/images/evol_fitness.png",
-    "Code/images/2_cases.png",
-    "Code/images/cases.png",
+    "Code/images/mutation 3%/freq.png",
+    "Code/images/mutation 3%/cases.png",
+    "Code/images/mutation 3%/evol_fitness.png",
+    "Code/images/mutation 3%",
+    "Code/images/mutation 7%/freq.png",
+    "Code/images/mutation 7%/evol_fitness.png",
+    "Code/images/mutation 7%/cases.png",
+    "Code/images/mutation 7%",
+    "Code/images/10XP/freq.png",
+    "Code/images/10XP/evol_fitness.png",
+    "Code/images/10XP/cases.png",
+    "Code/images/10XP",
+    "Code/traitement/10XP/freq.png",
+    "Code/traitement/10XP/evol_fitness.png",
+    "Code/traitement/10XP",
+    "Code/traitement/10xp_frontflip_images",
+    "Code/data/10xp_frontflip.json",
+    "Code/images/2XP",
+    "Code/traitement/2XP",
+    "Code/traitement/2xp_frontflip_images",
+    "Code/data/2xp_frontflip.json",
     "Brouillon.md",
-    "Code/traitement/5xp_frontflip_3_images/evol_fitness.png",
-    "Code/traitement/5xp_frontflip_3_images/freq.png",
-    "Code/traitement/5xp_frontflip_3_images",
-    "Code/data/5xp_frontflip_3.json",
-    "Code/data/5xp_frontflip_2.json",
-    "Code/__pycache__/Genetic.cpython-310.pyc.140204648123696",
-    "Ressources/Practical Genetic Algorithms (Randy L. Haupt, Sue Ellen Haupt) (Z-Library).pdf",
-    "Ressources/Notation du score.pdf",
+    "Classes.canvas",
+    "[Code/images/1 Generation avec nv scoring/freq.png.md",
     "Readme.md",
-    "Code/images/1_cases.png",
-    "Code/traitement/5xp_frontflip_2_images",
-    "Ressources/Genetic Algorithms in Search, Optimization, and Machine Learning (David E. Goldberg) (Z-Library).djvu",
-    "Ressources/Algorithms illuminated. Part 3. Greedy algorithms and dynamic programming (Roughgarden T) (Z-Library).pdf",
-    "Ressources/Genetic Algorithms in Elixir Solve Problems Using Evolution (Sean Moriarity) (Z-Library).pdf",
     "Code/README.md",
     "Code-TIPE/README.md",
     "Python.md",
