@@ -8,7 +8,7 @@
         "type": "tabs",
         "children": [
           {
-            "id": "749721464c6823c0",
+            "id": "0e0983fab0d05a08",
             "type": "leaf",
             "state": {
               "type": "markdown",
@@ -16,16 +16,6 @@
                 "file": "Brouillon.md",
                 "mode": "source",
                 "source": false
-              }
-            }
-          },
-          {
-            "id": "bae49ed066f8bb0c",
-            "type": "leaf",
-            "state": {
-              "type": "image",
-              "state": {
-                "file": "Code/images/1er load des 15 figures/cases.png"
               }
             }
           },
@@ -167,31 +157,31 @@
       "command-palette:Ouvrir la palette de commandes": false
     }
   },
-  "active": "749721464c6823c0",
+  "active": "0e0983fab0d05a08",
   "lastOpenFiles": [
-    "Code/images/mutation 3%/freq.png",
-    "Code/images/mutation 3%/cases.png",
-    "Code/images/mutation 3%/evol_fitness.png",
-    "Code/images/mutation 3%",
-    "Code/images/mutation 7%/freq.png",
-    "Code/images/mutation 7%/evol_fitness.png",
-    "Code/images/mutation 7%/cases.png",
-    "Code/images/mutation 7%",
-    "Code/images/10XP/freq.png",
-    "Code/images/10XP/evol_fitness.png",
-    "Code/images/10XP/cases.png",
-    "Code/images/10XP",
-    "Code/traitement/10XP/freq.png",
-    "Code/traitement/10XP/evol_fitness.png",
-    "Code/traitement/10XP",
-    "Code/traitement/10xp_frontflip_images",
-    "Code/data/10xp_frontflip.json",
-    "Code/images/2XP",
-    "Code/traitement/2XP",
-    "Code/traitement/2xp_frontflip_images",
-    "Code/data/2xp_frontflip.json",
-    "Brouillon.md",
+    "Code/traitement/6xp_frontflip/all_images/freq.png",
+    "Code/traitement/6xp_frontflip/all_images/cases.png",
+    "Code/traitement/6xp_frontflip/all_images/evol_fitness.png",
+    "Code/traitement/6xp_frontflip/all_images",
+    "Code/traitement/data/6xp_frontflip/9.json_images",
+    "Code/traitement/data/6xp_frontflip/8.json_images",
+    "Code/traitement/data/6xp_frontflip/7.json_images",
+    "Code/traitement/data/6xp_frontflip/6.json_images",
+    "Code/traitement/data/6xp_frontflip/5.json_images",
+    "Code/traitement/data/6xp_frontflip/4.json_images",
+    "Code/traitement/data/6xp_frontflip/3.json_images",
+    "Code/traitement/data/6xp_frontflip/2.json_images",
+    "Code/traitement/data/6xp_frontflip/1.json_images",
+    "Code/traitement/data/6xp_frontflip/all_images/freq.png",
+    "Code/traitement/data/6xp_frontflip/all_images/cases.png",
+    "Code/traitement/data/6xp_frontflip/all_images/evol_fitness.png",
+    "Code/traitement/6xp_frontflip/9_images/freq.png",
+    "Code/traitement/6xp_frontflip/9_images/cases.png",
+    "Code/traitement/6xp_frontflip/9_images/evol_fitness.png",
+    "Code/traitement/6xp_frontflip/8_images/freq.png",
+    "Code/traitement/6xp_frontflip/8_images/cases.png",
     "Classes.canvas",
+    "Brouillon.md",
     "[Code/images/1 Generation avec nv scoring/freq.png.md",
     "Readme.md",
     "Code/README.md",

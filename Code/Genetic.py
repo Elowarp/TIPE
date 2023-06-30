@@ -1,13 +1,13 @@
 '''
  Name : Elowan
  Creation : 08-06-2023 10:00:40
- Last modified : 27-06-2023 21:17:29
+ Last modified : 01-07-2023 00:25:35
 '''
 import random 
 import json
 import os
 
-NUMBER_OF_CHROMOSOME_TO_KEEP = 20
+from consts import INITIAL_POSITION, MUTATION_RATE, NUMBER_OF_CHROMOSOME_TO_KEEP
 
 class Chromosome:
     """
@@ -89,17 +89,9 @@ class GeneticAlgorithm:
         Sauvegarde en Json les données de la population à chaque itération
         en plus des informations sur l'athlète original
         """
-        if not os.path.exists("data"):
-            os.mkdir("data")
+        self.filename = filename
+        os.makedirs("data", exist_ok=True)
 
-        if filename == "":
-            filename = "{}xp_{}".format(self.population[0].athlete.xp, self.population[0].athlete.figureFav.name)
-
-            if os.path.exists("data/{}.json".format(filename)):
-                i = 1
-                while os.path.exists("data/{}_{}.json".format(filename, i)):
-                    i += 1
-                filename += "_{}".format(i)
 
         # Formatage des données
         dataSerialized = []
@@ -120,9 +112,17 @@ class GeneticAlgorithm:
         
         athleteSerialized = {
             "xp": self.population[0].athlete.xp,
-            "FigureFav": self.population[0].athlete.figureFav.id,   
+            "FigureFav": self.population[0].athlete.figureFav.id, 
+            "InitialPosition": INITIAL_POSITION,  
         }
 
+        metaInfoSerialized = {
+            "POPULATION_NUMBER": self.population_len,
+            "NUMBER_OF_CHROMOSOME_TO_KEEP": NUMBER_OF_CHROMOSOME_TO_KEEP,
+            "MUTATION_RATE": MUTATION_RATE,
+            "NUMBER_OF_GENERATIONS": len(self.populationOverTime)
+        }
+        
         fieldCases = []
         for i in range(len(self.population[0].athlete.field.grille)):
             ligne = []
@@ -139,14 +139,33 @@ class GeneticAlgorithm:
         }
 
         data = {
+            "metaInfo": metaInfoSerialized,
             "athlete": athleteSerialized,
             "field": fieldSerialized,
             "dataGenerations": dataSerialized
         }
-        with open("data/{}.json".format(filename), "w") as f:
+
+        self.dirname = "{}xp_{}".format(
+            self.population[0].athlete.xp, 
+            self.population[0].athlete.figureFav.name
+        )
+
+        os.makedirs("data/{}".format(self.dirname), exist_ok=True)
+
+        i=0
+        while os.path.exists("data/{}/{}.json".format(self.dirname, i)):
+            i += 1
+            
+        self.filename += self.dirname + "/{}".format(i)
+
+        with open("data/{}.json".format(self.filename), "w") as f:
             json.dump(data, f)
 
-        print("Data saved in data/{}.json".format(filename))
+        print("Data saved in data/{}.json".format(self.filename))
+        
+    
+    def getFilename(self):
+        return self.filename
 
 if __name__ == "__main__":
     random.seed(22)
@@ -187,6 +206,7 @@ if __name__ == "__main__":
         return liste
 
     def evaluate(population):
+        # Evaluation de la population
         sums = sumlist(population)
 
         # Sort list decreasing

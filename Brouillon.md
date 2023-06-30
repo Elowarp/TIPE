@@ -419,3 +419,92 @@ J'ai une trop grosse convergence des cas, fin, un algo trop généralisé et je 
 - Moyenne de nombre de combos par partie
 - Nombre de combinaisons possibles
 - Faire un vrai terrain
+
+# 29/06/2023
+On va instaurer un niveau minimal pour effectuer chaque figure
+Pour se faire, on peut faire toutes les figures de complexité inférieure strictement au niveau de l'athlète/2 (pour avoir des valeurs entre 0 et 5)
+
+> [!caution] 
+> Est ce qu'il y a un pb avec le fait de prendre les meilleurs a chaque tour sachant qu'on loupe toujours le maximum au final?
+
+Après ajout du niveau minimal par figure, on remarque que le jump est toujours la figure la plus utilisée (pour tous les niveaux), 25% pour les 3xp et 10% pour les 10xp
+
+On obtient très vite une convergence des points vers des chiffres entre 20 et 30 pour tous les niveaux
+
+> [!info] Changement de la seed (2207 -> 12)
+> On voit surtout un gros changement sur les figures utilisées et les cases parcourues mais une différence de 0.01 sur la moyenne pour un même niveau :
+
+Seed: 12
+![[Code/images/8XP SEED 12/cases.png]]
+![[Code/images/8XP SEED 12/evol_fitness.png]]
+![[Code/images/8XP SEED 12/freq.png]]
+
+Seed 2207 :
+![[Code/images/8XP SEED 2207/cases.png]]
+![[Code/images/8XP SEED 2207/evol_fitness.png]]
+![[Code/images/8XP SEED 2207/freq.png]]
+
+
+### Done:
+- Tri de l'histogramme par ordre lexicographique
+- Baisse du nombre de générations après la valeur maximale (5000 -> 1000) 
+- Changement de la seed (2207 -> 12)
+- Temps réel par figure (chronométré a la shlag via ytb)
+- Changement du graphe de l'evolution de la fitness par un graphe montrant la fitness maximal, la moyenne par génération, la moyenne et le score total
+
+### To do:
+- Ajouter le champ variété par figure pour coller avec la table de jugement des juges
+- Faire démarrer les athlètes avec des chemins tous différents
+- Evaluer la complexité de mes fonctions
+- Ajouter des infos supplémentaires dans le json (informations sur les paramètres utilisés comme la position initiale, la mutation, etc)
+- Pouvoir faire un tas de simulations et faire les graphes de toutes les générations
+- Trouver le chemin utilisé pour avoir le meilleur score
+- Moyenne de nombre de combos par partie
+- Nombre de combinaisons possibles
+- Faire un vrai terrain
+- Faire un graphe de l’évolution de la fitness (z) par l’évolution de l'xp (x) 
+
+# 30/06/2023
+Bon j'ai un peu troll je sais que j'ai pas tout noté mais en gros j'ai fait :
+### Done:
+- Suppression d'une part d'aléatoire dans le scoring => Convergence en 7 générations => Nul.
+- Changement complet de l'affichage des cases pour integrer les chemin suivit par l'athlète directement sur le dessin
+- Création du premier diapo
+- Application d'un terrain fixe (même si géné aléatoirement au debut)
+- Suppression de l'aléatoire pour que le score soit de plus en plus corréler avec le niveau du joueur 
+- Exportation des certaines fonctions / constantes dans des fichiers réservés
+- Ajout de `POPULATION_NUMBER`, `NUMBER_OF_CHROMOSOME_TO_KEEP`, `MUTATION_RATE`, `NUMBER_OF_GENERATIONS` et `InitialPosition` au JSON
+- Ajout de la fonctionnalité de faire plusieurs exécutions de l'algo génétique (en l'occurrence `ITERATION_NUMBER` fois) et de créer directement les graphiques associés (40s pour 10 exécutions de l'algo dont les générations d'images)
+- Ajout de la création des images de plusieurs simulations en même temps (en mode moyenne de 10 simulations) /!\\ j'ai un pb avec les moyennes de scoring, faudrait faire ca a tete reposé 
+
+Terrain : 
+```python
+[[0, 0, 0, 0, 2, 1, 1, 0, 1, 0], [1, 2, 2, 0, 2, 0, 2, 1, 0, 1], [2, 0, 0, 1, 0, 1, 2, 0, 2, 2], [1, 1, 2, 0, 0, 1, 2, 1, 2, 1], [2, 1, 1, 0, 1, 0, 0, 0, 2, 2], [2, 0, 1, 1, 2, 2, 0, 2, 0, 0], [1, 1, 0, 0, 1, 2, 2, 1, 0, 2], [0, 1, 2, 1, 2, 2, 1, 1, 1, 2], [2, 0, 0, 2, 0, 0, 1, 0, 1, 1], [1, 0, 0, 1, 2, 2, 1, 0, 0, 1], [1, 2, 1, 0, 2, 0, 0, 0, 0, 1], [1, 1, 2, 2, 1, 0, 2, 1, 0, 1], [1, 2, 1, 0, 1, 1, 1, 1, 0, 0], [1, 0, 1, 2, 0, 2, 1, 2, 2, 1], [2, 0, 2, 2, 1, 2, 0, 0, 0, 0]]
+```
+
+>[!info] Ce que je retiens
+>En gros, on a une convergence très rapide, on a 1 premier athlète qui va se trouver bien bas et en prenant directement les meilleurs, on peut pas vraiment les faire se surpasser, il y a la prédominance du niveau de l'athlète (ce qui est logique) mais aucun chemin n'est a privilégié de ce que je vois 
+
+![[Code/images/Changement Score relation lvl/freq.png]]
+![[Code/images/Changement Score relation lvl/cases.png]]
+![[Code/images/Changement Score relation lvl/evol_fitness.png]]
+
+Entre deux générations différentes, on a des fréquences de figures hyper différentes mais une moyenne toujours identiques (quasiment)
+
+Logique d'avoir une stagnation de score, mon algorithme cherche le meilleur athlète, donc celui avec le meilleur score donc une fois qu'il a trouvé son poulain super fort bah c'est tout il a fini
+
+Je pense baisser encore les locks des figures genre 2xp tu peux faire 3 figures grand grand max
+
+Peut être ne pas compter RUN dans le total des freq pcq c'est pas une figure c''est un lien entre les figures 
+
+Ce qui serait vraiment bien ça serait de faire 10-20 générations pour pouvoir se rendre compte de toutes les valeurs (Fait)
+
+### To do:
+- Ajouter le champ variété par figure pour coller avec la table de jugement des juges
+- Faire démarrer les athlètes avec des chemins tous différents
+- Evaluer la complexité de mes fonctions
+- Trouver le chemin utilisé pour avoir le meilleur score
+- Moyenne de nombre de combos par partie
+- Nombre de combinaisons possibles
+- Faire un vrai terrain
+- Faire un graphe de l’évolution de la fitness (z) par l’évolution de l'xp (x) 

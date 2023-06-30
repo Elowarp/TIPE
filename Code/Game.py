@@ -1,13 +1,14 @@
 '''
  Name : Elowan
  Creation : 02-06-2023 11:00:05
- Last modified : 23-06-2023 13:35:45
+ Last modified : 01-07-2023 00:14:43
 '''
 
 from Terrain import Field
 from Models import Athlete, FIGURES
 
-MAX_TICK_COUNT = 80 # Maximum de 70s d'après les règles
+from consts import INITIAL_POSITION, MAX_TICK_COUNT
+
 
 class Game:
     """
@@ -30,7 +31,7 @@ class Game:
         """Initialisation des valeurs de depart de la competition"""
         self.tickCount = 0
         self.state = 1
-        self.athlete.position = (0, 0)
+        self.athlete.position = INITIAL_POSITION
 
     def update(self):
         """Met à jour l'état de l'athlète et retourne l'état de la compétition"""
@@ -67,7 +68,6 @@ class Game:
 
     def _getGameByAthlete(athlete):
         for i in Game.instances:
-            print(i.athlete.id, athlete.id)
             if i.athlete.id == athlete.id:
                 return i
             

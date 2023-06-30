@@ -1,14 +1,13 @@
 '''
  Name : Elowan
  Creation : 02-06-2023 11:01:13
- Last modified : 28-06-2023 18:31:02
+ Last modified : 01-07-2023 00:44:18
 '''
 
 from Models import Figure, FIGURES
 from random import choice
 
-SIZE_X = 10
-SIZE_Y = 15
+from consts import SIZE_X, SIZE_Y
 
 class Case:
     instanceCount = 0
@@ -39,9 +38,32 @@ class Field:
         self.grille = grille
 
     def createField(self):
+        """Crée un terrain aléatoire"""
+        # for i in range(SIZE_Y):
+        #     for j in range(SIZE_X):
+        #         self.grille[i][j] = choice(list(CASES.values()))
+
+        # Terrain fixe :
+        field = [[0, 0, 0, 0, 2, 1, 1, 0, 1, 0], 
+                 [1, 2, 2, 0, 2, 0, 2, 1, 0, 1], 
+                 [2, 0, 0, 1, 0, 1, 2, 0, 2, 2], 
+                 [1, 1, 2, 0, 0, 1, 2, 1, 2, 1], 
+                 [2, 1, 1, 0, 1, 0, 0, 0, 2, 2], 
+                 [2, 0, 1, 1, 2, 2, 0, 2, 0, 0], 
+                 [1, 1, 0, 0, 1, 2, 2, 1, 0, 2], 
+                 [0, 1, 2, 1, 2, 2, 1, 1, 1, 2], 
+                 [2, 0, 0, 2, 0, 0, 1, 0, 1, 1], 
+                 [1, 0, 0, 1, 2, 2, 1, 0, 0, 1], 
+                 [1, 2, 1, 0, 2, 0, 0, 0, 0, 1], 
+                 [1, 1, 2, 2, 1, 0, 2, 1, 0, 1], 
+                 [1, 2, 1, 0, 1, 1, 1, 1, 0, 0], 
+                 [1, 0, 1, 2, 0, 2, 1, 2, 2, 1], 
+                 [2, 0, 2, 2, 1, 2, 0, 0, 0, 0]]
+        
         for i in range(SIZE_Y):
             for j in range(SIZE_X):
-                self.grille[i][j] = choice(list(CASES.values()))
+                self.grille[i][j] = Case.getCaseById(field[i][j])
+
 
     def getCase(self, positions) -> Case:
         """Retourne la case en coordonée x y"""

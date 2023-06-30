@@ -1,9 +1,10 @@
 '''
  Name : Elowan
  Creation : 02-06-2023 11:00:02
- Last modified : 28-06-2023 18:28:23
+ Last modified : 30-06-2023 23:59:34
 '''
 from random import randint, choice
+from utils import weighted_random
 
 class Figure:
     instanceCount = 0
@@ -201,7 +202,14 @@ class Athlete:
         else:
             # Choisit aléatoirement le mouvement à faire parmis la liste possible
             figures = self.field.getCase(self.position).figuresPossible
-            self.state["movement"] = figures[randint(0, len(figures)-1)]
+            self.state["movement"] = figures[weighted_random(
+                0, len(figures)-1, 20, self.xp)]
+
+            # Choisit une figure possible avec un tel niveau d'xp
+            while self.state["movement"].complexity > (self.xp/2):
+                self.state["movement"] = figures[weighted_random(
+                    0, len(figures)-1, 20, self.xp)]
+
             self.combos.append((self.position, self.state["movement"], tick))
 
         self.state["isMoving"] = True
@@ -228,23 +236,23 @@ FIGURES = {
     "jump": Figure("jump", 1, 0),                   # Sauter pendant 1s
 
     "180": Figure("180", 1, 0.5),                   # Faire un 180 pendant 1s
-    "frontflip": Figure("frontflip", 1, 0.5),       # Faire un frontflip pendant 1s
-    "backflip": Figure("backflip", 1, 0.5),         # Faire un backflip pendant 1s
-    "gaet_flip": Figure("gaet_flip", 1, 0.5),       # Faire un gaet flip (back 
+    "frontflip": Figure("frontflip", 3, 0.5),       # Faire un frontflip pendant 3s
+    "backflip": Figure("backflip", 2, 0.5),         # Faire un backflip pendant 2s
+    "gaet_flip": Figure("gaet_flip", 2, 0.5),       # Faire un gaet flip (back 
                                                     # en appui sur un coin de mur) 
-                                                    # pendant 1s
+                                                    # pendant 2s
     
-    "cork": Figure("cork", 1, 1),                   # Faire un cork pendant 1s
+    "cork": Figure("cork", 3, 1),                   # Faire un cork pendant 3s
     "cast_backflip": Figure("cast_backflip", 1, 1), # Faire un cast backflip (
                                                     # backflip en appui sur un
                                                     # mur) pendant 1s
-    "gainer": Figure("gainer", 1, 1),               # Faire un gainer pendant 1s
-    "inward_flip": Figure("inward_flip", 1, 1),     # Faire un inward flip (
+    "gainer": Figure("gainer", 3, 1),               # Faire un gainer pendant 3s
+    "inward_flip": Figure("inward_flip", 2, 1),     # Faire un inward flip (
                                                     # front qui te fait reculer)
-                                                    # pendant 1s    
+                                                    # pendant 2s    
     "540": Figure("540", 1, 1.5),                     # Faire un 540 pendant 1s
-    "double_cork": Figure("double_cork", 2, 2),     # Faire un double cork
-    "kong_gainer": Figure("kong_gainer", 1, 2),     # Faire un kong gainer
+    "double_cork": Figure("double_cork", 4, 2),     # Faire un double cork
+    "kong_gainer": Figure("kong_gainer", 2, 2),     # Faire un kong gainer
     "cast_backflip_360": Figure("cast_backflip_360",
                                  2, 2.5),           # Faire un cast backflip 360
     "double_swing_gainer": Figure("double_swing_gainer", 2, 3), # back sur une barre
@@ -254,7 +262,7 @@ FIGURES = {
     "double_backflip": Figure("double_backflip",
                                2, 4),               # Faire un double back
 
-    "double_flip_360": Figure("double_flip_360", 2, 4.5), # Faire un double flip 360
+    "double_flip_360": Figure("double_flip_360", 3, 4.5), # Faire un double flip 360
 }
 
 if __name__ == "__main__":

@@ -1,7 +1,7 @@
 '''
  Name : Elowan
  Creation : 02-06-2023 10:59:30
- Last modified : 28-06-2023 22:56:55
+ Last modified : 01-07-2023 00:38:49
 '''
 from random import seed, randint, choices
 import numpy as np
@@ -11,8 +11,9 @@ from Terrain import Field, Figure, FIGURES, CASES
 from Models import Athlete
 from Game import Game
 from Genetic import GeneticAlgorithm, Chromosome
-
-seed(2207) # Pour avoir des résultats reproductibles
+from traitement import main as traitement
+from consts import POPULATION_NUMBER, MUTATION_RATE, TERMINAISON_AGE,\
+    ITERATION_NUMBER
 
 #########
 # Algorithme glouton
@@ -23,17 +24,6 @@ seed(2207) # Pour avoir des résultats reproductibles
 #########
 # Algorithme génétique
 #########
-
-POPULATION_NUMBER = 200     # Nombre d'individus dans la population
-MUTATION_RATE = 5           # Taux de mutation en pourcentage
-
-def weighted_random(mn, mx, mnweight, mxweight):
-    """
-    Exécute un random entre mn et mx avec une probabilité de mnweight
-    d'avoir la plus basse valeur et mxweight d'avoir la plus haute valeur
-    """
-    return choices(range(mn, mx+1), \
-      weights=np.linspace(mnweight,mxweight,(mx-mn)+1))[0]
 
 class AthleteChromosome(Chromosome):
     """
@@ -73,14 +63,16 @@ class AthleteChromosome(Chromosome):
         score["surete"] = (score["surete"])*self.athlete.xp/10
         
         # Calcule de la présentation
-        score["presentation"] = randint(0, 2)
+        # score["presentation"] = randint(0, 2)
+        score["presentation"] = 2*self.athlete.xp/10
 
         # Calcule du flow
         # Compte le nb de fois qu'on s'est arreté
         score["flow"] = 3 - tricks.count(FIGURES["do_nothing"])
 
         # Calcule de la connection
-        score["connection"] = weighted_random(0, 2, 10, 1)
+        # score["connection"] = weighted_random(0, 2, 20, 1)
+        score["connection"] = 2*self.athlete.xp/10
 
         # Calcule des parts
         # Compte le nb de cases différentes utilisées
@@ -89,6 +81,7 @@ class AthleteChromosome(Chromosome):
         
         # Calcule des types
         score["types"] = randint(0, 2)
+        score["types"] = 2*self.athlete.xp/10
 
         # Calcule des tricks
         # Calcule des points accordés par les tricks
@@ -99,15 +92,16 @@ class AthleteChromosome(Chromosome):
             score["tricks"] = 5
 
         # Calcule du placement
-        score["placement"] = randint(1, 3)
+        score["placement"] = 3
 
         # Calcule du temps
-        score["time"] = weighted_random(0, 2, 10, 1)
+        # score["time"] = weighted_random(0, 2, 20, 1)
+        score["time"] = 2*self.athlete.xp/10
 
         # Calcule de la variété
         # Ajoute 0.5 pts a chaque figure de complexité > 2
         # (Donc que le trick n'est pas ds la catégorie de parkour classique)
-        score["variety"] = sum([trick.complexity/2
+        score["variety"] = sum([0.5
                                 for trick in tricks
                                 if trick.complexity > 2])
         
@@ -119,6 +113,11 @@ class AthleteChromosome(Chromosome):
         score["technique"] = 2*self.athlete.xp/10
 
         self.fitness = sum(score.values())
+
+        # Une chance pour que l'athlète se blesse
+        if randint(0, 100) < 5:
+            self.fitness = self.fitness - 5
+            
         return self.fitness
     
     def __repr__(self) -> str:
@@ -150,7 +149,6 @@ def selection(population:list) -> list:
     Returns:
         (AthleteChromosome list): liste d'athlètes sélectionnés
     """
-    print([x.fitness for x in population[:10]])
     return population[:10]
 
 def crossover(parents:list) -> list:
@@ -194,9 +192,10 @@ def mutation(population:list) -> list:
     for athleteChromosome in population:
         # Mutation
         if randint(0, 100) < MUTATION_RATE: 
-            athlete = athleteChromosome.athlete  
+            athlete = athleteChromosome.athlete 
+             
             # On supprime tous les combots à partir d'un index aléatoire
-            index = randint(0, len(athlete.combos)-1)
+            index = randint(0, len(athlete.combos) - 1)
             athlete.combos = athlete.combos[:index]
             
             # On fait jouer l'athlète 
@@ -241,44 +240,59 @@ def termination(population:list) -> bool:
     Returns:
         (bool): True si l'algorithme doit s'arrêter, False sinon
     """
-    return maxInfos["maxAge"] > 5000
+    return maxInfos["maxAge"] > TERMINAISON_AGE
 
 if __name__ == "__main__":
-    ### Creation de la population
+    seed(20) # Pour avoir des résultats reproductibles
 
-    # Chronométrage
-    start_time = datetime.datetime.now()
-    
-    # POPULATION_NUMBER de fois le meme athlete 
-    population = [AthleteChromosome(Athlete(10, FIGURES["frontflip"])) 
-    
-                  for _ in range(POPULATION_NUMBER)]
-    playAllGames(population)
-    
-    ### Algorithme génétique
+    total_time = datetime.timedelta(0)
 
-    maxInfos = {
-        "maxFitness": 0,
-        "maxAge": 0,
-    }
+    for i in range(ITERATION_NUMBER):
+        print("##### ITERATION {} #####".format(i))
+        ### Creation de la population
 
-    parkourGenetic = GeneticAlgorithm(population, termination, evaluate, 
-                                      selection, crossover, mutation)
-    
-    def iterate(population):
-        getBestAthlete(population)
-        evalPop = evaluate(population)
+        # Chronométrage
+        start_time = datetime.datetime.now()
+        
+        # POPULATION_NUMBER de fois le meme athlete 
+        population = [AthleteChromosome(Athlete(6, FIGURES["frontflip"])) 
+        
+                    for _ in range(POPULATION_NUMBER)]
+        playAllGames(population)
+        
+        ### Algorithme génétique
 
-        # Mise a jour du score max des athlètes
-        # et le temps depuis quand c'est le max
-        if evalPop[0].fitness > maxInfos["maxFitness"]:
-            maxInfos["maxFitness"] = evalPop[0].fitness
-            maxInfos["maxAge"] = 1
+        maxInfos = {
+            "maxFitness": 0,
+            "maxAge": 0,
+        }
 
-        else:
-            maxInfos["maxAge"] += 1
+        parkourGenetic = GeneticAlgorithm(population, termination, evaluate, 
+                                        selection, crossover, mutation)
+        
+        def iterate(population):
+            # getBestAthlete(population)
+            evalPop = evaluate(population)
 
-    parkourGenetic.run(iteration=iterate, callback=getBestAthlete)
+            # Mise a jour du score max des athlètes
+            # et le temps depuis quand c'est le max
+            if evalPop[0].fitness > maxInfos["maxFitness"]:
+                maxInfos["maxFitness"] = evalPop[0].fitness
+                maxInfos["maxAge"] = 1
 
-    print("\nMeilleur athlète : {}".format(evaluate(parkourGenetic.population)[0]))
-    print("Temps d'execution : {}".format(datetime.datetime.now() - start_time))
+            else:
+                maxInfos["maxAge"] += 1
+
+        parkourGenetic.run(iteration=iterate)
+
+        print("\nMeilleur athlète de la dernière génération: {}".format(evaluate(parkourGenetic.population)[0]))
+        print("Temps d'execution : {}".format(datetime.datetime.now() - start_time))
+
+        traitement(parkourGenetic.getFilename())
+        
+        print()
+        
+        total_time += datetime.datetime.now() - start_time
+
+    print("Temps d'execution total : {} pour {} itérations".format(
+        total_time, ITERATION_NUMBER))
