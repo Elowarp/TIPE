@@ -1,7 +1,7 @@
 '''
  Name : Elowan
  Creation : 02-06-2023 10:59:30
- Last modified : 01-07-2023 00:38:49
+ Last modified : 01-07-2023 12:10:33
 '''
 from random import seed, randint, choices
 import numpy as np
@@ -11,7 +11,7 @@ from Terrain import Field, Figure, FIGURES, CASES
 from Models import Athlete
 from Game import Game
 from Genetic import GeneticAlgorithm, Chromosome
-from traitement import main as traitement
+import traitement
 from consts import POPULATION_NUMBER, MUTATION_RATE, TERMINAISON_AGE,\
     ITERATION_NUMBER
 
@@ -288,11 +288,15 @@ if __name__ == "__main__":
         print("\nMeilleur athlète de la dernière génération: {}".format(evaluate(parkourGenetic.population)[0]))
         print("Temps d'execution : {}".format(datetime.datetime.now() - start_time))
 
-        traitement(parkourGenetic.getFilename())
+        traitement.main(parkourGenetic.getDirname() + "/" + 
+                        parkourGenetic.getFilename() + ".json")
         
         print()
         
         total_time += datetime.datetime.now() - start_time
 
+    data = traitement.analyseFolder(parkourGenetic.getDirname())
+    traitement.main(filename="6xp_frontflip/all", data=data)
+    
     print("Temps d'execution total : {} pour {} itérations".format(
         total_time, ITERATION_NUMBER))

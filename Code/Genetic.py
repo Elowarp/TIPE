@@ -1,7 +1,7 @@
 '''
  Name : Elowan
  Creation : 08-06-2023 10:00:40
- Last modified : 01-07-2023 00:25:35
+ Last modified : 01-07-2023 11:51:57
 '''
 import random 
 import json
@@ -84,15 +84,11 @@ class GeneticAlgorithm:
         self.save()
         return callback(self.population)
     
-    def save(self, filename=""):
+    def save(self):
         """
         Sauvegarde en Json les données de la population à chaque itération
         en plus des informations sur l'athlète original
         """
-        self.filename = filename
-        os.makedirs("data", exist_ok=True)
-
-
         # Formatage des données
         dataSerialized = []
         for i in range(len(self.populationOverTime)):
@@ -156,9 +152,9 @@ class GeneticAlgorithm:
         while os.path.exists("data/{}/{}.json".format(self.dirname, i)):
             i += 1
             
-        self.filename += self.dirname + "/{}".format(i)
+        self.filename = str(i)
 
-        with open("data/{}.json".format(self.filename), "w") as f:
+        with open("data/{}/{}.json".format(self.dirname, self.filename), "w") as f:
             json.dump(data, f)
 
         print("Data saved in data/{}.json".format(self.filename))
@@ -166,6 +162,9 @@ class GeneticAlgorithm:
     
     def getFilename(self):
         return self.filename
+    
+    def getDirname(self):
+        return self.dirname
 
 if __name__ == "__main__":
     random.seed(22)

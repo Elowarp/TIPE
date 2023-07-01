@@ -1,7 +1,7 @@
 '''
  Name : Elowan
  Creation : 23-06-2023 10:35:11
- Last modified : 01-07-2023 01:27:10
+ Last modified : 01-07-2023 12:11:24
 '''
 
 from json import dump, load
@@ -209,12 +209,12 @@ def makeEvolFitnessImg(athlete, nb_generations, list_fitness, list_fitness_moy,
     name = "Evolution de la fitness au cours des générations"
     characteristics = "{}xp, {}, {} générations, {} individus/génération, max {}"\
         .format(athlete["xp"], athlete["FigureFav"],
-            nb_generations, POPULATION_NUMBER, best_athlete["fitness"]
+            nb_generations, POPULATION_NUMBER, round(best_athlete["fitness"], 2)
         )
 
     # Affichage de la courbe
-    x_values = [i for i in range(0, len(list_fitness))]
-    plt.plot(x_values, list_fitness, color="blue", label="Score")
+    print(list_fitness[-10:])
+    plt.plot(list_fitness[:-8], color="blue", label="Score", linewidth=2)
     plt.xlabel("Nb d'athlètes sauvegardés par génération ({} athlètes/génération)"\
                .format(NUMBER_OF_CHROMOSOME_TO_KEEP))
     plt.ylabel("Score")
@@ -225,11 +225,10 @@ def makeEvolFitnessImg(athlete, nb_generations, list_fitness, list_fitness_moy,
     plt.axhline(y=mean_fitness, color="red", linestyle="--", 
                 label="Moyenne : {}".format(round(float(mean_fitness), 2)),
                 zorder = 3)
-
-    
+                
     x_values = [i for i in range(0, len(list_fitness), NUMBER_OF_CHROMOSOME_TO_KEEP)]
             
-    plt.plot(list_fitness_moy, color="orange", label="Moyenne par génération", zorder=2)
+    plt.plot(x_values, list_fitness_moy, color="orange", label="Moyenne par génération", zorder=2)
     plt.legend()
 
     # Sauvegarde
@@ -350,7 +349,7 @@ def main(filename=None, data=None):
     
     # Récupération des données
     if data is None:
-        data = analyse(filename)
+        data = analyse("data/" + filename)
 
     os.makedirs("traitement/{}_images".format(filename), exist_ok=True)
 
@@ -371,6 +370,7 @@ def analyseFolder(foldername):
     """
     Analyse tous les fichiers d'un dossier en concaténant les données
     """
+    foldername = "data/"+foldername
     # Récupération des noms des fichiers
     filenames = [f for f in os.listdir(foldername) if os.path.isfile(os.path.join(foldername, f))]
 
@@ -390,6 +390,8 @@ def analyseFolder(foldername):
         "athlete": {}
     }
 
+    fitness_temp = []
+
     # Analyse de chaque fichier
     for filename in filenames:
         # Analyse du fichier
@@ -398,7 +400,7 @@ def analyseFolder(foldername):
         # Ajout des données
         data["nb_generations"] = file_data["nb_generations"]
         data["freq_matrice"] += file_data["freq_matrice"]
-        data["fitness"].extend(file_data["fitness"])
+        fitness_temp.append(file_data["fitness"])
         
 
         # Variables invariantes face aux excécutions de l'algorithme
@@ -413,21 +415,30 @@ def analyseFolder(foldername):
             data["best_athlete"] = file_data["best_athlete"]
 
     # Moyenne des données
-    data["fitness_moy"] = np.zeros(47000)
-
     data["freq_matrice"] /= len(filenames)
 
-    # Moyenne de toutes les fitness
-    for i in range(0, len(data["fitness"]), NUMBER_OF_CHROMOSOME_TO_KEEP):
-        print(data["fitness"][i])
-        data["fitness_moy"][i] = np.mean(data["fitness"][i:i+NUMBER_OF_CHROMOSOME_TO_KEEP])
+    # Moyenne de toutes les fitness par exécution
+    # de l'algorithme génétique
+    max_size = max(len(x) for x in fitness_temp)
+    for i in range(max_size):
+        moy_cur_fitness = [x[i] for x in fitness_temp if len(x) > i] 
+        data["fitness"].append(sum(moy_cur_fitness)/len(moy_cur_fitness))
 
-    data["fitness"] = np.zeros(5000)
+    data["fitness"] = np.array(data["fitness"])
+
+    # Moyenne par génération
+    data["fitness_moy"] = [sum(data["fitness"][i:i+NUMBER_OF_CHROMOSOME_TO_KEEP])
+                    /NUMBER_OF_CHROMOSOME_TO_KEEP
+                    for i in range(0, len(data["fitness"]), 
+                                   NUMBER_OF_CHROMOSOME_TO_KEEP)]
+    
+    data["fitness_moy"] = np.array(data["fitness_moy"])
+    
     return data
 
 if __name__ == "__main__":
     filename = "6xp_frontflip/0"
 
     # main(filename)
-    data = analyseFolder("data/6xp_frontflip")
+    data = analyseFolder("6xp_frontflip")
     main(filename="6xp_frontflip/all", data=data)
