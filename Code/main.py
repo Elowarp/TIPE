@@ -1,13 +1,12 @@
 '''
  Name : Elowan
  Creation : 02-06-2023 10:59:30
- Last modified : 01-07-2023 12:10:33
+ Last modified : 07-07-2023 13:25:40
 '''
-from random import seed, randint, choices
-import numpy as np
+from random import seed, randint
 import datetime
 
-from Terrain import Field, Figure, FIGURES, CASES
+from Terrain import FIGURES
 from Models import Athlete
 from Game import Game
 from Genetic import GeneticAlgorithm, Chromosome
@@ -87,12 +86,10 @@ class AthleteChromosome(Chromosome):
         # Calcule des points accordés par les tricks
         # Majoré par 5
         score["tricks"] = sum([trick.complexity
-                                for trick in tricks])
-        if score["tricks"] > 5:
-            score["tricks"] = 5
+                                for trick in tricks])/5
 
         # Calcule du placement
-        score["placement"] = 3
+        score["placement"] = 3*self.athlete.xp/10
 
         # Calcule du temps
         # score["time"] = weighted_random(0, 2, 20, 1)
@@ -255,7 +252,7 @@ if __name__ == "__main__":
         start_time = datetime.datetime.now()
         
         # POPULATION_NUMBER de fois le meme athlete 
-        population = [AthleteChromosome(Athlete(6, FIGURES["frontflip"])) 
+        population = [AthleteChromosome(Athlete(7, FIGURES["frontflip"])) 
         
                     for _ in range(POPULATION_NUMBER)]
         playAllGames(population)
@@ -296,7 +293,7 @@ if __name__ == "__main__":
         total_time += datetime.datetime.now() - start_time
 
     data = traitement.analyseFolder(parkourGenetic.getDirname())
-    traitement.main(filename="6xp_frontflip/all", data=data)
+    traitement.main(filename="{}/all".format(parkourGenetic.getDirname()), data=data)
     
     print("Temps d'execution total : {} pour {} itérations".format(
         total_time, ITERATION_NUMBER))

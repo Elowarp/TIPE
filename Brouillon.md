@@ -508,3 +508,21 @@ Ce qui serait vraiment bien ça serait de faire 10-20 générations pour pouvoir
 - Nombre de combinaisons possibles
 - Faire un vrai terrain
 - Faire un graphe de l’évolution de la fitness (z) par l’évolution de l'xp (x) 
+# 01/07/2023
+### Done:
+- Multi-traitement et application directe après exécution de l'algo
+![[Code/images/Images multi générations/cases.png]]
+![[Code/images/Images multi générations/evol_fitness.png]]
+![[Code/images/Images multi générations/freq.png]]
+# 07/07/2023
+### Todo:
+- Ajouter toutes les figures mêmes non faites (freqs)
+- Faire une legende avec toutes les figures et ses informations
+- Mettre une taille y fixé (freq)
+- Pourquoi ya des valeurs qui sautent dans les générations
+
+OK JE CROIS JAI REUSSI A AVOIR UN SCORE QUI EST EN ACCORD AVEC LA VIE REELLE
+
+![[Code/images/Image scoring réelle/all_images/freq.png]]
+![[Code/images/Image scoring réelle/all_images/evol_fitness.png]]
+![[Code/images/Image scoring réelle/all_images/cases.png]]

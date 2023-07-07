@@ -1,9 +1,9 @@
 '''
  Name : Elowan
  Creation : 02-06-2023 11:00:02
- Last modified : 30-06-2023 23:59:34
+ Last modified : 07-07-2023 13:31:31
 '''
-from random import randint, choice
+from random import choice
 from utils import weighted_random
 
 class Figure:
@@ -24,8 +24,12 @@ class Figure:
 
         return None
     
+    def __str__(self) -> str:
+        return self.name
+
     def __repr__(self) -> str:
-        return self.name    
+        return "{}: Points accordés : {} pour une durée de {}".format(
+            self.name, self.complexity, self.duration)   
     
 class Athlete: 
     instanceCount = 0

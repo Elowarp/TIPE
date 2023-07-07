@@ -1,11 +1,10 @@
 '''
  Name : Elowan
  Creation : 02-06-2023 11:01:13
- Last modified : 01-07-2023 00:44:18
+ Last modified : 07-07-2023 13:12:29
 '''
 
-from Models import Figure, FIGURES
-from random import choice
+from Models import FIGURES
 
 from consts import SIZE_X, SIZE_Y
 
