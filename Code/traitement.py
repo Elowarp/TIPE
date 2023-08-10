@@ -1,7 +1,7 @@
 '''
  Name : Elowan
  Creation : 23-06-2023 10:35:11
- Last modified : 01-07-2023 12:11:24
+ Last modified : 07-07-2023 19:16:47
 '''
 
 from json import dump, load
@@ -14,7 +14,7 @@ import os
 import datetime
 
 from Models import Figure, FIGURES
-from Terrain import Field, Case
+from Terrain import Case
 
 from Genetic import NUMBER_OF_CHROMOSOME_TO_KEEP
 
@@ -112,6 +112,11 @@ def analyse(filename):
         list_figures.append(key)
         list_count.append(value)
 
+    for key in FIGURES.keys():
+        if key not in list_figures:
+            list_figures.append(key)
+            list_count.append(0)
+
     list_figures = np.array(list_figures)
     list_count = np.array(list_count)
     nb_generations = len(data["dataGenerations"])/NUMBER_OF_CHROMOSOME_TO_KEEP
@@ -180,7 +185,7 @@ def analyse(filename):
 
     # Trouve le chemin utilisé par l'athlete avec la meilleur fitness
     best_athlete = {}
-    best_fitness = 0
+    best_fitness = -1
     for generation in data["dataGenerations"]:
         if generation["fitness"] > best_fitness:
             best_fitness = generation["fitness"] 
@@ -195,25 +200,26 @@ def analyse(filename):
         "count": list_count,
         "nb_generations": nb_generations,
         "athlete": data["athlete"],
-        "best_athlete": best_athlete
+        "best_athlete": best_athlete,
+        "nb_executions": 1,
     }
 
 
 def makeEvolFitnessImg(athlete, nb_generations, list_fitness, list_fitness_moy,
-                        best_athlete, filename):
+                        best_athlete, filename, nb_executions=1):
     """
     Crée l'image de l'évolution de la fitness au cours des générations
     """
     mean_fitness = list_fitness.mean()
 
-    name = "Evolution de la fitness au cours des générations"
-    characteristics = "{}xp, {}, {} générations, {} individus/génération, max {}"\
-        .format(athlete["xp"], athlete["FigureFav"],
+    name = "Evolution de la fitness au cours des générations ({} exécutions)"\
+        .format(nb_executions)
+    characteristics = "{} générations en moyenne, {} individus/génération, max {}"\
+        .format(
             nb_generations, POPULATION_NUMBER, round(best_athlete["fitness"], 2)
         )
 
     # Affichage de la courbe
-    print(list_fitness[-10:])
     plt.plot(list_fitness[:-8], color="blue", label="Score", linewidth=2)
     plt.xlabel("Nb d'athlètes sauvegardés par génération ({} athlètes/génération)"\
                .format(NUMBER_OF_CHROMOSOME_TO_KEEP))
@@ -314,12 +320,13 @@ def makeCasesImg(freq_matrice, terrain_matrice, best_athlete, filename):
                 bbox_inches='tight',dpi=100)
     plt.close()
 
-def makeFreqImg(athlete, list_figures, list_count, nb_generations, filename):
+def makeFreqImg(athlete, list_figures, list_count, nb_generations, 
+                filename, nb_executions=1):
     """
     Crée l'histogramme de la fréquence des figures
     """
-    name = "Fréquence des figures utilisées"
-    characteristics = "{}xp, {}, {} générations, {} individus/génération"\
+    name = "Fréquence des figures utilisées ({} exécutions)".format(nb_executions)
+    characteristics = "{}xp, {}, {} générations en moyenne, {} individus/génération"\
         .format(
             athlete["xp"], athlete["FigureFav"], 
             nb_generations, POPULATION_NUMBER
@@ -358,10 +365,10 @@ def main(filename=None, data=None):
     # Création des images
     makeEvolFitnessImg(data["athlete"], data["nb_generations"],
                           data["fitness"], data["fitness_moy"], 
-                          data["best_athlete"], filename)
+                          data["best_athlete"], filename, data["nb_executions"])
     makeCasesImg(data["freq_matrice"], data["terrain_matrice"], data["best_athlete"], filename)
     makeFreqImg(data["athlete"], data["figures"], data["count"],
-                data["nb_generations"], filename)
+                data["nb_generations"], filename, data["nb_executions"])
     
     print("Traitement terminé (en {})!\n".format(
         datetime.datetime.now()-start_time))
@@ -373,6 +380,8 @@ def analyseFolder(foldername):
     foldername = "data/"+foldername
     # Récupération des noms des fichiers
     filenames = [f for f in os.listdir(foldername) if os.path.isfile(os.path.join(foldername, f))]
+
+    file_number = len(filenames)
 
     # Initialisation des données
     data = {
@@ -387,18 +396,20 @@ def analyseFolder(foldername):
             "fitness": 0,
             "genes": []
         },
-        "athlete": {}
+        "athlete": {},
+        "nb_executions": file_number,
     }
 
     fitness_temp = []
 
     # Analyse de chaque fichier
+    count = 0
     for filename in filenames:
         # Analyse du fichier
         file_data = analyse(os.path.join(foldername, filename))
 
         # Ajout des données
-        data["nb_generations"] = file_data["nb_generations"]
+        data["nb_generations"] += file_data["nb_generations"]
         data["freq_matrice"] += file_data["freq_matrice"]
         fitness_temp.append(file_data["fitness"])
         
@@ -414,8 +425,13 @@ def analyseFolder(foldername):
         if file_data["best_athlete"]["fitness"] > data["best_athlete"]["fitness"]:
             data["best_athlete"] = file_data["best_athlete"]
 
+        count += 1
+        print("Analyse de {} terminée ({}%)".format(filename,
+            round((count/file_number)*100, 2)))
+
     # Moyenne des données
     data["freq_matrice"] /= len(filenames)
+    data["nb_generations"] /= len(filenames)
 
     # Moyenne de toutes les fitness par exécution
     # de l'algorithme génétique
@@ -437,8 +453,9 @@ def analyseFolder(foldername):
     return data
 
 if __name__ == "__main__":
-    filename = "6xp_frontflip/0"
-
+    # filename = "6xp_frontflip/0"
     # main(filename)
-    data = analyseFolder("6xp_frontflip")
-    main(filename="6xp_frontflip/all", data=data)
+
+    folder = "10xp_frontflip"
+    data = analyseFolder(folder)
+    main(filename=folder+"/all", data=data)

@@ -1,7 +1,7 @@
 '''
  Name : Elowan
  Creation : 02-06-2023 10:59:30
- Last modified : 07-07-2023 13:25:40
+ Last modified : 07-07-2023 20:21:56
 '''
 from random import seed, randint
 import datetime
@@ -87,6 +87,9 @@ class AthleteChromosome(Chromosome):
         # Majoré par 5
         score["tricks"] = sum([trick.complexity
                                 for trick in tricks])/5
+        
+        if score["tricks"] > 5:
+            score["tricks"] = 5
 
         # Calcule du placement
         score["placement"] = 3*self.athlete.xp/10
@@ -114,6 +117,9 @@ class AthleteChromosome(Chromosome):
         # Une chance pour que l'athlète se blesse
         if randint(0, 100) < 5:
             self.fitness = self.fitness - 5
+
+        if self.fitness < 0:
+            self.fitness = 0
             
         return self.fitness
     
@@ -240,7 +246,7 @@ def termination(population:list) -> bool:
     return maxInfos["maxAge"] > TERMINAISON_AGE
 
 if __name__ == "__main__":
-    seed(20) # Pour avoir des résultats reproductibles
+    seed(24) # Pour avoir des résultats reproductibles
 
     total_time = datetime.timedelta(0)
 
@@ -252,7 +258,7 @@ if __name__ == "__main__":
         start_time = datetime.datetime.now()
         
         # POPULATION_NUMBER de fois le meme athlete 
-        population = [AthleteChromosome(Athlete(7, FIGURES["frontflip"])) 
+        population = [AthleteChromosome(Athlete(3, FIGURES["frontflip"])) 
         
                     for _ in range(POPULATION_NUMBER)]
         playAllGames(population)

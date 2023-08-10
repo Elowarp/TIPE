@@ -1,7 +1,7 @@
 '''
  Name : Elowan
  Creation : 30-06-2023 23:56:45
- Last modified : 01-07-2023 00:44:31
+ Last modified : 07-07-2023 17:06:10
 '''
 
 POPULATION_NUMBER = 200             # Nombre d'individus dans la population
@@ -16,7 +16,7 @@ TERMINAISON_AGE = 200               # Nombre de générations avant de
 INITIAL_POSITION = (0, 0)           # Position initiale de l'athlète
 MAX_TICK_COUNT = 70                 # Nombre de tours(=secondes) maximum
 
-ITERATION_NUMBER = 10               # Nombre d'itérations de l'algorithme
+ITERATION_NUMBER = 50               # Nombre d'itérations de l'algorithme
 
 SIZE_X = 10                         # Taille du terrain
 SIZE_Y = 15

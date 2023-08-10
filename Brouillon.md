@@ -516,13 +516,29 @@ Ce qui serait vraiment bien ça serait de faire 10-20 générations pour pouvoir
 ![[Code/images/Images multi générations/freq.png]]
 # 07/07/2023
 ### Todo:
-- Ajouter toutes les figures mêmes non faites (freqs)
+- Ajouter toutes les figures mêmes non faites (freqs) (Done)
 - Faire une legende avec toutes les figures et ses informations
-- Mettre une taille y fixé (freq)
-- Pourquoi ya des valeurs qui sautent dans les générations
+- Pourquoi ya des valeurs qui sautent dans les générations (Done)
 
 OK JE CROIS JAI REUSSI A AVOIR UN SCORE QUI EST EN ACCORD AVEC LA VIE REELLE
 
-![[Code/images/Image scoring réelle/all_images/freq.png]]
-![[Code/images/Image scoring réelle/all_images/evol_fitness.png]]
-![[Code/images/Image scoring réelle/all_images/cases.png]]
+![[Code/images/Image scoring réelle/freq.png]]
+![[Code/images/Image scoring réelle/evol_fitness.png]]
+![[Code/images/Image scoring réelle/cases.png]]
+
+>[!warning] Pique descendant
+>Les piques descendants sont en fait du à une blessure !
+
+Et 0 influence de la figure pref
+
+seed 20 -> 24
+
+### To do:
+- Ajouter le champ variété par figure pour coller avec la table de jugement des juges (a voir)
+- Faire démarrer les athlètes avec des chemins tous différents
+- Evaluer la complexité de mes fonctions
+- Moyenne de nombre de combos par partie
+- Nombre de combinaisons possibles
+- Faire un vrai terrain
+- Faire un graphe de l’évolution de la fitness (z) par l’évolution de l'xp (x) 
+-  Faire une legende avec toutes les figures et ses informations
