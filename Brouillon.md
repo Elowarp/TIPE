@@ -542,3 +542,5 @@ seed 20 -> 24
 - Faire un vrai terrain
 - Faire un graphe de l’évolution de la fitness (z) par l’évolution de l'xp (x) 
 -  Faire une legende avec toutes les figures et ses informations
+
+# 10/08/2023
