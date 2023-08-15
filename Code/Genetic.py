@@ -1,11 +1,12 @@
 '''
  Name : Elowan
  Creation : 08-06-2023 10:00:40
- Last modified : 01-07-2023 11:51:57
+ Last modified : 10-08-2023 12:47:41
 '''
 import random 
 import json
 import os
+import logging
 
 from consts import INITIAL_POSITION, MUTATION_RATE, NUMBER_OF_CHROMOSOME_TO_KEEP
 
@@ -157,7 +158,7 @@ class GeneticAlgorithm:
         with open("data/{}/{}.json".format(self.dirname, self.filename), "w") as f:
             json.dump(data, f)
 
-        print("Data saved in data/{}.json".format(self.filename))
+        logging.debug("Data saved in data/{}.json".format(self.filename))
         
     
     def getFilename(self):

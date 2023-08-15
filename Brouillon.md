@@ -541,6 +541,33 @@ seed 20 -> 24
 - Nombre de combinaisons possibles
 - Faire un vrai terrain
 - Faire un graphe de l’évolution de la fitness (z) par l’évolution de l'xp (x) 
--  Faire une legende avec toutes les figures et ses informations
+-  Faire une légende avec toutes les figures et ses informations
 
 # 10/08/2023
+Légende des termes : 
+> **Génération** : Le nombre de tour de boucle de l'algorithme génétique effectué (dépend de la partie en cours)
+> **Fitness** : Le score attribué à chaque athlète
+> **Exécutions** : Nombre de fois que l'on a commencé puis terminé une partie (dépend de la constante `ITERATION_NUMBER`)
+
+### To do:
+- Ajouter le champ variété par figure pour coller avec la table de jugement des juges (a voir)
+- Faire démarrer les athlètes avec des chemins tous différents
+- Evaluer la complexité de mes fonctions
+- Moyenne de nombre de combos par partie
+- Nombre de combinaisons possibles
+- Faire un vrai terrain
+- Faire un graphe de l’évolution de la fitness (z) par l’évolution de l'xp (x) 
+-  Faire une légende avec toutes les figures et ses informations (et l'inclure dans un subplot a 4 cases)
+- Changer les print en logging 
+# 15/08/23
+> [!error] Une echelle pour le score ??????? comment jpeux mesurer rien du tout si je nai meme pas de référence  
+
+### Done
+- Ajout de l'image constantes
+- Changement des print en logging
+
+### To Do (Important)
+- Refaire le terrain de Sofia (Bulgarie) (Chiant mais pas si long 10mn max)
+- Coder le parkour de Lilou Ruel (Chiant++ et moyen long 20mn max)
+- Faire le MCOT (CHIANT++++++++ aucune idée mais ca va être horrible)
+- Faire les diapos (cv 40mn max)

@@ -1,10 +1,11 @@
 '''
  Name : Elowan
  Creation : 02-06-2023 10:59:30
- Last modified : 07-07-2023 20:21:56
+ Last modified : 10-08-2023 13:16:38
 '''
 from random import seed, randint
 import datetime
+import logging
 
 from Terrain import FIGURES
 from Models import Athlete
@@ -12,7 +13,8 @@ from Game import Game
 from Genetic import GeneticAlgorithm, Chromosome
 import traitement
 from consts import POPULATION_NUMBER, MUTATION_RATE, TERMINAISON_AGE,\
-    ITERATION_NUMBER
+    ITERATION_NUMBER, NUMBER_OF_CHROMOSOME_TO_KEEP, INITIAL_POSITION,\
+    MAX_TICK_COUNT, SIZE_X, SIZE_Y
 
 #########
 # Algorithme glouton
@@ -125,7 +127,7 @@ class AthleteChromosome(Chromosome):
     
     def __repr__(self) -> str:
         return "AthleteID {} de score {} d'age {} et de taille {} : \n{}".format(
-            self.athlete.id, self.fitness, self.age, self.size, self.athlete)
+            self.athlete.id, round(self.fitness, 2), self.age, self.size, self.athlete)
     
 def evaluate(population:list) -> list:
     """
@@ -230,7 +232,7 @@ def getBestAthlete(population):
         population (AthleteChromosome list): liste des athlètes
     """
     evalPop = evaluate(population)
-    print(evalPop[0].athlete, evalPop[0].fitness)
+    logging.debug(evalPop[0].athlete, evalPop[0].fitness)
 
 def termination(population:list) -> bool:
     """
@@ -245,22 +247,60 @@ def termination(population:list) -> bool:
     """
     return maxInfos["maxAge"] > TERMINAISON_AGE
 
+def logConstants(athleteLevel, athleteFigureFav):
+    """
+    Log les constantes de l'algorithme
+    """
+    logging.debug("Population number : {}".format(POPULATION_NUMBER))
+    logging.debug("Iteration number : {}".format(ITERATION_NUMBER))
+    logging.debug("Mutation rate : {}%".format(MUTATION_RATE))
+    logging.debug("Terminaison age : {}".format(TERMINAISON_AGE))
+    logging.debug("Athlete level : {}".format(athleteLevel))
+    logging.debug("Athlete figure fav : {}".format(athleteFigureFav))
+    logging.debug("Number of chromosomes to keep : {}".format(NUMBER_OF_CHROMOSOME_TO_KEEP))
+    logging.debug("Initial position : {}".format(INITIAL_POSITION))
+    logging.debug("Size of the field : {}".format((SIZE_X, SIZE_Y)))
+    logging.debug("Max tick count : {}".format(MAX_TICK_COUNT))
+
+
 if __name__ == "__main__":
-    seed(24) # Pour avoir des résultats reproductibles
+    # seed(24) # Pour avoir des résultats reproductibles
+    athleteLevel = 9
+    athleteFigureFav = FIGURES["frontflip"]
+
+    # Initialisation des logs
+    logging.basicConfig(level=logging.DEBUG, 
+                    format='%(asctime)s - %(levelname)s - %(message)s',
+                    datefmt='%d-%m-%Y %H:%M:%S',
+                    filename='logs/Main - {}.txt'.format(str(athleteLevel) + "xp - "
+                                             + str(athleteFigureFav) + " - "
+                                             + datetime.datetime.now()
+                                             .strftime("%d-%m-%Y %H:%M:%S")),
+                    filemode='w')
+    
+    # Affichage dans la console
+    console = logging.StreamHandler()
+    console.setLevel(logging.INFO)
+    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+    console.setFormatter(formatter)
+    logging.getLogger('').addHandler(console)
+
+    logConstants(athleteLevel, athleteFigureFav)
 
     total_time = datetime.timedelta(0)
 
     for i in range(ITERATION_NUMBER):
-        print("##### ITERATION {} #####".format(i))
+        logging.info("##### ITERATION {}/{} #####".format(i+1, ITERATION_NUMBER))
         ### Creation de la population
 
         # Chronométrage
         start_time = datetime.datetime.now()
         
         # POPULATION_NUMBER de fois le meme athlete 
-        population = [AthleteChromosome(Athlete(3, FIGURES["frontflip"])) 
-        
+        population = [AthleteChromosome(
+                        Athlete(athleteLevel, athleteFigureFav)) 
                     for _ in range(POPULATION_NUMBER)]
+        
         playAllGames(population)
         
         ### Algorithme génétique
@@ -288,18 +328,16 @@ if __name__ == "__main__":
 
         parkourGenetic.run(iteration=iterate)
 
-        print("\nMeilleur athlète de la dernière génération: {}".format(evaluate(parkourGenetic.population)[0]))
-        print("Temps d'execution : {}".format(datetime.datetime.now() - start_time))
+        logging.debug("\nMeilleur athlète de la dernière génération: {}".format(evaluate(parkourGenetic.population)[0]))
+        logging.info("Temps d'execution : {}".format(datetime.datetime.now() - start_time))
 
         traitement.main(parkourGenetic.getDirname() + "/" + 
                         parkourGenetic.getFilename() + ".json")
-        
-        print()
-        
+                
         total_time += datetime.datetime.now() - start_time
 
     data = traitement.analyseFolder(parkourGenetic.getDirname())
     traitement.main(filename="{}/all".format(parkourGenetic.getDirname()), data=data)
     
-    print("Temps d'execution total : {} pour {} itérations".format(
+    logging.info("Temps d'execution total : {} pour {} itérations".format(
         total_time, ITERATION_NUMBER))
