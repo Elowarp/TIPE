@@ -1,7 +1,7 @@
 '''
  Name : Elowan
  Creation : 23-06-2023 10:35:11
- Last modified : 15-08-2023 16:40:51
+ Last modified : 27-08-2023 16:27:30
 '''
 
 from json import dump, load
@@ -348,6 +348,7 @@ def makeCasesImg(freq_matrice, terrain_matrice, best_athlete, filename):
                 str(i+1), color="black", ha="center", va="center")
 
     # Mise en forme de l'image
+    print(len(freq_matrice), len(freq_matrice[0]))
     max_x, max_y, diff = len(freq_matrice[0]), len(freq_matrice), 1.
 
     plt.title("Utilisation des cases au cours\ndes générations")
@@ -396,11 +397,12 @@ def makeCasesImg(freq_matrice, terrain_matrice, best_athlete, filename):
     ax2.grid()
     
     # Marges
-    plt.subplots_adjust(bottom=0.1, right=1.5, top=0.9) 
+    plt.subplots_adjust(right=1.2, bottom=-0.8) 
+    # plt.tight_layout()  
 
     # Sauvegarde
     plt.savefig("traitement/{}_images/cases.png".format(filename), 
-                bbox_inches='tight',dpi=100)
+                bbox_inches=Bbox([[0, -4], [9, 5]]),dpi=100)
     plt.close()
 
 def makeFreqImg(athlete, list_figures, list_count, nb_generations, 
@@ -509,16 +511,18 @@ if __name__ == "__main__":
     # filename = "6xp_frontflip/0.json"
     # main(filename)
 
-    folder = "6xp_frontflip"
+    folder = "7xp_frontflip"
 
     # Afficher les logs dans un fichier
     logging.basicConfig(level=logging.DEBUG, 
                     format='%(asctime)s - %(levelname)s - %(message)s',
                     datefmt='%d-%m-%Y %H:%M:%S',
-                    filename='logs/Traitement - {}.txt'.format(str(folder)
-                                            + " - " +
-                                            + datetime.datetime.now()
-                                             .strftime("%d-%m-%Y %H:%M:%S")),
+                    filename='logs/Traitement - {}.txt'.format(
+                                            str(folder)
+                                            + " - "
+                                            + datetime.datetime.now().strftime(
+                                                "%d-%m-%Y %H:%M:%S"
+                                            )),
                     filemode='w')
     
     # Affichage dans la console

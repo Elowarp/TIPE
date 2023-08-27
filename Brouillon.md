@@ -569,5 +569,15 @@ Légende des termes :
 ### To Do (Important)
 - Refaire le terrain de Sofia (Bulgarie) (Chiant mais pas si long 10mn max)
 - Coder le parkour de Lilou Ruel (Chiant++ et moyen long 20mn max)
-- Faire le MCOT (CHIANT++++++++ aucune idée mais ca va être horrible)
 - Faire les diapos (cv 40mn max)
+
+# 27/08/23
+Seule vidéo du passage de lilou : https://www.youtube.com/watch?v=ubQ1w7awah8 (19:50)
+Dimensions terrain : [[2021_PK_Workplan_Sofia.pdf]] (40 x 10m)
+
+### Done
+- Création du terrain de Sofia 
+### To do
+- Parcours Lilou
+- Diapos
+- Systeme de score

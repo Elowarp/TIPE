@@ -1,7 +1,7 @@
 '''
  Name : Elowan
  Creation : 30-06-2023 23:56:45
- Last modified : 10-08-2023 16:32:41
+ Last modified : 27-08-2023 15:51:52
 '''
 
 POPULATION_NUMBER = 200             # Nombre d'individus dans la population
@@ -19,4 +19,4 @@ MAX_TICK_COUNT = 70                 # Nombre de tours(=secondes) maximum
 ITERATION_NUMBER = 50               # Nombre d'itérations de l'algorithme
 
 SIZE_X = 10                         # Taille du terrain
-SIZE_Y = 15
+SIZE_Y = 40

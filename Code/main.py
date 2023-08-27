@@ -1,7 +1,7 @@
 '''
  Name : Elowan
  Creation : 02-06-2023 10:59:30
- Last modified : 10-08-2023 13:16:38
+ Last modified : 27-08-2023 15:38:41
 '''
 from random import seed, randint
 import datetime
@@ -265,7 +265,7 @@ def logConstants(athleteLevel, athleteFigureFav):
 
 if __name__ == "__main__":
     # seed(24) # Pour avoir des résultats reproductibles
-    athleteLevel = 9
+    athleteLevel = 7
     athleteFigureFav = FIGURES["frontflip"]
 
     # Initialisation des logs
