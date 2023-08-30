@@ -79,7 +79,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 300,
+    "collapsed": true
   },
   "right": {
     "id": "cac7d68219559364",
@@ -139,7 +140,8 @@
               }
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "horizontal",
@@ -158,27 +160,27 @@
   },
   "active": "0e0983fab0d05a08",
   "lastOpenFiles": [
-    "Code/logs/Traitement - 7xp_frontflip - 27-08-2023 16:27:31.txt",
-    "Code/logs/Traitement - 7xp_frontflip - 27-08-2023 16:26:55.txt",
-    "Code/logs/Traitement - 7xp_frontflip - 27-08-2023 16:26:17.txt",
-    "Code/logs/Traitement - 7xp_frontflip - 27-08-2023 16:24:07.txt",
-    "Code/logs/Traitement - 7xp_frontflip - 27-08-2023 16:23:33.txt",
-    "Code/logs/Traitement - 7xp_frontflip - 27-08-2023 16:23:05.txt",
-    "Code/logs/Traitement - 7xp_frontflip - 27-08-2023 16:22:35.txt",
-    "Code/logs/Traitement - 7xp_frontflip - 27-08-2023 16:22:07.txt",
-    "Code/logs/Traitement - 7xp_frontflip - 27-08-2023 16:21:29.txt",
-    "Code/logs/Traitement - 7xp_frontflip - 27-08-2023 16:17:59.txt",
-    "Code/logs/Traitement - 7xp_frontflip - 27-08-2023 16:17:30.txt",
-    "Code/traitement/7xp_frontflip/99.json_images/cases.png",
-    "Code/traitement/7xp_frontflip/99.json_images/constantes.png",
-    "Code/traitement/7xp_frontflip/99.json_images/freq&fitness.png",
-    "Code/traitement/7xp_frontflip/98.json_images/cases.png",
-    "Code/traitement/7xp_frontflip/98.json_images/constantes.png",
-    "Code/traitement/7xp_frontflip/98.json_images/freq&fitness.png",
-    "Code/traitement/7xp_frontflip/97.json_images/cases.png",
-    "Code/traitement/7xp_frontflip/97.json_images/constantes.png",
-    "Code/traitement/7xp_frontflip/97.json_images/freq&fitness.png",
-    "Code/traitement/7xp_frontflip/96.json_images/cases.png",
+    "Code/logs/Traitement - 29-08-2023 19:10:30.txt",
+    "Code/logs/Traitement - 29-08-2023 19:10:06.txt",
+    "Code/logs/Traitement - 29-08-2023 19:09:26.txt",
+    "Code/logs/Traitement - 29-08-2023 19:08:25.txt",
+    "Code/logs/Traitement - 29-08-2023 19:06:45.txt",
+    "Code/logs/Traitement - 29-08-2023 19:05:41.txt",
+    "Code/logs/Traitement - 29-08-2023 19:05:13.txt",
+    "Code/logs/Traitement - 29-08-2023 19:04:51.txt",
+    "Code/logs/Traitement - 29-08-2023 19:03:33.txt",
+    "Code/logs/Traitement - 29-08-2023 19:02:16.txt",
+    "Code/logs/Traitement - 29-08-2023 19:01:31.txt",
+    "Code/traitement/10xp/29-08-2023 18h56m45s/29.json_images/cases.png",
+    "Code/traitement/10xp/29-08-2023 18h56m45s/29.json_images/constantes.png",
+    "Code/traitement/10xp/29-08-2023 18h56m45s/29.json_images/freq&fitness.png",
+    "Code/traitement/10xp/29-08-2023 18h56m45s/28.json_images/cases.png",
+    "Code/traitement/10xp/29-08-2023 18h56m45s/28.json_images/constantes.png",
+    "Code/traitement/10xp/29-08-2023 18h56m45s/28.json_images/freq&fitness.png",
+    "Code/traitement/10xp/29-08-2023 18h56m45s/27.json_images/cases.png",
+    "Code/traitement/10xp/29-08-2023 18h56m45s/27.json_images/constantes.png",
+    "Code/traitement/10xp/29-08-2023 18h56m45s/27.json_images/freq&fitness.png",
+    "Code/traitement/10xp/29-08-2023 18h56m45s/26.json_images/cases.png",
     "Brouillon.md",
     "Code/images/Image scoring réelle/all_images/freq.png.md",
     "Classes.canvas",

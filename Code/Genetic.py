@@ -1,7 +1,7 @@
 '''
  Name : Elowan
  Creation : 08-06-2023 10:00:40
- Last modified : 10-08-2023 12:47:41
+ Last modified : 29-08-2023 18:16:21
 '''
 import random 
 import json
@@ -45,7 +45,7 @@ class GeneticAlgorithm:
             mutation (function): fonction qui fait des mutations sur eux
     """
     def __init__(self, population:list, termination, evaluate, 
-                 selection, crossover, mutation) -> None:
+                 selection, crossover, mutation, dirname="") -> None:
         
         # Renvoie true/false selon le critere de terminaison
         self.termination = termination
@@ -60,6 +60,8 @@ class GeneticAlgorithm:
         self.population_len = len(population)
 
         self.populationOverTime = [self.population]
+
+        self.dirname = dirname
 
     def run(self, iteration=lambda x: None, callback=lambda x: None):
         """
@@ -103,6 +105,7 @@ class GeneticAlgorithm:
                 dataSerialized.append({
                     "genes": genesSerialized,
                     "fitness": self.populationOverTime[i][j].fitness,
+                    "detailedFitness": self.populationOverTime[i][j].detailedFitness,
                     "age": self.populationOverTime[i][j].age,
                     "size": self.populationOverTime[i][j].size
                 })
@@ -142,23 +145,18 @@ class GeneticAlgorithm:
             "dataGenerations": dataSerialized
         }
 
-        self.dirname = "{}xp_{}".format(
-            self.population[0].athlete.xp, 
-            self.population[0].athlete.figureFav.name
-        )
-
-        os.makedirs("data/{}".format(self.dirname), exist_ok=True)
+        os.makedirs(self.dirname, exist_ok=True)
 
         i=0
-        while os.path.exists("data/{}/{}.json".format(self.dirname, i)):
+        while os.path.exists("{}/{}.json".format(self.dirname, i)):
             i += 1
             
         self.filename = str(i)
 
-        with open("data/{}/{}.json".format(self.dirname, self.filename), "w") as f:
+        with open("{}/{}.json".format(self.dirname, self.filename), "w") as f:
             json.dump(data, f)
 
-        logging.debug("Data saved in data/{}.json".format(self.filename))
+        logging.debug("Data saved in {}.json".format(self.filename))
         
     
     def getFilename(self):

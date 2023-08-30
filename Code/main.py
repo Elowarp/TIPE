@@ -1,7 +1,7 @@
 '''
  Name : Elowan
  Creation : 02-06-2023 10:59:30
- Last modified : 27-08-2023 15:38:41
+ Last modified : 29-08-2023 18:15:42
 '''
 from random import seed, randint
 import datetime
@@ -12,6 +12,7 @@ from Models import Athlete
 from Game import Game
 from Genetic import GeneticAlgorithm, Chromosome
 import traitement
+from utils import weighted_random
 from consts import POPULATION_NUMBER, MUTATION_RATE, TERMINAISON_AGE,\
     ITERATION_NUMBER, NUMBER_OF_CHROMOSOME_TO_KEEP, INITIAL_POSITION,\
     MAX_TICK_COUNT, SIZE_X, SIZE_Y
@@ -37,88 +38,104 @@ class AthleteChromosome(Chromosome):
     def __init__(self, athlete):
         self.athlete = athlete
         self.genes = athlete.combos
+
+        self.detailedFitness = {
+            "execution": {
+                "safety": 3,
+                "flow": 0,
+                "mastery": 0,
+            },
+            "composition": {
+                "use_of_space": 0,
+                "use_of_obstacles": 0,
+                "connection": 0,
+            },
+            "difficulty": {
+                "variety": 0,
+                "single_trick": 0,
+                "whole_run": 0,
+            },
+            "is_injured": False,
+        }
+
         super().__init__(self.genes, self.calc_fitness(), 
                          0, len(self.genes))
 
     def calc_fitness(self) -> int:
         """Calcule le score de l'athlète"""
-        score = {
-            "surete": 3,
-            "presentation": 0,
-            "flow": 3,
-            "connection": 0,
-            "parts": 0,
-            "types": 0,
-            "tricks": 0,
-            "placement": 0,
-            "time": 0,
-            "variety": 0,
-            "technique": 0
-        }
+        score = self.detailedFitness
 
-        tricks = [ combo[1] for combo in self.athlete.combos]
+        tricks = [combo[1] for combo in self.athlete.combos]
         field = self.athlete.field
 
-        # Calcule de la sureté des figures
+        # Calcul de la sureté des figures
         # On coefficiente la sureté par l'xp de l'athlète
-        score["surete"] = (score["surete"])*self.athlete.xp/10
-        
-        # Calcule de la présentation
-        # score["presentation"] = randint(0, 2)
-        score["presentation"] = 2*self.athlete.xp/10
+        score["execution"]["safety"] =\
+            (score["execution"]["safety"])*self.athlete.xp/10
 
-        # Calcule du flow
+        # Calcul du flow
         # Compte le nb de fois qu'on s'est arreté
-        score["flow"] = 3 - tricks.count(FIGURES["do_nothing"])
+        score["execution"]["flow"] = 3 - tricks.count(FIGURES["do_nothing"])
+                        
+        # Calcul de la maitrise
+        # score["execution"]["mastery"] = weighted_random(0, 4, 1, 2*self.athlete.xp)
+        score["execution"]["mastery"] = 4*self.athlete.xp/10
 
-        # Calcule de la connection
-        # score["connection"] = weighted_random(0, 2, 20, 1)
-        score["connection"] = 2*self.athlete.xp/10
-
-        # Calcule des parts
+        # Calcul de l'utilisation de l'espace
         # Compte le nb de cases différentes utilisées
-        score["parts"] = len(set([field.getCase(combo[0]).id
-                                    for combo in self.athlete.combos]))
+        score["composition"]["use_of_space"] = len(set([field.getCase(combo[0]).id
+                                    for combo in self.athlete.combos]))/3
         
-        # Calcule des types
-        score["types"] = randint(0, 2)
-        score["types"] = 2*self.athlete.xp/10
+        if score["composition"]["use_of_space"] > 3:
+            score["composition"]["use_of_space"] = 3
 
-        # Calcule des tricks
-        # Calcule des points accordés par les tricks
-        # Majoré par 5
-        score["tricks"] = sum([trick.complexity
-                                for trick in tricks])/5
+        # Calcul de l'utilisation des obstacles
+        # Compte le nb de types de cases différents utilisés
+        score["composition"]["use_of_obstacles"] = len(set([field.getCase(combo[0]).name
+                                    for combo in self.athlete.combos]))/3
         
-        if score["tricks"] > 5:
-            score["tricks"] = 5
+        # Limite le score à 3
+        if score["composition"]["use_of_obstacles"] > 3:
+            score["composition"]["use_of_obstacles"] = 3
 
-        # Calcule du placement
-        score["placement"] = 3*self.athlete.xp/10
+        # Calcul de la connection
+        # score["composition"]["connection"] = weighted_random(0, 4, 1, 2*self.athlete.xp)
+        score["composition"]["connection"] = 4*self.athlete.xp/10
 
-        # Calcule du temps
-        # score["time"] = weighted_random(0, 2, 20, 1)
-        score["time"] = 2*self.athlete.xp/10
-
-        # Calcule de la variété
+        # Calcul de la variété
         # Ajoute 0.5 pts a chaque figure de complexité > 2
         # (Donc que le trick n'est pas ds la catégorie de parkour classique)
-        score["variety"] = sum([0.5
+        score["difficulty"]["variety"] = sum([0.5
                                 for trick in tricks
                                 if trick.complexity > 2])
         
-        if score["variety"] > 3:
-            score["variety"] = 3
-        
-        # Calcule de la technique
-        # Ajout de 2 points max coefficienté par l'xp de l'athlète
-        score["technique"] = 2*self.athlete.xp/10
+        if score["difficulty"]["variety"] > 3:
+            score["difficulty"]["variety"] = 3
 
-        self.fitness = sum(score.values())
+        # Calcul de la difficulté d'un trick
+        # Ajoute 1 pt par trick de complexité > 3
+        score["difficulty"]["single_trick"] = sum([trick.complexity
+                                for trick in tricks
+                                if trick.complexity > 3])
+        
+        if score["difficulty"]["single_trick"] > 3:
+            score["difficulty"]["single_trick"] = 3
+
+        # Calcul de la difficulté d'un run
+        score["difficulty"]["whole_run"] = weighted_random(0, 4, 1, 2*self.athlete.xp)
+
+
+        # Calcul du score final
+        self.detailedFitness = score
+        self.fitness = sum([sum(score["execution"].values()),
+                            sum(score["composition"].values()),
+                            sum(score["difficulty"].values())])
+                            
 
         # Une chance pour que l'athlète se blesse
         if randint(0, 100) < 5:
             self.fitness = self.fitness - 5
+            self.detailedFitness["is_injured"] = True
 
         if self.fitness < 0:
             self.fitness = 0
@@ -265,8 +282,11 @@ def logConstants(athleteLevel, athleteFigureFav):
 
 if __name__ == "__main__":
     # seed(24) # Pour avoir des résultats reproductibles
-    athleteLevel = 7
+    athleteLevel = 10
     athleteFigureFav = FIGURES["frontflip"]
+    dirnameSaves = "{}xp/{}".format(athleteLevel, 
+                                      datetime.datetime.now()
+                                      .strftime("%d-%m-%Y %Hh%Mm%Ss"))
 
     # Initialisation des logs
     logging.basicConfig(level=logging.DEBUG, 
@@ -311,7 +331,8 @@ if __name__ == "__main__":
         }
 
         parkourGenetic = GeneticAlgorithm(population, termination, evaluate, 
-                                        selection, crossover, mutation)
+                                        selection, crossover, mutation,
+                                        "data/{}".format(dirnameSaves))
         
         def iterate(population):
             # getBestAthlete(population)
@@ -337,7 +358,7 @@ if __name__ == "__main__":
         total_time += datetime.datetime.now() - start_time
 
     data = traitement.analyseFolder(parkourGenetic.getDirname())
-    traitement.main(filename="{}/all".format(parkourGenetic.getDirname()), data=data)
+    traitement.main(path="{}/all".format(parkourGenetic.getDirname()), data=data)
     
     logging.info("Temps d'execution total : {} pour {} itérations".format(
         total_time, ITERATION_NUMBER))

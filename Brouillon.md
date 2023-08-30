@@ -577,7 +577,35 @@ Dimensions terrain : [[2021_PK_Workplan_Sofia.pdf]] (40 x 10m)
 
 ### Done
 - Création du terrain de Sofia 
+- Adaptation des images au nv terrain 
 ### To do
 - Parcours Lilou
 - Diapos
 - Systeme de score
+
+# 29/08/23
+Recommencement du système des scores : [[Code pointage 2019-2021.pdf]]
+### Infos extraites :
+- Choix de l'athlète pour le départ
+- Max 70s de passage, moins est autorisé
+- Maximum de 30 pts, possibilité de donner des demis points
+- Facon de noter :
+	- Exécution 
+		- Sécurité (max 3)
+		- Fluidité  (max 3)
+		- Maitrise (max 4)
+	- Composition
+		- Utilisation de l'espace (max 3)
+		- Utilisation des obstacles (max 3)
+		- Connections (max 4)
+	- Difficulté
+		- Variété (max 3)
+		- Éléments individuels (max 3)
+		- L'ensemble de la course (max 4)
+
+### Done :
+- Changement du scoring
+
+### Issues:
+- Cette façon de considérer le score fait grimper en flèche le fait de courir et non pas d'utiliser le plus l'environnement
+

@@ -1,7 +1,7 @@
 '''
  Name : Elowan
  Creation : 23-06-2023 10:35:11
- Last modified : 27-08-2023 16:27:30
+ Last modified : 30-08-2023 14:59:02
 '''
 
 from json import dump, load
@@ -66,10 +66,28 @@ def unserializeJson(filename):
             
             parsed_data["field"]["cases"].append(parsed_line)
 
+        
         for generation in data["dataGenerations"]:
+            # Récupération de la fitness détaillée
+            if "detailedFitness" in generation:
+                detailedFitness = generation["detailedFitness"]
+                
+                for key, value in detailedFitness.items():
+                    if key != "is_injured":
+                        detailedFitness[key] = sum(value.values())
+
+            else:
+                detailedFitness = {
+                    "execution": 0,
+                    "composition": 0,
+                    "difficulty": 0
+                }
+
+
             parsed_generation = {
                 "genes": [],
                 "fitness": generation["fitness"],
+                "detailedFitness": detailedFitness,
                 "age": generation["age"],
                 "size": generation["size"]
             }
@@ -139,16 +157,27 @@ def analyse(filename):
     
     ### Evolution de la fitness au cours des générations
     logging.debug("Création de l'évolution de la fitness au cours des générations...")
+    
+    detailed_fitness = {}
+    for fit in ["execution", "composition", "difficulty"]:
+        detailed_fitness[fit] = []
+        for generation in data["dataGenerations"]:
+            detailed_fitness[fit].append(generation["detailedFitness"][fit])
+
+        detailed_fitness[fit] = np.array(detailed_fitness[fit])
+
+
     list_fitness = []
     for generation in data["dataGenerations"]:
         list_fitness.append(generation["fitness"])
+    list_fitness = np.array(list_fitness)
+
 
     # Fait une liste de la moyenne des fitness par génération
     list_fitness_moy = [sum(list_fitness[i:i+NUMBER_OF_CHROMOSOME_TO_KEEP])
                     /NUMBER_OF_CHROMOSOME_TO_KEEP
                     for i in range(0, len(list_fitness), NUMBER_OF_CHROMOSOME_TO_KEEP)]
     
-    list_fitness = np.array(list_fitness)
     list_fitness_moy = np.array(list_fitness_moy)
     logging.debug("Evolution de la fitness au cours des générations créée !\n")
     
@@ -199,6 +228,7 @@ def analyse(filename):
         "terrain_matrice": terrain_matrice,
         "fitness": list_fitness,
         "fitness_moy": list_fitness_moy,
+        "detailed_fitness": detailed_fitness,
         "figures": list_figures,
         "count": list_count,
         "nb_generations": nb_generations,
@@ -211,7 +241,6 @@ def analyseFolder(foldername):
     """
     Analyse tous les fichiers d'un dossier en concaténant les données
     """    
-    foldername = "data/"+foldername
     # Récupération des noms des fichiers
     filenames = [f for f in os.listdir(foldername) if os.path.isfile(os.path.join(foldername, f))]
 
@@ -222,6 +251,7 @@ def analyseFolder(foldername):
         "nb_generations": 0,
         "fitness": [],
         "fitness_moy": [],
+        "detailed_fitness": {},
         "freq_matrice": np.zeros((SIZE_Y, SIZE_X)),
         "terrain_matrice": np.zeros((SIZE_Y, SIZE_X)),
         "figures": [],
@@ -235,6 +265,11 @@ def analyseFolder(foldername):
     }
 
     fitness_temp = []
+    detailed_fitness_temp = {
+        "execution": [],
+        "composition": [],
+        "difficulty": []
+    }
 
     # Analyse de chaque fichier
     count = 0
@@ -246,6 +281,10 @@ def analyseFolder(foldername):
         data["nb_generations"] += file_data["nb_generations"]
         data["freq_matrice"] += file_data["freq_matrice"]
         fitness_temp.append(file_data["fitness"])
+        
+        detailed_fitness_temp["execution"].append(file_data["detailed_fitness"]["execution"])
+        detailed_fitness_temp["composition"].append(file_data["detailed_fitness"]["composition"])
+        detailed_fitness_temp["difficulty"].append(file_data["detailed_fitness"]["difficulty"])
         
 
         # Variables invariantes face aux excécutions de l'algorithme
@@ -276,6 +315,18 @@ def analyseFolder(foldername):
 
     data["fitness"] = np.array(data["fitness"])
 
+    # Moyenne de toutes les fitness détaillées par exécution
+    # de l'algorithme génétique
+    # for key, value in detailed_fitness_temp.items():
+    #     max_size = max(len(x) for x in value)
+    #     print(key, value)
+    #     for i in range(max_size):
+    #         moy_cur_fitness = [x[i] for x in value if len(x) > i] 
+    #         detailed_fitness_temp[key][i] = sum(moy_cur_fitness)/len(moy_cur_fitness)
+
+    # data["detailed_fitness"] = detailed_fitness_temp
+    
+
     # Moyenne par génération
     data["fitness_moy"] = [sum(data["fitness"][i:i+NUMBER_OF_CHROMOSOME_TO_KEEP])
                     /NUMBER_OF_CHROMOSOME_TO_KEEP
@@ -302,9 +353,18 @@ def makeEvolFitnessImg(athlete, nb_generations, list_fitness, list_fitness_moy,
     fitness_moy_by_gen = [sum(list_fitness[i:i+NUMBER_OF_CHROMOSOME_TO_KEEP])
                           /NUMBER_OF_CHROMOSOME_TO_KEEP
                         for i in range(0, len(list_fitness), NUMBER_OF_CHROMOSOME_TO_KEEP)]
+    
+    # Liste de la moyenne des fitness détaillées par génération
+    detailed_fitness_moy_by_gen = {
+        "execution": [],
+        "composition": [],
+        "difficulty": []
+    }
 
+    
     # Affichage de la courbe
     plt.plot(fitness_moy_by_gen, color="blue", label="Score", linewidth=2)
+    
     plt.xlabel("Génération ({} athlètes/génération)"\
                .format(NUMBER_OF_CHROMOSOME_TO_KEEP))
     plt.ylabel("Score")
@@ -348,7 +408,6 @@ def makeCasesImg(freq_matrice, terrain_matrice, best_athlete, filename):
                 str(i+1), color="black", ha="center", va="center")
 
     # Mise en forme de l'image
-    print(len(freq_matrice), len(freq_matrice[0]))
     max_x, max_y, diff = len(freq_matrice[0]), len(freq_matrice), 1.
 
     plt.title("Utilisation des cases au cours\ndes générations")
@@ -447,8 +506,8 @@ def constListImage(filename, const_dict):
     plt.close()
     
 
-def main(filename=None, data=None):
-    if filename is None and data is None:
+def main(path=None, data=None):
+    if path is None and data is None:
         logging.error("Veuillez entrer un nom de fichier ou des données à analyser.")
         return
     
@@ -457,8 +516,10 @@ def main(filename=None, data=None):
     
     # Récupération des données
     if data is None:
-        data = analyse("data/" + filename)
+        data = analyse(path)
 
+    # Création du dossier de sauvegarde
+    filename = path.split("data/")[-1] # Nom du fichier sans la partie "data/"
     os.makedirs("traitement/{}_images".format(filename), exist_ok=True)
 
     logging.info("Traitement des données...")
@@ -511,16 +572,14 @@ if __name__ == "__main__":
     # filename = "6xp_frontflip/0.json"
     # main(filename)
 
-    folder = "7xp_frontflip"
+    folder = "10xp/29-08-2023 18h16m09s/"
 
     # Afficher les logs dans un fichier
     logging.basicConfig(level=logging.DEBUG, 
                     format='%(asctime)s - %(levelname)s - %(message)s',
                     datefmt='%d-%m-%Y %H:%M:%S',
                     filename='logs/Traitement - {}.txt'.format(
-                                            str(folder)
-                                            + " - "
-                                            + datetime.datetime.now().strftime(
+                                            datetime.datetime.now().strftime(
                                                 "%d-%m-%Y %H:%M:%S"
                                             )),
                     filemode='w')
@@ -532,5 +591,5 @@ if __name__ == "__main__":
     console.setFormatter(formatter)
     logging.getLogger('').addHandler(console)
 
-    data = analyseFolder(folder)
-    main(filename=folder+"/all", data=data)
+    data = analyseFolder("data/" + folder)
+    main(path=folder+"/all", data=data)
