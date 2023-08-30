@@ -1,7 +1,7 @@
 '''
  Name : Elowan
  Creation : 02-06-2023 10:59:30
- Last modified : 29-08-2023 18:15:42
+ Last modified : 30-08-2023 16:06:25
 '''
 from random import seed, randint
 import datetime
@@ -282,7 +282,7 @@ def logConstants(athleteLevel, athleteFigureFav):
 
 if __name__ == "__main__":
     # seed(24) # Pour avoir des résultats reproductibles
-    athleteLevel = 10
+    athleteLevel = 8
     athleteFigureFav = FIGURES["frontflip"]
     dirnameSaves = "{}xp/{}".format(athleteLevel, 
                                       datetime.datetime.now()

@@ -1,7 +1,7 @@
 '''
  Name : Elowan
  Creation : 23-06-2023 10:35:11
- Last modified : 30-08-2023 14:59:02
+ Last modified : 30-08-2023 16:24:30
 '''
 
 from json import dump, load
@@ -535,7 +535,7 @@ def main(path=None, data=None):
     name = "{}xp, {}, {} générations/exécution en moy, {} individus/génération ({} exécutions)"\
         .format(
             data["athlete"]["xp"], data["athlete"]["FigureFav"], 
-            data["nb_generations"], POPULATION_NUMBER,
+            round(data["nb_generations"]), POPULATION_NUMBER,
             data["nb_executions"]
         )
     

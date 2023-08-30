@@ -1,7 +1,7 @@
 '''
  Name : Elowan
  Creation : 02-06-2023 11:00:02
- Last modified : 07-07-2023 13:31:31
+ Last modified : 30-08-2023 15:20:12
 '''
 from random import choice
 from utils import weighted_random
@@ -254,12 +254,12 @@ FIGURES = {
     "inward_flip": Figure("inward_flip", 2, 1),     # Faire un inward flip (
                                                     # front qui te fait reculer)
                                                     # pendant 2s    
-    "540": Figure("540", 1, 1.5),                     # Faire un 540 pendant 1s
+    "540": Figure("540", 1, 1.5),                   # Faire un 540 pendant 1s
     "double_cork": Figure("double_cork", 4, 2),     # Faire un double cork
     "kong_gainer": Figure("kong_gainer", 2, 2),     # Faire un kong gainer
     "cast_backflip_360": Figure("cast_backflip_360",
                                  2, 2.5),           # Faire un cast backflip 360
-    "double_swing_gainer": Figure("double_swing_gainer", 2, 3), # back sur une barre
+    "double_swing_gainer": Figure("double_swing_gainer", 2, 3), # Back sur une barre
     
     "double_frontflip": Figure("double_frontflip", 
                                2, 4),               # Faire un double front

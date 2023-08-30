@@ -609,3 +609,33 @@ Recommencement du système des scores : [[Code pointage 2019-2021.pdf]]
 ### Issues:
 - Cette façon de considérer le score fait grimper en flèche le fait de courir et non pas d'utiliser le plus l'environnement
 
+# 30/08/23
+Reproduction du parkour de Lilou -> Premier essaie a la zob : le systeme de score est plutot bon on a un delta de 3pts
+
+Un des problemes c'est le 1s pour faire 1m qui n'est pas réaliste et qui joue dans le score et nombre de figures faites sur le terrain 
+
+Comparaison du score moyen obtenu par un athlete de même xp que Lilou (8xp) qui commence au même endroit qu'elle (30 executions)
+
+Véritable score (Total 21):
+- E : 5.5
+- C : 7.0
+- D : 8.5
+
+Score lilou (Total 17.8):
+- E : 8.6
+- C : 5.2
+- D : 4
+
+Générations :
+![[Code/images/Génération comparaison lilou/constantes.png]]
+![[Code/images/Génération comparaison lilou/freq&fitness.png]]
+![[Code/images/Génération comparaison lilou/cases.png]]
+
+
+Rmq : 
+- Sur le score en lui même on a bien des différences sur le traitement ce qui montre un problème sur la notation et que le total soit "proche" du vrai résultat relève plus de la chance que d'autre chose 
+- On voit que par rapport au véritable parcours de Lilou, le progm est bien plus restreint sur lui même -> Possibilité d'amélioration faire des demi-ticks (0.5s) et passer le saut et la course en demi tick on aurait donc plus de facilité a représenter la vraie course de Lilou
+- A-t-on atteint les limites ? A cause du facteur humain assez présent dans le système de notation, et de l'infinité des figures possibles on se retrouve avec ces résultats quand même interprétables mais pas aussi bien applicable à la réalité qu'on le voudrait
+### Done
+- Ajout du fichier des combos customs
+- Externalisation du terrain de Sofia
