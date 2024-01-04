@@ -1,14 +1,13 @@
 '''
  Name : Elowan
  Creation : 02-06-2023 11:00:05
- Last modified : 01-07-2023 00:14:43
+ Last modified : 30-12-2023 11:16:27
 '''
 
 from Terrain import Field
 from Models import Athlete, FIGURES
 
-from consts import INITIAL_POSITION, MAX_TICK_COUNT
-
+from consts import INITIAL_POSITION, MAX_TICK_COUNT, TICK_INTERVAL
 
 class Game:
     """
@@ -41,7 +40,7 @@ class Game:
         
         self.athlete.takeAction(self.tickCount)
 
-        self.tickCount += 1
+        self.tickCount += TICK_INTERVAL
         return self.state
 
     def end(self):
@@ -72,7 +71,7 @@ class Game:
                 return i
             
     def resetGames():
-        """Reset toutes les instances de Game"""
+        """Supprime toutes les instances de Game"""
         Game.instances = []
 
 if __name__ == "__main__":

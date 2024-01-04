@@ -1,19 +1,21 @@
 '''
  Name : Elowan
  Creation : 02-06-2023 11:00:02
- Last modified : 30-08-2023 15:20:12
+ Last modified : 12-12-2023 22:29:03
 '''
 from random import choice
 from utils import weighted_random
 
 class Figure:
     instanceCount = 0
+    figures = {}
 
     def __init__(self, name, duration, complexity):
         self.id = self.instanceCount
         self.name = name
         self.duration = duration
         self.complexity = complexity
+        Figure.figures[self.id] = self
         Figure.instanceCount += 1
 
     def getFigureById(id):

@@ -1,14 +1,9 @@
 '''
  Name : Elowan
  Creation : 08-06-2023 10:00:40
- Last modified : 29-08-2023 18:16:21
+ Last modified : 12-12-2023 17:03:31
 '''
 import random 
-import json
-import os
-import logging
-
-from consts import INITIAL_POSITION, MUTATION_RATE, NUMBER_OF_CHROMOSOME_TO_KEEP
 
 class Chromosome:
     """
@@ -45,7 +40,7 @@ class GeneticAlgorithm:
             mutation (function): fonction qui fait des mutations sur eux
     """
     def __init__(self, population:list, termination, evaluate, 
-                 selection, crossover, mutation, dirname="") -> None:
+                 selection, crossover, mutation, save, dirname="") -> None:
         
         # Renvoie true/false selon le critere de terminaison
         self.termination = termination
@@ -55,6 +50,7 @@ class GeneticAlgorithm:
         self.selection = selection      # Selectionne les parents
         self.crossover = crossover      # Crée les enfants
         self.mutation = mutation        # Fait des mutations sur eux
+        self.save = save
 
         self.population = population
         self.population_len = len(population)
@@ -84,80 +80,8 @@ class GeneticAlgorithm:
             # Sauvegarde des données pour la sérialisation
             self.populationOverTime.append(self.population)
 
-        self.save()
-        return callback(self.population)
-    
-    def save(self):
-        """
-        Sauvegarde en Json les données de la population à chaque itération
-        en plus des informations sur l'athlète original
-        """
-        # Formatage des données
-        dataSerialized = []
-        for i in range(len(self.populationOverTime)):
-            for j in range(NUMBER_OF_CHROMOSOME_TO_KEEP):
-                genes = self.populationOverTime[i][j].genes
-                genesSerialized = []
-                
-                for k in range(len(genes)):
-                    genesSerialized.append((genes[k][0], genes[k][1].id, genes[k][2]))
-                    
-                dataSerialized.append({
-                    "genes": genesSerialized,
-                    "fitness": self.populationOverTime[i][j].fitness,
-                    "detailedFitness": self.populationOverTime[i][j].detailedFitness,
-                    "age": self.populationOverTime[i][j].age,
-                    "size": self.populationOverTime[i][j].size
-                })
-        
-        athleteSerialized = {
-            "xp": self.population[0].athlete.xp,
-            "FigureFav": self.population[0].athlete.figureFav.id, 
-            "InitialPosition": INITIAL_POSITION,  
-        }
-
-        metaInfoSerialized = {
-            "POPULATION_NUMBER": self.population_len,
-            "NUMBER_OF_CHROMOSOME_TO_KEEP": NUMBER_OF_CHROMOSOME_TO_KEEP,
-            "MUTATION_RATE": MUTATION_RATE,
-            "NUMBER_OF_GENERATIONS": len(self.populationOverTime)
-        }
-        
-        fieldCases = []
-        for i in range(len(self.population[0].athlete.field.grille)):
-            ligne = []
-            for j in range(len(self.population[0].athlete.field.grille[i])):
-                caseId = self.population[0].athlete.field.grille[i][j].id
-                ligne.append(caseId)
-
-            fieldCases.append(ligne)
-
-        fieldSerialized = {
-            "cases": fieldCases,
-            "width": len(self.population[0].athlete.field.grille),
-            "height": len(self.population[0].athlete.field.grille[0])
-        }
-
-        data = {
-            "metaInfo": metaInfoSerialized,
-            "athlete": athleteSerialized,
-            "field": fieldSerialized,
-            "dataGenerations": dataSerialized
-        }
-
-        os.makedirs(self.dirname, exist_ok=True)
-
-        i=0
-        while os.path.exists("{}/{}.json".format(self.dirname, i)):
-            i += 1
-            
-        self.filename = str(i)
-
-        with open("{}/{}.json".format(self.dirname, self.filename), "w") as f:
-            json.dump(data, f)
-
-        logging.debug("Data saved in {}.json".format(self.filename))
-        
+        self.save(self)
+        return callback(self.population) 
     
     def getFilename(self):
         return self.filename

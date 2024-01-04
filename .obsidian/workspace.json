@@ -4,11 +4,11 @@
     "type": "split",
     "children": [
       {
-        "id": "b154db4d4a4bf426",
+        "id": "abedb2045cb6f122",
         "type": "tabs",
         "children": [
           {
-            "id": "0e0983fab0d05a08",
+            "id": "a790de4ed7167a09",
             "type": "leaf",
             "state": {
               "type": "markdown",
@@ -20,16 +20,29 @@
             }
           },
           {
-            "id": "05009b740f4d6c55",
+            "id": "700db9e2cbe2c899",
             "type": "leaf",
             "state": {
-              "type": "pdf",
+              "type": "markdown",
               "state": {
-                "file": "Ressources/Notation du score.pdf"
+                "file": "MCOT.md",
+                "mode": "source",
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "e8d1295c96b1de74",
+            "type": "leaf",
+            "state": {
+              "type": "release-notes",
+              "state": {
+                "currentVersion": "1.5.3"
               }
             }
           }
-        ]
+        ],
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -95,7 +108,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Brouillon.md",
+                "file": "MCOT.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -112,7 +125,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Brouillon.md",
+                "file": "MCOT.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -135,7 +148,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Brouillon.md"
+                "file": "MCOT.md"
               }
             }
           }
@@ -157,32 +170,33 @@
       "command-palette:Ouvrir la palette de commandes": false
     }
   },
-  "active": "0e0983fab0d05a08",
+  "active": "e8d1295c96b1de74",
   "lastOpenFiles": [
-    "Code/images/Génération comparaison lilou/freq&fitness.png",
-    "Code/images/Génération comparaison lilou/constantes.png",
-    "Code/images/Génération comparaison lilou/cases.png",
-    "Code/images/Génération comparaison lilou",
-    "Code/images/all_images/freq&fitness.png",
-    "Code/images/all_images/constantes.png",
-    "Code/images/all_images/cases.png",
-    "Code/images/all_images",
-    "Code/traitement/8xp/30-08-2023 16h31m49s/all_images/cases.png",
-    "Code/traitement/8xp/30-08-2023 16h31m49s/all_images/constantes.png",
-    "Code/traitement/8xp/30-08-2023 16h31m49s/all_images/freq&fitness.png",
-    "Code/traitement/8xp/30-08-2023 16h31m49s/all_images",
-    "Code/traitement/8xp/30-08-2023 16h31m49s/99.json_images/cases.png",
-    "Code/traitement/8xp/30-08-2023 16h31m49s/99.json_images/constantes.png",
-    "Code/traitement/8xp/30-08-2023 16h31m49s/99.json_images",
-    "Code/data/8xp/30-08-2023 16h31m49s/99.json",
-    "Code/traitement/8xp/30-08-2023 16h31m49s/98.json_images",
-    "Code/data/8xp/30-08-2023 16h31m49s/98.json",
-    "Code/traitement/8xp/30-08-2023 16h31m49s/97.json_images",
-    "Code/data/8xp/30-08-2023 16h31m49s/97.json",
-    "Code/traitement/8xp/30-08-2023 16h31m49s/96.json_images",
     "Brouillon.md",
-    "Code/images/Image scoring réelle/all_images/freq.png.md",
+    "MCOT.md",
+    "MCOT.pdf",
+    "Ressources/Optimization by GRASP Greedy Randomized Adaptive Search Procedures (Mauricio G.C. Resende, Celso C. Ribeiro (auth.)) (Z-Library).pdf",
+    "2023-10-17.md",
+    "Ressources/Code pointage 2019-2021.pdf",
+    "Ressources/en_2022 PK Code of Points - Judges' Scoring Sheets.pdf",
+    "Ressources/en_1.1 - PK Code of Points 2022-2024 - Table of tricks 2023.pdf",
+    "Ressources/Schema Theorem.pdf",
+    "Ressources/Simulated Annealing and Boltzmann Machines A Stochastic Approach to Combinatorial Optimization and Neural Computing (Emile H. L. Aarts, Jan Korst) (Z-Library).pdf",
+    "Ressources/Algorithms illuminated. Part 3. Greedy algorithms and dynamic programming (Roughgarden T) (Z-Library).pdf",
+    "Ressources/Notation du score.pdf",
+    "Ressources/PK-World-Ranking-2022.pdf",
+    "diapo/images/lilou.jpg",
+    "diapo/images/LILOUcases.png",
+    "diapo/images/LILOUconstantes.png",
+    "diapo/images/LILOUfreq&fitness.png",
+    "diapo/images/freq&fitness.png",
+    "diapo/images/constantes.png",
+    "diapo/images/cases.png",
+    "diapo/images/modeles.png",
     "Classes.canvas",
+    "diapo/images/terrain.png",
+    "diapo/images/Modèles.png",
+    "Code/images/Image scoring réelle/all_images/freq.png.md",
     "[Code/images/1 Generation avec nv scoring/freq.png.md",
     "Readme.md",
     "Code/README.md",

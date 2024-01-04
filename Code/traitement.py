@@ -1,7 +1,7 @@
 '''
  Name : Elowan
  Creation : 23-06-2023 10:35:11
- Last modified : 30-08-2023 16:24:30
+ Last modified : 04-01-2024 22:16:01
 '''
 
 from json import dump, load
@@ -11,18 +11,15 @@ import matplotlib.patches as mpatches
 from matplotlib.transforms import Bbox
 import matplotlib as mpl
 import os
-import sys
 import datetime
 import logging
 
 from Models import Figure, FIGURES
 from Terrain import Case
 
-from Genetic import NUMBER_OF_CHROMOSOME_TO_KEEP
-
 from consts import SIZE_X, SIZE_Y, NUMBER_OF_CHROMOSOME_TO_KEEP,\
-    POPULATION_NUMBER, MUTATION_RATE, TERMINAISON_AGE, INITIAL_POSITION,\
-    MAX_TICK_COUNT, ITERATION_NUMBER
+    POPULATION_NUMBER, MUTATION_PROB, CROSSOVER_PROB,\
+    INITIAL_POSITION, MAX_TICK_COUNT, ITERATION_NUMBER, TICK_INTERVAL
 
 def unserializeJson(filename):
     """
@@ -32,7 +29,11 @@ def unserializeJson(filename):
             xp,
             FigureFav
         },
-        field : [[Case, Case], [Case, Case]],
+        field : {
+            case: [[Case, Case], [Case, Case]],
+            width
+            height
+            },
         dataGenerations : [
             {
                 genes : [[(x,y), Figure, tick],],
@@ -41,6 +42,9 @@ def unserializeJson(filename):
                 size,
             }
         ]
+        meta : {
+            is_success
+        }
     }
     """
     with open(filename, "r") as file:
@@ -55,6 +59,13 @@ def unserializeJson(filename):
                 "cases": [],
                 "width": data["field"]["width"],
                 "height": data["field"]["height"]
+            },
+            "meta": {
+                "is_success": data["metaInfo"]["is_success"],
+                "crossover_prob": data["metaInfo"]["crossover_prob"],
+                "mutation_prob": data["metaInfo"]["mutation_prob"],
+                "population_size": data["metaInfo"]["population_size"],
+                "terminaison_age": data["metaInfo"]["terminaison_age"],
             },
             "dataGenerations": []
         }
@@ -235,6 +246,11 @@ def analyse(filename):
         "athlete": data["athlete"],
         "best_athlete": best_athlete,
         "nb_executions": 1,
+        "is_success": data["meta"]["is_success"],
+        "crossover_prob": data["meta"]["crossover_prob"],
+        "mutation_prob": data["meta"]["mutation_prob"],
+        "population_size": data["meta"]["population_size"],
+        "terminaison_age": data["meta"]["terminaison_age"],
     }
 
 def analyseFolder(foldername):
@@ -262,6 +278,7 @@ def analyseFolder(foldername):
         },
         "athlete": {},
         "nb_executions": file_number,
+        "performance": 0
     }
 
     fitness_temp = []
@@ -281,6 +298,7 @@ def analyseFolder(foldername):
         data["nb_generations"] += file_data["nb_generations"]
         data["freq_matrice"] += file_data["freq_matrice"]
         fitness_temp.append(file_data["fitness"])
+        data["performance"] += 1 if file_data["is_success"] else 0
         
         detailed_fitness_temp["execution"].append(file_data["detailed_fitness"]["execution"])
         detailed_fitness_temp["composition"].append(file_data["detailed_fitness"]["composition"])
@@ -305,6 +323,7 @@ def analyseFolder(foldername):
     # Moyenne des données
     data["freq_matrice"] /= len(filenames)
     data["nb_generations"] /= len(filenames)
+    data["performance"] /= len(filenames)
 
     # Moyenne de toutes les fitness par exécution
     # de l'algorithme génétique
@@ -529,15 +548,21 @@ def main(path=None, data=None):
                           data["fitness"], data["fitness_moy"], 
                           data["best_athlete"], filename, 
                           data["nb_executions"])
+    
     makeFreqImg(data["athlete"], data["figures"], data["count"],
                 data["nb_generations"], filename, data["nb_executions"])
     
+    perf = " performance {}%".format(data["performance"]*100) if "performance" in data.keys() \
+        else " succès ? {}".format(data["is_success"])
+
     name = "{}xp, {}, {} générations/exécution en moy, {} individus/génération ({} exécutions)"\
         .format(
             data["athlete"]["xp"], data["athlete"]["FigureFav"], 
-            round(data["nb_generations"]), POPULATION_NUMBER,
+            round(data["nb_generations"]), data["population_size"],
             data["nb_executions"]
         )
+    
+    name += "\n" + perf
     
     plt.suptitle(name)
     plt.subplots_adjust(bottom=0.1, left=-0.2, right=1.3, top=0.85, hspace=2)
@@ -550,16 +575,21 @@ def main(path=None, data=None):
         "ATHLETE_XP": data["athlete"]["xp"],
         "ATHLETE_FIG_FAV": data["athlete"]["FigureFav"],
         #"FIGURES": data["figures"],
-        "POPULATION_NUMBER": POPULATION_NUMBER,
-        "MUTATION_RATE": MUTATION_RATE,
-        "NUMBER_OF_CHROMOSOME_TO_KEEP": NUMBER_OF_CHROMOSOME_TO_KEEP,
-        "TERMINAISON_AGE": TERMINAISON_AGE,
+        # "POPULATION_NUMBER": POPULATION_NUMBER,
+        "MUTATION_PROB": MUTATION_PROB,
+        "CROSSOVER_PROB": data["crossover_prob"],
+        "MUTATION_PROB": data["mutation_prob"],
+        "POPULATION_SIZE": data["population_size"],
+        "NUMBER_OF_CHROMOSOME_TO_KEEP": 
+                min(NUMBER_OF_CHROMOSOME_TO_KEEP, data["population_size"]-1),
+        "TERMINAISON_AGE": data["terminaison_age"],
         "INITIAL_POSITION": INITIAL_POSITION,
         "MAX_TICK_COUNT": MAX_TICK_COUNT,
         "ITERATION_NUMBER": ITERATION_NUMBER,
         "SIZE_X": SIZE_X,
         "SIZE_Y": SIZE_Y,
-        "MAX_FITNESS": data["best_athlete"]["fitness"],
+        "TICK_INTERVAL": TICK_INTERVAL,
+        "MAX_FITNESS_GOTTEN": data["best_athlete"]["fitness"],
     })
 
     makeCasesImg(data["freq_matrice"], data["terrain_matrice"], 

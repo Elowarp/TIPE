@@ -1,4 +1,4 @@
-#!/media/Partage/Cours/TIPE/Code-TIPE/.venv/bin/python3.10
+#!/mnt/Partage/Cours/TIPE/Code/.venv/bin/python3
 # -*- coding: utf-8 -*-
 import re
 import sys

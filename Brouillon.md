@@ -626,7 +626,7 @@ Score lilou (Total 17.8):
 - C : 5.2
 - D : 4
 
-Générations :
+Générations (30-08-2023 16h31m49s):
 ![[Code/images/Génération comparaison lilou/constantes.png]]
 ![[Code/images/Génération comparaison lilou/freq&fitness.png]]
 ![[Code/images/Génération comparaison lilou/cases.png]]
@@ -639,3 +639,288 @@ Rmq :
 ### Done
 - Ajout du fichier des combos customs
 - Externalisation du terrain de Sofia
+
+Comment j'organise le diapo ?
+1. Définitions / Explication du sujet
+2. Ma solution
+	1. Utilisation de python
+	2. Algorithme génétique
+	3. Le modèle utilisé 
+		1. cad la représentation que j'ai choisi
+3. L'histoire
+	1. D'abord fait x générations
+	2. Trompé d'année pour faire mes comparaisons
+	3. Récupérations des données via vidéo/informations trouvable sur internet
+	4. Comparaison de ce que j'ai fait et de la représentation de la réalité via mon programme
+4. Le problème
+	1. Ca colle pas si bien à la réalité
+	2. Trop d'humanité dans le système de score
+	3. Infinité des figures
+	4. Aléatoire
+5. La conclusion
+	1. On peut se rapprocher (et encore faudrait tester avec une deuxieme athlete) de la réalité mais on ne peut malheureusement pas sortir du programme une technique infaillible pour gagner. Malgré les problèmes, on note que on sent dans ces données que ce qui prime le plus c'est de ne pas aller trop loin, et de changer bcp de type de mobilier (notamment pour les figures utilisant des bouts de murs) ce qui n'est pas trop éloigné de la réalité 
+6. Bibliographie
+
+# 19/09/2023
+Recherche d'un nouvel algorithme pour résoudre mon problème
+- [A*](https://fr.wikipedia.org/wiki/Algorithme_A*)
+	- Problème de l'algorithme : Impossible d'évaluer en temps réelle la totalité du score avant d'avoir atteint la fin, ce qui reviendrait à un parcours en force brute de toutes les possibilités
+- [Métaheuristique](https://fr.wikipedia.org/wiki/M%C3%A9taheuristique) est un type de programmation pour résoudre des pb qui s'inspire de la vie
+	- [Recuit Simulé](https://fr.wikipedia.org/wiki/Recuit_simul%C3%A9)(Ou Simulated Annealing)
+		- [[Simulated Annealing and Boltzmann Machines A Stochastic Approach to Combinatorial Optimization and Neural Computing (Emile H. L. Aarts, Jan Korst) (Z-Library).pdf]]
+		- Probablement celui voulu
+
+# 26/09/23
+- Faut expliquer PQ le score il marche pas bien
+- Pq j'ai choisi le génétique à la place du recuit ou quoi 
+# 03/10/23
+Pourquoi le score pose problème ? 
+- La façon de calculer le score : [[Code pointage 2019-2021.pdf]] ne se prête pas à la recherche d'une heuristique ou d'un plus court chemin. Le score est calculé sur un parcours total et non par partie (en tout cas pour la majorité)
+- La façon de juger : Hyper subjectif et impossible à faire dans le modèle étudié. La seule façon trouvée pour le prendre en compte : soit de l'aléatoire pondéré soit un coefficient de proportionnalité avec le niveau de l'athlète
+
+Répercussions sur les algorithmes possibles :
+- Impossible d'utiliser des algorithmes avec heuristiques (= l'art d'inventer, de faire des découvertes en résolvant des problèmes à partir de connaissances incomplètes) car impossible de connaitre le score avant la fin d'une run
+- Recherche alors tourné vers les algorithmes Métaheuristique (=résoudre des pb d'optimisation difficile pour lequel les méthodes classiques ne marchent pas), on veut pas la meilleure solution mais une solution approchée pour pouvoir ensuite en déduire des façon d'agir
+	- Les algorithmes stochastiques(=apprendre les caractéristiques d’un problème afin d’en trouver une approximation de la meilleure solution)
+		- Algorithme génétique (à population)
+			- L’algorithme sera considéré comme faisant partie de la classe des algorithmes évolutionnaires s’il manipule une population _via_ des _opérateurs_, selon un algorithme général donné. ![Wikipedia](https://fr.wikipedia.org/wiki/M%C3%A9taheuristique#%C3%89volutionnaire_ou_non) 
+			- S'inspire de la théorie de l'évolution pour résoudre des pb divers
+		- Algorithme du recuit (à population) X
+			- Dans cette classification, le recuit simulé occupe une place particulière, puisqu’on peut considérer qu’il échantillonne la fonction objectif en utilisant directement celle-ci comme distribution de probabilité (les meilleures solutions ayant une probabilité plus grande d’être tirées). Il n’est donc ni explicite ni implicite, mais plutôt « direct ». ![Wikipédia](https://fr.wikipedia.org/wiki/M%C3%A9taheuristique#Implicite,_explicite,_directe) 
+		- Colonie de fourmis (à population) X
+			- Résolution du pb du voyageur du commerce. Possibilité de l'utiliser car un chemin = une run et les run d'après utilisent ces mêmes runs pour faire de meilleurs scores
+			- "En effet, dans les problèmes combinatoires, il est possible que la meilleure solution finisse par être trouvée, alors même qu’aucune fourmi ne l’aura éprouvée effectivement. Ainsi, dans l’exemple du problème du voyageur de commerce, il n’est pas nécessaire qu’une fourmi parcoure effectivement le chemin le plus court : celui-ci peut être construit à partir des segments les plus renforcés des meilleures solutions. **Cependant, cette définition peut poser problème dans le cas des problèmes à variables réelles, où aucune structure du voisinage n’existe.**" ![Wikipédia](https://fr.wikipedia.org/wiki/Algorithme_de_colonies_de_fourmis#Une_d%C3%A9finition_difficile) 
+			- Problème avec la continuité des runs ?
+		- GRASP
+			- Création d'un chemin et modification petit à petit de ce chemin pour trouver le meilleur chemin (glouton + aléatoire)
+			- Problème de la continuité a travers le voisinage
+			- [[Optimization by GRASP Greedy Randomized Adaptive Search Procedures (Mauricio G.C. Resende, Celso C. Ribeiro (auth.)) (Z-Library).pdf]]
+
+# 17/10/2023
+## Plan d'attaque 
+1. Définitions / Explication du sujet
+2. Ma solution
+	1. Utilisation de python
+	2. Algorithme génétique
+	3. Le modèle utilisé 
+		1. cad la représentation que j'ai choisi
+3. L'histoire
+	1. D'abord fait x générations
+	2. Trompé d'année pour faire mes comparaisons
+	3. Récupérations des données via vidéo/informations trouvable sur internet
+	4. Comparaison de ce que j'ai fait et de la représentation de la réalité via mon programme
+4. Le problème
+	1. Ca colle pas si bien à la réalité
+	2. Trop d'humanité dans le système de score
+	3. Infinité des figures
+	4. Aléatoire
+5. La conclusion
+	1. On peut se rapprocher (et encore faudrait tester avec une deuxieme athlete) de la réalité mais on ne peut malheureusement pas sortir du programme une technique infaillible pour gagner. Malgré les problèmes, on note que on sent dans ces données que ce qui prime le plus c'est de ne pas aller trop loin, et de changer bcp de type de mobilier (notamment pour les figures utilisant des bouts de murs) ce qui n'est pas trop éloigné de la réalité 
+6. Bibliographie
+
+1. Introduction
+	1. Définitions utiles
+		1. Traceurs
+		2. Compétition
+	2. Problème posé : Comment améliorer ses chances de gagner une compétition de parkour ?
+		1. Résolution grâce à un modèle informatique
+2. Explication du modèle et des solutions
+	1. Modélisation de la réalité
+		1. Classes
+		2. Discrétisation du temps
+	2. Algorithme génétique
+		1. Fonctionnement d'un algorithme génétique
+		2. Application à notre problème
+		3. Question du scoring 
+			1. Comment noter le score ?
+			2. Comment appliquer cette notation dans le modèle ?
+			3. Les gros problèmes de cette façon de noter
+				1. L'appréciation des juges
+				2. Mouvements individuels
+	3. Résultats
+		1. Avoir des résultats c'est bien, pouvoir le comparer à quelque chose de concret c'est MIEUX !
+			1. Introduction de Lilou Ruel
+			2. Implémentation de son parcours dans le programme 
+				1. Problèmes rencontrés
+		2. Interprétation des résultats
+
+# 28-11-23
+
+Changement de plan !
+
+On utilise l'algo génétique en tant que sujet d'étude et le parkour n'est qu'une application 
+
+Il faut essayer de trouver des liens entres les parametres qu'on modifie et des papiers/recherches/etudes
+
+Voir les liens entre beauté/technicité etc
+
+Voir les statistiques que les points obtenues en fonctoin des classes de points 
+
+S'orienter vers les stats et l'algo génétique pour avoir un bon TIPE
+
+https://www.sciencedirect.com/science/article/pii/S0304397500004060?via%3Dihub
+
+# 5-12-23
+
+Lecture du lien précédent [[Theorry_Genetics.pdf]]
+
+Chaines de markov inhomogène (= en temps, seulement faisable en simulation informatique)
+
+> The crossover operation combined with fitness selection under no mutation shows a convergence effect for the algorithm, called genetic drift, which is not ergodic in nature, i.e., depends upon the initial population. See Section 7.5.
+
+> The crossover operation does not play a signi5cant role in the asymptotic behavior of genetic algorithms, if the mutation rate stays positive and5tness scalings such as unbounded power-law scaling are used. See Theorem 8.3.
+
+FAIRE AtTENTIOB AUX CROSSOVER (imgage telephone)
+
+# 12-12-23
+
+Mutation : force principale dans la phase de génération aléatoire d'un algorithme génétique
+
+Etude d'une grande variété de tests avec une grande mutation 
+https://link.springer.com/chapter/10.1007/3-540-61723-X_994
+
+OK 
+Faudra dire que l'on a fait comme les premiers documents, très peu de mutation et surtout un crossover, on va changer le crossover pour voir ce qu'il donne après, et ensuite tester une grande mutation 
+
+> GP is plagued by premature convergence. That is, GP populations often lose their ability to evolve before the problem is solved. Increasing the mutation rate makes the runs continue to evolve for about twice as long (Table 6)that is, a high mutation run maintans its ability to evolve for longer.
+
+J'ai mis la premiere version dans chromosomeV1 et je vais mettre la suivante suivant la photo dans chromosome V2
+
+les choses a changer : la mutation le crossover et la facon de repr
+
+Premiers tests avec Iteration à 10 pour un versus entre les deux représentations :
+Aucun changement niveau mutation et crossover niveau code, seulement repr des genes
+
+V1 execution 8xp 12-12-2023 16h39m20s
+	1m10 d'exécution + voir images
+
+V2 execution 8xp 12-12-2023 22h21h34s
+	1m47 d'exécutions + images similaires
+
+bon c'est pas mieux niveau perf
+
+/!\ Suppression du cas où l'athlète se blesse qui été basé sur aucune donnée
+
+# 19-12-2023
+
+> Put the crossover operation in proper perspective by showing:
+> ◦ The crossover operation assists mutation in the random generator phase of the algorithm by adding to the contraction process over the state space S. See Theorem 6.1.
+> ◦ The crossover operation *does not play* a significant role in the asymptotic behavior of genetic algorithms, if the mutation rate stays positive and fitness scalings such as unbounded power-law scaling are used. See Theorem 8.3.
+
+Theory de la génétique
+
+On a une étude qui nous dit que le crossover EST le facteur le plus important (cf abstract et introduction) et donc étudie surtout la mutation pour voir réelle l'effet et une theory de la génétique qui lui prouve que le crossover n'est pas un facteur prédominant selon certaines conditions
+
+C'est quoi le crossover :
+
+- Prends 2 chemins
+- On détecte 2 points communs et on swap les chemins entre ces deux là
+
+Score lilou avec le nouveau systeme :
+
+```text
+{'execution': {'safety': 2.4, 'flow': 3, 'mastery': 3.2}, 'composition': {'use_of_space': 1.0, 'use_of_obstacles': 1.0, 'connection': 3.2}, 'difficulty': {'variety': 1.0, 'single_trick': 0, 'whole_run': 4}}
+18.8
+```
+
+## TODO
+
+- Création d'un Protocole
+- Execution du protocole
+- Comparaison avec les données de l'étude
+
+# 24-12-2023
+
+Nouvelle problématique : Dans quelle mesure la mutation affecte-elle les solutions obtenues par un algorithme génétique par rapport aux croisements intergénérationnels, cela observée à travers l'exemple d'une compétition de  parkour ?
+
+## Présentation
+
+### Modèle / Hypothèse
+
+#### C'est quoi le parkour
+
+#### C'est quoi une compétition de parkour
+
+#### Comment on la représente
+
+#### Pourquoi avoir choisi l'algorithme génétique / Description de celui ci
+
+Problème de la notation
+
+#### But final
+
+Comparer les résultats que j'aurai obtenu à l'étude que j'ai choisie
+
+### Paramètres / données dont tu as besoin et pourquoi celles-ci
+
+#### Choix des figures
+
+#### Explication de la récolte du temps moyen de chaque figure
+
+#### Paramètre propre à l'étude (hypothèses utilisées)
+
+- Pour garder le nombre d'individus évolué pair entre la mutation et la crossover, on fait soit un crossover soit une mutation sur 2 individus à chaque fois qu'une opération génétique est faite
+- Dataset ??? Pas compris
+- Taille de la population 3000
+- Selection par tournois
+- Taille maximale par individus 256 instructions contre le nb de coup possible en 70s
+- Nombre total de run 10 aavec des seeds diff pour chaque paramètre
+- Variation de la mutation 5-20-50-80%
+
+- Notation de la fitness forcement différente entre l'étude et notre pb dû aux diff intrinsèque du problème
+- Généralisation avec entrainement/tests
+- Terminaison critère
+
+/!\ Le papier
+
+### Premiers résultats avec et sans crossover et les paramètres recommandées en général
+
+#### Comparaison avec un résultat en conditions réelles (Lilou Ruel)
+
+### Modification des paramètres selon l'étude
+
+### Analyse des données récoltées et confrontation avec les résultats de l'étude
+
+### Conclusion sur l'efficaticé de la mutation par rapport au crossover, ouverture sur les limites de ce modèle donnée par une dernière étude (théorie de l'algorithme génétique)
+
+# 30-12-2023
+
+On change de papier pcq l'autre est pas bon :
+https://www.egr.msu.edu/~kdeb/papers/k99003.pdf
+
+> Since the overall time to run a GA is more or less proportional to the number of function evaluations used, we set the number of function evaluations fixed for  all the GA runs. When such a bound on function evaluations is desired for comparing different GAs, most earlier GA parameter studies are not applicable, because in these cases GAs were run till complete population convergence. We feel that this study of comparing performance of different GAs for a fixed number of function evaluations is practical and useful from GA’s applicability in real-world scenarios
+
+Ce qui nous correspond : "Massive Multimodal" fonction vu qu'on a pas UN unique parcours qui amene au meilleur score
+
+Leur fonction est hyper bonne : y faire un commentaire
+
+### Les paramètres
+
+#### Selection
+
+Mating : Selection des parents qu'on va faire reproduire
+Crossover : Single point crossover (Ce qui est déjà le cas avec moi) probabilité pc
+Mutation clock operator : Impossible a mettre en place avec notre forme de mutation
+
+50 populations differentes de départ
+Zeta = La mersure de performance : Proportion de réussite le l'algo génétique d'obtenir un score proche de epsilon d'un score référence attribué comme score parfait
+
+S = nombre max d'execution de la fonction d'évaluation
+N = taille de la population
+T= S/N nombre de générations écoulées
+U = 1 - F/S = Proportion de fonction evaluation non utilisé (F le nombre de fonction d'évaluation utilisée)
+
+Solution au problème ?
+Comparaison au score maximal possible à avoir en fonction de l'exp 
+Calcule donne :
+$$M_{xp} =  3*xp/10 + 3 +4*xp/10 + 3 + 3 + 4*xp/10 + 3 + 3 + 4*xp/10 = 15 + 15*xp/10$$
+
+Soit pour une xp de 8 : 27
+
+/!\ Changement du scoring parce que des choses ne collait pas avec le reglement et changement en demi seconde
+Donc Lilou à maintenant un score de 25/30 comparé à 23/30 irl
+Et le max pour un gars avec une xp de 8 : 27
+
+Donc mon epsilon interval c'est +-1 autour de $M_{xp}$
+
+Multimodal pcq plusieurs solutions pour un résultat maximum

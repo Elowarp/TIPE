@@ -1,3 +1,4 @@
 data/*
 traitement/*
 logs/*
+.venv/*
