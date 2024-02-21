@@ -924,3 +924,6 @@ Et le max pour un gars avec une xp de 8 : 27
 Donc mon epsilon interval c'est +-0.5 autour de $M_{xp}$
 
 Multimodal pcq plusieurs solutions pour un résultat maximum
+
+# 21/02/24
+Voir pour tout mettre en str

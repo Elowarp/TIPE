@@ -489,7 +489,6 @@ if __name__ == "__main__":
     print(a.fitness)
 
     print("autre")
-    a = _AthleteChromosome(population[4].athlete)
     a.calc_fitness()
     print(a.fitness)
 
