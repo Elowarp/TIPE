@@ -1,7 +1,7 @@
 '''
  Name : Elowan
  Creation : 02-06-2023 10:59:30
- Last modified : 04-01-2024 22:06:24
+ Last modified : 21-02-2024 08:57:15
 '''
 import datetime
 import logging
@@ -36,7 +36,7 @@ def playAllGames(population:list):
         game.play()
 
 
-def logConstants(athleteLevel, athleteFigureFav):
+def logConstants(athleteLevel):
     """
     Log les constantes de l'algorithme
     """
@@ -46,7 +46,6 @@ def logConstants(athleteLevel, athleteFigureFav):
     # logging.debug("Crossover probability : {}".format(CROSSOVER_PROB))
     # logging.debug("Terminaison age : {}".format(TERMINAISON_AGE))
     logging.debug("Athlete level : {}".format(athleteLevel))
-    logging.debug("Athlete figure fav : {}".format(athleteFigureFav))
     logging.debug("Number of chromosomes to keep : {}".format(NUMBER_OF_CHROMOSOME_TO_KEEP))
     logging.debug("Initial position : {}".format(INITIAL_POSITION))
     logging.debug("Size of the field : {}".format((SIZE_X, SIZE_Y)))
@@ -56,7 +55,6 @@ def logConstants(athleteLevel, athleteFigureFav):
 if __name__ == "__main__":
     # seed(24) # Pour avoir des résultats reproductibles
     athleteLevel = 8
-    athleteFigureFav = FIGURES["frontflip"]
     dirnameSaves = "{}xp/{}".format(athleteLevel, 
                                       datetime.datetime.now()
                                       .strftime("%d-%m-%Y %Hh%Mm%Ss"))
@@ -66,7 +64,6 @@ if __name__ == "__main__":
                     format='%(asctime)s - %(levelname)s - %(message)s',
                     datefmt='%d-%m-%Y %H:%M:%S',
                     filename='logs/Main - {}.txt'.format(str(athleteLevel) + "xp - "
-                                             + str(athleteFigureFav) + " - "
                                              + datetime.datetime.now()
                                              .strftime("%d-%m-%Y %H:%M:%S")),
                     filemode='w')
@@ -78,7 +75,7 @@ if __name__ == "__main__":
     console.setFormatter(formatter)
     logging.getLogger('').addHandler(console)
 
-    logConstants(athleteLevel, athleteFigureFav)
+    logConstants(athleteLevel)
 
     total_time = datetime.timedelta(0)
 
@@ -87,6 +84,12 @@ if __name__ == "__main__":
         450, 700, 1000, 1400, 1800, 2000]
     PROBS_C = [0.0, 0.0, 0.0, 0.9, 0.9]
     PROBS_M = [0.1, 0.5, 1.0, 0.0, 0.1]
+
+    # Valeurs tests
+    # POPULATIONS = [200]
+    # PROBS_C = [1.0]
+    # PROBS_M = [0.05]
+    # ITERATION_NUMBER = 4
     
     count = 0
     total = len(POPULATIONS)*len(PROBS_C)*ITERATION_NUMBER
@@ -108,7 +111,7 @@ if __name__ == "__main__":
                 
                 # population_number de fois le meme athlete 
                 population = [AthleteChromosome(
-                                Athlete(athleteLevel, athleteFigureFav)) 
+                                Athlete(athleteLevel)) 
                             for _ in range(population_number)]
                 
                 playAllGames(population)
@@ -133,7 +136,7 @@ if __name__ == "__main__":
 
                 parkourGenetic = GeneticAlgorithm(population, term, evaluate, 
                                                 selection, cross, mut, s,
-                                                "data/study/{}".format(dirnameSaves))
+                                                "data/{}".format(dirnameSaves))
                 
                 def iterate(population):
                     # getBestAthlete(population)

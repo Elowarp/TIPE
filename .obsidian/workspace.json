@@ -35,9 +35,11 @@
             "id": "e8d1295c96b1de74",
             "type": "leaf",
             "state": {
-              "type": "release-notes",
+              "type": "markdown",
               "state": {
-                "currentVersion": "1.5.3"
+                "file": "MCOT.md",
+                "mode": "source",
+                "source": false
               }
             }
           }

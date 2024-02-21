@@ -1,14 +1,14 @@
 '''
  Name : Elowan
  Creation : 30-08-2023 15:03:52
- Last modified : 31-12-2023 12:48:47
+ Last modified : 13-02-2024 16:34:57
 '''
 from Models import Athlete, FIGURES
 from Terrain import Field
 from main import AthleteChromosome
 
 # Lilou Ruel
-lilou = Athlete(8, FIGURES["gaet_flip"])
+lilou = Athlete(8)
 lilou.combos = [
     ((7, 31), FIGURES["double_cork"], 0),
     ((7, 31), FIGURES["jump"], 4),

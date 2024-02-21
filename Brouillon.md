@@ -921,6 +921,6 @@ Soit pour une xp de 8 : 27
 Donc Lilou à maintenant un score de 25/30 comparé à 23/30 irl
 Et le max pour un gars avec une xp de 8 : 27
 
-Donc mon epsilon interval c'est +-1 autour de $M_{xp}$
+Donc mon epsilon interval c'est +-0.5 autour de $M_{xp}$
 
 Multimodal pcq plusieurs solutions pour un résultat maximum

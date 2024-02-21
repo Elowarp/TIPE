@@ -1,4 +1,4 @@
-from random import randint
+from random import randint, seed
 import logging
 
 from Terrain import FIGURES
@@ -12,6 +12,7 @@ from consts import POPULATION_NUMBER,\
 import json
 import os
 import logging
+from Game import Game
 
 class AthleteChromosome(Chromosome):
     """
@@ -20,11 +21,19 @@ class AthleteChromosome(Chromosome):
 
         Params:
             athlete (Athlete): Athlète représenté par le chromosome
-    """
+    """    
     def __init__(self, athlete):
         self.athlete = athlete
         self.genes = from_combo_to_string(athlete.combos)
-        self.detailedFitness = {
+        # self.detailedFitness = AthleteChromosome.BaseFitness
+        self.detailedFitness = {}
+
+        super().__init__(self.genes, self.calc_fitness(), 
+                         0, len(self.genes))
+        
+    def calc_fitness(self) -> int:
+        """Calcule le score de l'athlète"""
+        score =  {
             "execution": {
                 "safety": 3,
                 "flow": 0,
@@ -41,13 +50,7 @@ class AthleteChromosome(Chromosome):
                 "whole_run": 0,
             },
         }
-
-        super().__init__(self.genes, self.calc_fitness(), 
-                         0, len(self.genes))
-        
-    def calc_fitness(self) -> int:
-        """Calcule le score de l'athlète"""
-        score = self.detailedFitness
+        self.genes = from_combo_to_string(self.athlete.combos)
 
         # Liste des figures faites
         nb_figure = len(self.genes)//6
@@ -58,6 +61,8 @@ class AthleteChromosome(Chromosome):
             (int(self.genes[6*i:6*i+2]), int(self.genes[6*i+2: 6*i+4]))) 
             for i in range(nb_figure)]
         
+        # print(tricks)
+        # print(cases)
 
         # Calcul de la sureté des figures
         # On coefficiente la sureté par l'xp de l'athlète
@@ -126,7 +131,8 @@ class AthleteChromosome(Chromosome):
 
         if self.fitness < 0:
             self.fitness = 0
-            
+        
+        # print(self.fitness)
         return self.fitness
     
     def __repr__(self) -> str:
@@ -178,7 +184,7 @@ def crossover_base(parents:list) -> list:
     for i in range(POPULATION_NUMBER):
         # Selectionne un parent sur 10 (modulo)
         parent = parents[i % 10]
-        child = Athlete(parent.athlete.xp, parent.athlete.figureFav)
+        child = Athlete(parent.athlete.xp)
         child.combos = parent.athlete.combos
         child.setField(parent.athlete.field)
         childChro = AthleteChromosome(child)
@@ -186,7 +192,7 @@ def crossover_base(parents:list) -> list:
         children.append(childChro)
     return children
 
-def get_point_communs(a1, a2) -> (int, int):
+def get_point_communs(a1, a2) -> tuple[int, int]:
     """
     Renvoie les indices où les deux athlètes sont au même point dans leur course,
     différent de (0, 0).
@@ -220,7 +226,7 @@ def crossover_ameliore(parents: list, probs) -> list:
         children (AthleteChromosome list): liste d'athlètes enfants
     """
     children = []   
-    CROSSOVER_PROB, MUTATION_PROB = probs
+    CROSSOVER_PROB, _ = probs
 
     for i in range(len(parents)):
         for j in range(len(parents)):
@@ -232,38 +238,41 @@ def crossover_ameliore(parents: list, probs) -> list:
                 if c1 != -1 and c2 != -1\
                     and randint(0, 100)/100 < CROSSOVER_PROB:
 
-                    child1 = Athlete(parents[i].athlete.xp, 
-                                     parents[i].athlete.figureFav)
+                    # Premier enfant, avec un premier croisement des combos
+                    child1 = Athlete(parents[i].athlete.xp)
                     child1.combos = parents[i].athlete.combos[:c1] +\
                                      parents[j].athlete.combos[c2:]
                     child1.setField(parents[i].athlete.field)
-                    childChro = AthleteChromosome(child1)
-                    childChro.age = parents[i].age + 1
-                    children.append(childChro)
+                    childChro1 = AthleteChromosome(child1)
+                    childChro1.age = parents[i].age + 1
+                    children.append(childChro1)
                     
-                    child2 = Athlete(parents[j].athlete.xp, 
-                                     parents[j].athlete.figureFav)
+                    # Deuxieme enfant, avec le croisement complémentaire au premier
+                    child2 = Athlete(parents[j].athlete.xp)
                     child2.combos = parents[j].athlete.combos[:c2] +\
                                      parents[i].athlete.combos[c1:]
                     child2.setField(parents[j].athlete.field)
-                    childChro = AthleteChromosome(child1)
-                    childChro.age = parents[j].age + 1
-                    children.append(childChro)
-                    continue
+                    childChro2 = AthleteChromosome(child2)
+                    childChro2.age = parents[j].age + 1
+                    children.append(childChro2)
+                    
+            else:
+                # Premier enfant, copie littérale du parent
+                child = Athlete(parents[i].athlete.xp)
+                child.combos = parents[i].athlete.combos
+                child.setField(parents[i].athlete.field)
+                
+                childChro = AthleteChromosome(child)
+                childChro.age = parents[i].age + 1
+                children.append(childChro)
 
-            child = Athlete(parents[i].athlete.xp, parents[i].athlete.figureFav)
-            child.combos = parents[i].athlete.combos
-            child.setField(parents[i].athlete.field)
-            childChro = AthleteChromosome(child)
-            childChro.age = parents[i].age + 1
-            children.append(childChro)
-
-            child = Athlete(parents[j].athlete.xp, parents[j].athlete.figureFav)
-            child.combos = parents[j].athlete.combos
-            child.setField(parents[j].athlete.field)
-            childChro = AthleteChromosome(child)
-            childChro.age = parents[j].age + 1
-            children.append(childChro)
+                # Second enfant, idem
+                child = Athlete(parents[j].athlete.xp)
+                child.combos = parents[j].athlete.combos
+                child.setField(parents[j].athlete.field)
+                childChro = AthleteChromosome(child)
+                childChro.age = parents[j].age + 1
+                children.append(childChro)
 
     return children
 
@@ -280,7 +289,7 @@ def mutation(population:list, probs) -> list:
         children (AthleteChromosome list): liste d'athlètes enfants
     """
     children = []
-    CROSSOVER_PROB, MUTATION_PROB = probs
+    _, MUTATION_PROB = probs
 
     for athleteChromosome in population:
         # Mutation
@@ -308,6 +317,8 @@ def termination(population:list, infos) -> bool:
     Returns:
         (bool): True si l'algorithme doit s'arrêter, False sinon
     """
+    # return infos["generationCount"] > 400 or \
+    #     MAX_SCORE(population[0].athlete.xp) - EPS < infos["maxPopulationFitness"]
     return infos["generationCount"] > infos["terminaison_age"] or \
         MAX_SCORE(population[0].athlete.xp) - EPS < infos["maxPopulationFitness"]
 
@@ -355,7 +366,8 @@ def from_string_to_combos(genes: str) -> list:
         combos.append(
             (
                 (int(genes[6*i: 6*i+2]), int(genes[6*i+2: 6*i+4])),
-                Figure.figures[int(genes[6*i+4: 6*i+6])]
+                Figure.figures[int(genes[6*i+4: 6*i+6])],
+                -1
             )
         )
 
@@ -399,7 +411,6 @@ def save(self, probs, population_number, infos):
         
     athleteSerialized = {
         "xp": self.population[0].athlete.xp,
-        "FigureFav": self.population[0].athlete.figureFav.id, 
         "InitialPosition": INITIAL_POSITION,  
     }
 
@@ -445,3 +456,41 @@ def save(self, probs, population_number, infos):
         json.dump(data, f)
 
     logging.debug("Data saved in {}.json".format(self.filename))
+
+if __name__ == "__main__":
+    # seed(0)
+    
+    population_number = 8
+    population = [AthleteChromosome(Athlete(8)) 
+                for _ in range(population_number)]
+    
+    Game.resetGames()
+
+    for athleteChromosome in population:
+        game = Game(athleteChromosome.athlete)
+        game.play()
+
+    # Genes de score 27 normalement
+    genes = [[[7, 30], 2, -1], [[8, 31], 7, -1], [[7, 32], 1, -1], [[8, 33], 7, -1], [[8, 34], 2, -1], [[8, 35], 7, -1], [[8, 36], 5, -1], [[8, 35], 7, -1], [[9, 36], 5, -1], [[9, 37], 17, -1], [[8, 37], 2, -1], [[8, 36], 16, -1], [[7, 37], 9, -1], [[8, 38], 5, -1], [[9, 39], 5, -1], [[8, 39], 17, -1], [[7, 39], 1, -1], [[6, 38], 1, -1], [[5, 39], 10, -1], [[6, 38], 10, -1], [[6, 37], 8, -1], [[5, 38], 6, -1], [[4, 37], 2, -1], [[5, 36], 13, -1], [[6, 36], 8, -1]]
+    genes_2 = []
+    for coords, fig, tick in genes:
+        genes_2.append(((coords[0], coords[1]), Figure.getFigureById(fig), tick))
+
+    print(from_combo_to_string(genes_2))
+
+    s = from_combo_to_string(genes_2)
+    g = from_string_to_combos(s)
+
+    print("Echange string <-> combo bijectif (sans ticks) ? "+str(g==genes_2))
+    population[4].athlete.combos = genes_2
+
+    a = AthleteChromosome(population[4].athlete)
+    a.calc_fitness()
+    print(a.fitness)
+
+    print("autre")
+    a = _AthleteChromosome(population[4].athlete)
+    a.calc_fitness()
+    print(a.fitness)
+
+    print("Is success : ", is_success(population))

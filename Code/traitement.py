@@ -1,12 +1,13 @@
 '''
  Name : Elowan
  Creation : 23-06-2023 10:35:11
- Last modified : 04-01-2024 22:16:01
+ Last modified : 20-02-2024 15:56:29
 '''
 
 from json import dump, load
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.ticker as mticker
 import matplotlib.patches as mpatches
 from matplotlib.transforms import Bbox
 import matplotlib as mpl
@@ -27,7 +28,6 @@ def unserializeJson(filename):
     {
         athlete : {
             xp,
-            FigureFav
         },
         field : {
             case: [[Case, Case], [Case, Case]],
@@ -53,7 +53,6 @@ def unserializeJson(filename):
         parsed_data = {
             "athlete": {
                 "xp": data["athlete"]["xp"],
-                "FigureFav": Figure.getFigureById(data["athlete"]["FigureFav"])
             },
             "field": {
                 "cases": [],
@@ -278,7 +277,7 @@ def analyseFolder(foldername):
         },
         "athlete": {},
         "nb_executions": file_number,
-        "performance": 0
+        "performance": 0,
     }
 
     fitness_temp = []
@@ -311,6 +310,11 @@ def analyseFolder(foldername):
         data["count"] = file_data["count"]
         data["athlete"] = file_data["athlete"]
 
+        # Valeurs sans cohérence face aux exécutions
+        data["population_size"] = -1
+        data["crossover_prob"] = -1
+        data["mutation_prob"] = -1
+        data["terminaison_age"] = -1
 
         # Meilleur athlète
         if file_data["best_athlete"]["fitness"] > data["best_athlete"]["fitness"]:
@@ -552,12 +556,12 @@ def main(path=None, data=None):
     makeFreqImg(data["athlete"], data["figures"], data["count"],
                 data["nb_generations"], filename, data["nb_executions"])
     
-    perf = " performance {}%".format(data["performance"]*100) if "performance" in data.keys() \
+    perf = " performance {}%".format(round(data["performance"]*100,2)) if "performance" in data.keys() \
         else " succès ? {}".format(data["is_success"])
 
-    name = "{}xp, {}, {} générations/exécution en moy, {} individus/génération ({} exécutions)"\
+    name = "{}xp, {} générations/exécution en moy, {} individus/génération ({} exécutions)"\
         .format(
-            data["athlete"]["xp"], data["athlete"]["FigureFav"], 
+            data["athlete"]["xp"], 
             round(data["nb_generations"]), data["population_size"],
             data["nb_executions"]
         )
@@ -573,7 +577,6 @@ def main(path=None, data=None):
     
     constListImage(filename=filename, const_dict={
         "ATHLETE_XP": data["athlete"]["xp"],
-        "ATHLETE_FIG_FAV": data["athlete"]["FigureFav"],
         #"FIGURES": data["figures"],
         # "POPULATION_NUMBER": POPULATION_NUMBER,
         "MUTATION_PROB": MUTATION_PROB,
@@ -597,12 +600,88 @@ def main(path=None, data=None):
 
     logging.info("Traitement terminé (en {})!\n".format(
         datetime.datetime.now()-start_time))
+    
+def analyseStudy(foldername):
+    """
+    Analyse et création des images pour la comparaison avec l'étude
+    """
+    # Récupération des noms des fichiers
+    filenames = [f for f in os.listdir(foldername) if os.path.isfile(os.path.join(foldername, f))]
+    filenames.sort(key=lambda x : int(x.split(".")[0]))
+
+    # perfs = {
+    #   p_c-p_m-population_size : [0, 1, 1, 0] (0 pour non succès, 1 pour succès)
+    # }
+    # 
+
+    perfs = {}
+
+    def pc_pmToString(file_data):
+        pc = file_data["crossover_prob"]
+        pm = file_data["mutation_prob"]
+        popu = file_data["population_size"]
+        return "{}-{}-{}".format(pc, pm, popu)
+
+    # Analyse de chaque fichier
+    count = 0
+    for filename in filenames:
+        # Analyse du fichier
+        file_data = analyse(os.path.join(foldername, filename))
+        
+        category = pc_pmToString(file_data)
+        if category not in perfs:
+            perfs[category] = []
+
+        perfs[category].append(1 if file_data["is_success"] else 0)
+
+        count += 1
+        logging.info("Analyse de {} terminée ({}%)".format(filename,
+            round((count/len(filenames))*100, 2)))
+        
+    POPULATIONS = [2, 5, 10, 20, 35, 60, 100, 200, 300,
+       450, 700, 1000, 1400, 1800, 2000]
+    PROBS_C = [0.0, 0.0, 0.0, 0.9, 0.9]
+    PROBS_M = [0.1, 0.5, 1.0, 0.0, 0.1]
+    
+    # perfsFinales = {
+    #     "pc-pm": [float]
+    # }
+    perfsFinales = {}
+
+    for pc, pm in zip(PROBS_C, PROBS_M):
+        perfsFinales["{}-{}".format(pc, pm)] = []
+        for popu in POPULATIONS:
+            perf = 0
+            for success in perfs["{}-{}-{}".format(pc, pm, popu)]:
+                perf += success
+            perf /= ITERATION_NUMBER
+
+            perfsFinales["{}-{}".format(pc, pm)].append(perf)
+
+    print(perfsFinales)
+
+    for key, value in perfsFinales.items():
+        pc, pm = key.split("-")
+        plt.plot(POPULATIONS, value, label="p_c = {}; p_m = {}".format(pc, pm))
+
+    plt.legend()
+    plt.xlabel("Taille de la population")
+    plt.ylabel("Performances")
+    plt.ylim((0, 1))
+    plt.xscale('log')
+    ax = plt.gca()
+    ax.xaxis.set_major_formatter(mticker.ScalarFormatter())
+    ax.set_xticks([2, 10, 100, 500, 1000, 2000])
+    plt.xlim((2, 2000))
+    plt.savefig("traitement/study/performances.png",dpi=100)
+    plt.close()
+
 
 if __name__ == "__main__":
     # filename = "6xp_frontflip/0.json"
     # main(filename)
 
-    folder = "10xp/29-08-2023 18h16m09s/"
+    # folder = "10xp/29-08-2023 18h16m09s/"
 
     # Afficher les logs dans un fichier
     logging.basicConfig(level=logging.DEBUG, 
@@ -621,5 +700,7 @@ if __name__ == "__main__":
     console.setFormatter(formatter)
     logging.getLogger('').addHandler(console)
 
-    data = analyseFolder("data/" + folder)
-    main(path=folder+"/all", data=data)
+    # data = analyseFolder("data/" + folder)
+    # main(path=folder+"/all", data=data)
+
+    analyseStudy("data/study/8xp/05-01-2024 09h47m15s/")

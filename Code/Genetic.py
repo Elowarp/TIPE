@@ -1,7 +1,7 @@
 '''
  Name : Elowan
  Creation : 08-06-2023 10:00:40
- Last modified : 12-12-2023 17:03:31
+ Last modified : 20-02-2024 16:14:57
 '''
 import random 
 
@@ -70,12 +70,13 @@ class GeneticAlgorithm:
                 ?callback (function (GeneticAlgorithm): None): fonction qui s'execute à la fin de
                     l'algorithme (Prend en paramètre l'instance de l'algorithme génétique et renvoie None)
         """
+        self.population = self.evaluate(self.population)
         while not self.termination(self.population):
             iteration(self.population)
-            self.population = self.evaluate(self.population)
             self.population = self.selection(self.population)
             self.population = self.crossover(self.population)
             self.population = self.mutation(self.population)
+            self.population = self.evaluate(self.population)
 
             # Sauvegarde des données pour la sérialisation
             self.populationOverTime.append(self.population)
@@ -192,11 +193,13 @@ if __name__ == "__main__":
 
         print("Current best : {}".format(population[best].fitness))
 
+    def save(population): pass
+
     populationChromosome = [ OneMaxChromosome([ random.randint(0, 1) 
                                                for x in range(1000) ]) 
                             for y in range(100) ]
     OneMaxProblem = GeneticAlgorithm(populationChromosome, termination, evaluate,
-                            selection, crossover, mutation)
+                            selection, crossover, mutation, save)
     
     OneMaxProblem.run(iteration)
 

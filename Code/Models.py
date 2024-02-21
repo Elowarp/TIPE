@@ -1,7 +1,7 @@
 '''
  Name : Elowan
  Creation : 02-06-2023 11:00:02
- Last modified : 12-12-2023 22:29:03
+ Last modified : 13-02-2024 16:37:48
 '''
 from random import choice
 from utils import weighted_random
@@ -36,10 +36,9 @@ class Figure:
 class Athlete: 
     instanceCount = 0
 
-    def __init__(self, xp, figureFav):
+    def __init__(self, xp):
         self.id = self.instanceCount
         self.xp = xp
-        self.figureFav = figureFav
         self.combos = []                        # ((x, y), Figure, tickStarted)
         self.position = (0, 0)                  # Coordonnées en (x, y)
         self.state = {                          # Etat de l'athlete 
@@ -231,8 +230,8 @@ class Athlete:
         self.field = field
 
     def __repr__(self) -> str:
-        return "{} :\n    - xp : {}\n    - figure fav : {}\n    - Combos : {}".format(
-            self.id, self.xp, self.figureFav.name, self.combos
+        return "{} :\n    - xp : {}\n    - Combos : {}".format(
+            self.id, self.xp, self.combos
         )
 
 FIGURES = {
