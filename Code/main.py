@@ -1,21 +1,22 @@
 '''
  Name : Elowan
  Creation : 02-06-2023 10:59:30
- Last modified : 21-02-2024 08:57:15
+ Last modified : 16-03-2024 21:49:59
 '''
 import datetime
 import logging
+from multiprocessing import Process
 
 from Terrain import FIGURES
-# from chromosomeV1 import *
 from chromosomeV2 import *
 from Models import Athlete
 from Game import Game
 from Genetic import GeneticAlgorithm
-import traitement
-from consts import NB_EVAL_MAX, MUTATION_PROB, CROSSOVER_PROB,\
+from traitement import analyseStudy, analyseFolder, createStats
+from consts import NB_EVAL_MAX, PROBS_C, PROBS_M,\
     ITERATION_NUMBER, NUMBER_OF_CHROMOSOME_TO_KEEP,\
-    INITIAL_POSITION, MAX_TICK_COUNT, SIZE_X, SIZE_Y
+    INITIAL_POSITION, MAX_TICK_COUNT, SIZE_X, SIZE_Y,\
+    POPULATIONS
 
 #########
 # Algorithme génétique
@@ -40,11 +41,7 @@ def logConstants(athleteLevel):
     """
     Log les constantes de l'algorithme
     """
-    # logging.debug("Population number : {}".format(POPULATION_NUMBER))
     logging.debug("Iteration number : {}".format(ITERATION_NUMBER))
-    # logging.debug("Mutation probability : {}".format(MUTATION_PROB))
-    # logging.debug("Crossover probability : {}".format(CROSSOVER_PROB))
-    # logging.debug("Terminaison age : {}".format(TERMINAISON_AGE))
     logging.debug("Athlete level : {}".format(athleteLevel))
     logging.debug("Number of chromosomes to keep : {}".format(NUMBER_OF_CHROMOSOME_TO_KEEP))
     logging.debug("Initial position : {}".format(INITIAL_POSITION))
@@ -52,45 +49,7 @@ def logConstants(athleteLevel):
     logging.debug("Max tick count : {}".format(MAX_TICK_COUNT))
 
 
-if __name__ == "__main__":
-    # seed(24) # Pour avoir des résultats reproductibles
-    athleteLevel = 8
-    dirnameSaves = "{}xp/{}".format(athleteLevel, 
-                                      datetime.datetime.now()
-                                      .strftime("%d-%m-%Y %Hh%Mm%Ss"))
-
-    # Initialisation des logs
-    logging.basicConfig(level=logging.DEBUG, 
-                    format='%(asctime)s - %(levelname)s - %(message)s',
-                    datefmt='%d-%m-%Y %H:%M:%S',
-                    filename='logs/Main - {}.txt'.format(str(athleteLevel) + "xp - "
-                                             + datetime.datetime.now()
-                                             .strftime("%d-%m-%Y %H:%M:%S")),
-                    filemode='w')
-    
-    # Affichage dans la console
-    console = logging.StreamHandler()
-    console.setLevel(logging.INFO)
-    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-    console.setFormatter(formatter)
-    logging.getLogger('').addHandler(console)
-
-    logConstants(athleteLevel)
-
-    total_time = datetime.timedelta(0)
-
-    # Probabilités utilisées dans l'étude
-    POPULATIONS = [2, 5, 10, 20, 35, 60, 100, 200, 300,
-        450, 700, 1000, 1400, 1800, 2000]
-    PROBS_C = [0.0, 0.0, 0.0, 0.9, 0.9]
-    PROBS_M = [0.1, 0.5, 1.0, 0.0, 0.1]
-
-    # Valeurs tests
-    # POPULATIONS = [200]
-    # PROBS_C = [1.0]
-    # PROBS_M = [0.05]
-    # ITERATION_NUMBER = 4
-    
+def process(POPULATIONS, iteration):
     count = 0
     total = len(POPULATIONS)*len(PROBS_C)*ITERATION_NUMBER
 
@@ -125,12 +84,13 @@ if __name__ == "__main__":
                     "maxPopulationFitness": 0,
                     "maxAge": 0,
                     "generationCount": 0,
-                    "terminaison_age": NB_EVAL_MAX/population_number
+                    "terminaison_age": NB_EVAL_MAX/population_number,
+                    "start_filenumber": iteration*total
                 }
 
                 # Ajout de paramètres supplémentaires
                 def term(pop): return termination(pop, infos)
-                def cross(pop): return crossover_ameliore(pop, probs)
+                def cross(pop): return crossover(pop, probs)
                 def mut(pop): return mutation(pop, probs)
                 def s(pop): return save(pop, probs, population_number, infos)
 
@@ -157,13 +117,59 @@ if __name__ == "__main__":
                 logging.debug("\nMeilleur athlète de la dernière génération: {}".format(evaluate(parkourGenetic.population)[0]))
                 logging.info("Temps d'execution : {}".format(datetime.datetime.now() - start_time))
 
-                traitement.main(parkourGenetic.getDirname() + "/" + 
+                createStats(parkourGenetic.getDirname() + "/" + 
                                 parkourGenetic.getFilename() + ".json")
-                        
-                total_time += datetime.datetime.now() - start_time
+                                        
+    return parkourGenetic
 
-    data = traitement.analyseFolder(parkourGenetic.getDirname())
-    traitement.main(path="{}/all".format(parkourGenetic.getDirname()), data=data)
+
+if __name__ == "__main__":
+    # seed(24) # Pour avoir des résultats reproductibles
+    athleteLevel = 8
+    dirnameSaves = "{}xp/{}".format(athleteLevel, 
+                                      datetime.datetime.now()
+                                      .strftime("%d-%m-%Y %Hh%Mm%Ss"))
     
-    logging.info("Temps d'execution total : {} pour {} itérations".format(
-        total_time, ITERATION_NUMBER))
+    dirs = "data/{}".format(dirnameSaves)
+
+    # Initialisation des logs
+    logging.basicConfig(level=logging.DEBUG, 
+                    format='%(asctime)s - %(levelname)s - %(message)s',
+                    datefmt='%d-%m-%Y %H:%M:%S',
+                    filename='logs/Main - {}.txt'.format(str(athleteLevel) + "xp - "
+                                             + datetime.datetime.now()
+                                             .strftime("%d-%m-%Y %H:%M:%S")),
+                    filemode='w')
+    
+    # Affichage dans la console
+    console = logging.StreamHandler()
+    console.setLevel(logging.INFO)
+    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+    console.setFormatter(formatter)
+    logging.getLogger('').addHandler(console)
+
+    logConstants(athleteLevel)
+
+
+    # Multi-Processing pour accélérer le temps d'exécution
+    processes = []
+    init_time = datetime.datetime.now()    
+
+    for i in range(len(POPULATIONS)):
+        args = (POPULATIONS[i:i+1], i)
+        p = Process(target=process, args=args)
+        p.start()
+        processes.append(p)
+
+    for p in processes:
+        p.join()
+    
+    # Analyse du dossier (moyenne sur toutes les itérations)
+    data = analyseFolder(dirs)
+    createStats(path="{}/all".format(dirs), data=data)
+    # Dessine un graphe semblable à l'étude
+    analyseStudy(dirnameSaves)
+    
+
+    logging.info("Temps d'execution total : {}".format(
+        (datetime.datetime.now() - init_time)))

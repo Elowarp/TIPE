@@ -1,7 +1,7 @@
 '''
  Name : Elowan
  Creation : 23-06-2023 10:35:11
- Last modified : 20-02-2024 15:56:29
+ Last modified : 16-03-2024 22:30:33
 '''
 
 from json import dump, load
@@ -19,8 +19,8 @@ from Models import Figure, FIGURES
 from Terrain import Case
 
 from consts import SIZE_X, SIZE_Y, NUMBER_OF_CHROMOSOME_TO_KEEP,\
-    POPULATION_NUMBER, MUTATION_PROB, CROSSOVER_PROB,\
-    INITIAL_POSITION, MAX_TICK_COUNT, ITERATION_NUMBER, TICK_INTERVAL
+    POPULATIONS, PROBS_M, PROBS_C, INITIAL_POSITION,\
+    MAX_TICK_COUNT, ITERATION_NUMBER, TICK_INTERVAL
 
 def unserializeJson(filename):
     """
@@ -338,18 +338,6 @@ def analyseFolder(foldername):
 
     data["fitness"] = np.array(data["fitness"])
 
-    # Moyenne de toutes les fitness détaillées par exécution
-    # de l'algorithme génétique
-    # for key, value in detailed_fitness_temp.items():
-    #     max_size = max(len(x) for x in value)
-    #     print(key, value)
-    #     for i in range(max_size):
-    #         moy_cur_fitness = [x[i] for x in value if len(x) > i] 
-    #         detailed_fitness_temp[key][i] = sum(moy_cur_fitness)/len(moy_cur_fitness)
-
-    # data["detailed_fitness"] = detailed_fitness_temp
-    
-
     # Moyenne par génération
     data["fitness_moy"] = [sum(data["fitness"][i:i+NUMBER_OF_CHROMOSOME_TO_KEEP])
                     /NUMBER_OF_CHROMOSOME_TO_KEEP
@@ -529,7 +517,19 @@ def constListImage(filename, const_dict):
     plt.close()
     
 
-def main(path=None, data=None):
+def createStats(path=None, data=None):
+    """
+    Crée les images statistiques à partir d'un fichier ou de données fournies.
+    
+    Args:
+        path (str, optional): Le chemin du fichier à analyser. 
+            Si non spécifié, les données doivent être fournies.
+        data (dict, optional): Les données à analyser. 
+            Si non spécifié, le fichier sera analysé en utilisant le chemin spécifié.
+    
+    Returns:
+        None: Cette fonction ne retourne aucune valeur.
+    """
     if path is None and data is None:
         logging.error("Veuillez entrer un nom de fichier ou des données à analyser.")
         return
@@ -577,9 +577,6 @@ def main(path=None, data=None):
     
     constListImage(filename=filename, const_dict={
         "ATHLETE_XP": data["athlete"]["xp"],
-        #"FIGURES": data["figures"],
-        # "POPULATION_NUMBER": POPULATION_NUMBER,
-        "MUTATION_PROB": MUTATION_PROB,
         "CROSSOVER_PROB": data["crossover_prob"],
         "MUTATION_PROB": data["mutation_prob"],
         "POPULATION_SIZE": data["population_size"],
@@ -605,15 +602,20 @@ def analyseStudy(foldername):
     """
     Analyse et création des images pour la comparaison avec l'étude
     """
+    dataFolder = "data/"+foldername
+
     # Récupération des noms des fichiers
-    filenames = [f for f in os.listdir(foldername) if os.path.isfile(os.path.join(foldername, f))]
+    filenames = [f for f in os.listdir(dataFolder) 
+                 if os.path.isfile(os.path.join(dataFolder, f))]
     filenames.sort(key=lambda x : int(x.split(".")[0]))
 
+    # Construction du dictionnaire : 
     # perfs = {
-    #   p_c-p_m-population_size : [0, 1, 1, 0] (0 pour non succès, 1 pour succès)
+    #   p_c-p_m-population_size : [0, 1, 1, 0] 
+    #       (0 pour un échec, 1 pour un succès)
+    #       Longueur = Nombre d'executions
     # }
     # 
-
     perfs = {}
 
     def pc_pmToString(file_data):
@@ -626,7 +628,7 @@ def analyseStudy(foldername):
     count = 0
     for filename in filenames:
         # Analyse du fichier
-        file_data = analyse(os.path.join(foldername, filename))
+        file_data = analyse(os.path.join(dataFolder, filename))
         
         category = pc_pmToString(file_data)
         if category not in perfs:
@@ -637,32 +639,32 @@ def analyseStudy(foldername):
         count += 1
         logging.info("Analyse de {} terminée ({}%)".format(filename,
             round((count/len(filenames))*100, 2)))
-        
-    POPULATIONS = [2, 5, 10, 20, 35, 60, 100, 200, 300,
-       450, 700, 1000, 1400, 1800, 2000]
-    PROBS_C = [0.0, 0.0, 0.0, 0.9, 0.9]
-    PROBS_M = [0.1, 0.5, 1.0, 0.0, 0.1]
     
+    # Construction du dictionnaire :
     # perfsFinales = {
     #     "pc-pm": [float]
     # }
     perfsFinales = {}
 
     for pc, pm in zip(PROBS_C, PROBS_M):
-        perfsFinales["{}-{}".format(pc, pm)] = []
+        perfsFinales["{}|{}".format(pc, pm)] = []
         for popu in POPULATIONS:
             perf = 0
             for success in perfs["{}-{}-{}".format(pc, pm, popu)]:
                 perf += success
             perf /= ITERATION_NUMBER
 
-            perfsFinales["{}-{}".format(pc, pm)].append(perf)
+            perfsFinales["{}|{}".format(pc, pm)].append(perf)
 
-    print(perfsFinales)
-
+    # Affichage des différentes courbes
     for key, value in perfsFinales.items():
-        pc, pm = key.split("-")
+        pc, pm = key.split("|")
+
         plt.plot(POPULATIONS, value, label="p_c = {}; p_m = {}".format(pc, pm))
+
+    # Sauvegarde du tableau final
+    saveDir = "traitement/study/{}".format(foldername)
+    os.makedirs(saveDir, exist_ok=True)
 
     plt.legend()
     plt.xlabel("Taille de la population")
@@ -673,8 +675,12 @@ def analyseStudy(foldername):
     ax.xaxis.set_major_formatter(mticker.ScalarFormatter())
     ax.set_xticks([2, 10, 100, 500, 1000, 2000])
     plt.xlim((2, 2000))
-    plt.savefig("traitement/study/performances.png",dpi=100)
+    plt.savefig("{}/performances.png".format(saveDir), dpi=100)
     plt.close()
+
+    logging.info("Fichier sauvegardé : {}/performances.png".format(
+        saveDir
+    ))
 
 
 if __name__ == "__main__":
@@ -703,4 +709,4 @@ if __name__ == "__main__":
     # data = analyseFolder("data/" + folder)
     # main(path=folder+"/all", data=data)
 
-    analyseStudy("data/study/8xp/05-01-2024 09h47m15s/")
+    analyseStudy("8xp/16-03-2024 21h50m02s")

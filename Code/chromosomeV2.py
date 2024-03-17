@@ -5,9 +5,8 @@ from Terrain import FIGURES
 from Models import Athlete, Figure
 from Game import Game
 from Genetic import Chromosome
-from consts import POPULATION_NUMBER,\
-    INITIAL_POSITION, NUMBER_OF_CHROMOSOME_TO_KEEP, EPS, \
-    MAX_SCORE
+from consts import INITIAL_POSITION, NUMBER_OF_CHROMOSOME_TO_KEEP,\
+    EPS, MAX_SCORE, L
 
 import json
 import os
@@ -167,31 +166,6 @@ def selection(population:list) -> list:
     """
     return population[:10]
 
-def crossover_base(parents:list) -> list:
-    """
-    Crée les enfants de la prochaine population
-    On choisit un parent sur 10 (modulo) pour créer un enfant
-    parfaitement identique à lui
-
-    Params:
-        parents (AthleteChromosome list): liste d'athlètes
-
-    Returns:
-        children (AthleteChromosome list): liste d'athlètes enfants
-    """
-    children = []
-
-    for i in range(POPULATION_NUMBER):
-        # Selectionne un parent sur 10 (modulo)
-        parent = parents[i % 10]
-        child = Athlete(parent.athlete.xp)
-        child.combos = parent.athlete.combos
-        child.setField(parent.athlete.field)
-        childChro = AthleteChromosome(child)
-        childChro.age = parent.age + 1
-        children.append(childChro)
-    return children
-
 def get_point_communs(a1, a2) -> tuple[int, int]:
     """
     Renvoie les indices où les deux athlètes sont au même point dans leur course,
@@ -211,7 +185,7 @@ def get_point_communs(a1, a2) -> tuple[int, int]:
     return (-1, -1)
 
 
-def crossover_ameliore(parents: list, probs) -> list:
+def crossover(parents: list, probs) -> list:
     """
     Crée les enfants de la prochaine population
     On choisit 2 parents et on les on prend 2 moins communs aux deux
@@ -293,7 +267,7 @@ def mutation(population:list, probs) -> list:
 
     for athleteChromosome in population:
         # Mutation
-        if randint(0, 100)/100 < MUTATION_PROB: 
+        if randint(0, 100)/100 < MUTATION_PROB/L: # Divisé par L comme dit dans l'étude
             athlete = athleteChromosome.athlete 
              
             # On supprime tous les combots à partir d'un index aléatoire
@@ -343,8 +317,8 @@ def from_combo_to_string(combos) -> str:
 
     Returns:
         str: concaténation de chaque figure codée sur 6 caractères. Par exemple
-            "xyi" pour la figure d'identifiant i en ligne y et colonne x
-            Attention on code chaque nombre sur 2chiffres (d'où le 6)
+            "xxyyii" pour la figure d'identifiant i en ligne y et colonne x
+            Attention : on code chaque nombre sur 2 chiffres (d'où la longueur 6)
     """
     chaine = []
     for combo in combos:
@@ -446,7 +420,7 @@ def save(self, probs, population_number, infos):
 
     os.makedirs(self.dirname, exist_ok=True)
 
-    i=0
+    i=infos["start_filenumber"]
     while os.path.exists("{}/{}.json".format(self.dirname, i)):
         i += 1
             
@@ -457,9 +431,11 @@ def save(self, probs, population_number, infos):
 
     logging.debug("Data saved in {}.json".format(self.filename))
 
-if __name__ == "__main__":
-    # seed(0)
+if __name__ == "__main__":    
+    # Vérification que les fonctions de traduction Genes <-> Combo
+    # est bijective et ne change pas le score final
     
+    # Initialisation d'athlètes
     population_number = 8
     population = [AthleteChromosome(Athlete(8)) 
                 for _ in range(population_number)]
@@ -470,8 +446,11 @@ if __name__ == "__main__":
         game = Game(athleteChromosome.athlete)
         game.play()
 
-    # Genes de score 27 normalement
+    # Genes avec un score 27 normalement
     genes = [[[7, 30], 2, -1], [[8, 31], 7, -1], [[7, 32], 1, -1], [[8, 33], 7, -1], [[8, 34], 2, -1], [[8, 35], 7, -1], [[8, 36], 5, -1], [[8, 35], 7, -1], [[9, 36], 5, -1], [[9, 37], 17, -1], [[8, 37], 2, -1], [[8, 36], 16, -1], [[7, 37], 9, -1], [[8, 38], 5, -1], [[9, 39], 5, -1], [[8, 39], 17, -1], [[7, 39], 1, -1], [[6, 38], 1, -1], [[5, 39], 10, -1], [[6, 38], 10, -1], [[6, 37], 8, -1], [[5, 38], 6, -1], [[4, 37], 2, -1], [[5, 36], 13, -1], [[6, 36], 8, -1]]
+    
+    # Transformation du genes sauvegardé en genes utilisable par le programme
+    # (Conversion des identifiants en Figure par exemple)
     genes_2 = []
     for coords, fig, tick in genes:
         genes_2.append(((coords[0], coords[1]), Figure.getFigureById(fig), tick))
@@ -482,14 +461,11 @@ if __name__ == "__main__":
     g = from_string_to_combos(s)
 
     print("Echange string <-> combo bijectif (sans ticks) ? "+str(g==genes_2))
+    
+    # Vérification que les deux évaluations des genes ont le même score 
     population[4].athlete.combos = genes_2
 
     a = AthleteChromosome(population[4].athlete)
     a.calc_fitness()
-    print(a.fitness)
-
-    print("autre")
-    a.calc_fitness()
-    print(a.fitness)
-
-    print("Is success : ", is_success(population))
+    print("A-t-on égalité après deux évalutations consécutives des mêmes gènes ?")
+    print(a.fitness==a.calc_fitness())

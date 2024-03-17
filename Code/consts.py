@@ -1,17 +1,10 @@
 '''
  Name : Elowan
  Creation : 30-06-2023 23:56:45
- Last modified : 04-01-2024 21:48:42
+ Last modified : 17-03-2024 09:21:39
 '''
-
-POPULATION_NUMBER = 200             # Nombre d'individus dans la population = N
-NB_EVAL_MAX = 45_000                # = S
-
 NUMBER_OF_CHROMOSOME_TO_KEEP = 20   # Nombre de chromosomes à garder à 
                                     # chaque génération
-
-# TERMINAISON_AGE = 200             # Nombre de générations avant de
-                                    # terminer l'algorithme = T
 
 def MAX_SCORE(xp):                  # Score théorique maximal pour un niveau
     return 15 + 15*xp/10            # d'xp donné
@@ -30,3 +23,19 @@ MUTATION_PROB = 0.05                # Probabilité de mutation d'un enfant
 
 SIZE_X = 10                         # Taille du terrain
 SIZE_Y = 40
+
+# Valeurs utilisées dans l'étude
+POPULATIONS = [2, 5, 10, 20, 35, 60, 100, 200, 300,
+        450, 700, 1000, 1200, 1400, 1800, 2000]
+
+# Nombre de bits total sur lequel le problème est codé (le l de l'étude)
+# 17 est le nombre de bit qu'il faut pour coder 104099=le nombre maximum 
+#   possible d'atteindre en représentation chaine de caractères d'un état de l'athlète
+# 70 est le nombre de figures maximal qu'il est possible de réaliser, 
+#   donc 70 états au maximum 
+L = 17*70 
+
+PROBS_C = [0.0, 0.0, 0.0, 0.9, 0.9] # Probabilité de croisement
+PROBS_M = [0.1, 0.5, 1.0, 0.0, 0.1] # Probabilité de mutation
+
+NB_EVAL_MAX = 45_000                # = S
