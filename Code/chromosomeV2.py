@@ -1,4 +1,4 @@
-from random import randint, seed
+from random import randint
 import logging
 
 from Terrain import FIGURES
@@ -210,7 +210,7 @@ def crossover(parents: list, probs) -> list:
                 # Vérification qu'il y ait au moins 2 points en commun pour
                 # faire le croisement et qu'on ait bien la probabilité de le faire
                 if c1 != -1 and c2 != -1\
-                    and randint(0, 100)/100 < CROSSOVER_PROB:
+                    and randint(0, 100)/100 < CROSSOVER_PROB/L:
 
                     # Premier enfant, avec un premier croisement des combos
                     child1 = Athlete(parents[i].athlete.xp)
@@ -366,17 +366,8 @@ def save(self, probs, population_number, infos):
     CROSSOVER_PROB, MUTATION_PROB = probs
     for i in range(len(self.populationOverTime)):
         for j in range(min(NUMBER_OF_CHROMOSOME_TO_KEEP, population_number-1)):
-            genes = from_string_to_combos(self.populationOverTime[i][j].genes)
-            genesSerialized = []
-                
-            for k in range(len(genes)):
-                # -1 pour remplacer le tick auquel la figure a été faite
-                # car la modélisation par chaîne de caractère ne tient pas
-                # compte de cette info
-                genesSerialized.append((genes[k][0], genes[k][1].id, -1))
-                    
             dataSerialized.append({
-                "genes": genesSerialized,
+                "genes": self.populationOverTime[i][j].genes,
                 "fitness": self.populationOverTime[i][j].fitness,
                 "detailedFitness": self.populationOverTime[i][j].detailedFitness,
                 "age": self.populationOverTime[i][j].age,
@@ -469,3 +460,5 @@ if __name__ == "__main__":
     a.calc_fitness()
     print("A-t-on égalité après deux évalutations consécutives des mêmes gènes ?")
     print(a.fitness==a.calc_fitness())
+
+    

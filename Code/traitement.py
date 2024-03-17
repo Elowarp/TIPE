@@ -1,7 +1,7 @@
 '''
  Name : Elowan
  Creation : 23-06-2023 10:35:11
- Last modified : 16-03-2024 22:30:33
+ Last modified : 17-03-2024 21:07:58
 '''
 
 from json import dump, load
@@ -17,6 +17,7 @@ import logging
 
 from Models import Figure, FIGURES
 from Terrain import Case
+from chromosomeV2 import from_string_to_combos
 
 from consts import SIZE_X, SIZE_Y, NUMBER_OF_CHROMOSOME_TO_KEEP,\
     POPULATIONS, PROBS_M, PROBS_C, INITIAL_POSITION,\
@@ -36,7 +37,7 @@ def unserializeJson(filename):
             },
         dataGenerations : [
             {
-                genes : [[(x,y), Figure, tick],],
+                genes : "xxyyii",
                 fitness,
                 age,
                 size,
@@ -83,8 +84,7 @@ def unserializeJson(filename):
                 detailedFitness = generation["detailedFitness"]
                 
                 for key, value in detailedFitness.items():
-                    if key != "is_injured":
-                        detailedFitness[key] = sum(value.values())
+                    detailedFitness[key] = sum(value.values())
 
             else:
                 detailedFitness = {
@@ -102,11 +102,12 @@ def unserializeJson(filename):
                 "size": generation["size"]
             }
 
-            for gene in generation["genes"]:
+            # Parsing des combos
+            combos = from_string_to_combos(generation["genes"])
+            for gene in combos:
                 parsed_gene = []
                 parsed_gene.append(((gene[0][0], gene[0][1]), 
-                                    Figure.getFigureById(gene[1]), gene[2]))
-                
+                                    Figure.getFigureById(gene[1]), gene[2]))    
                 parsed_generation["genes"].append(parsed_gene)
 
             parsed_data["dataGenerations"].append(parsed_generation)
@@ -709,4 +710,4 @@ if __name__ == "__main__":
     # data = analyseFolder("data/" + folder)
     # main(path=folder+"/all", data=data)
 
-    analyseStudy("8xp/16-03-2024 21h50m02s")
+    analyseStudy("8xp/17-03-2024 20h57m22s")

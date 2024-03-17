@@ -1,7 +1,7 @@
 '''
  Name : Elowan
  Creation : 02-06-2023 10:59:30
- Last modified : 16-03-2024 21:49:59
+ Last modified : 17-03-2024 14:22:16
 '''
 import datetime
 import logging
@@ -117,8 +117,8 @@ def process(POPULATIONS, iteration):
                 logging.debug("\nMeilleur athlète de la dernière génération: {}".format(evaluate(parkourGenetic.population)[0]))
                 logging.info("Temps d'execution : {}".format(datetime.datetime.now() - start_time))
 
-                createStats(parkourGenetic.getDirname() + "/" + 
-                                parkourGenetic.getFilename() + ".json")
+                # createStats(parkourGenetic.getDirname() + "/" + 
+                #                 parkourGenetic.getFilename() + ".json")
                                         
     return parkourGenetic
 
@@ -132,6 +132,7 @@ if __name__ == "__main__":
     
     dirs = "data/{}".format(dirnameSaves)
 
+    os.makedirs('logs', exist_ok=True)
     # Initialisation des logs
     logging.basicConfig(level=logging.DEBUG, 
                     format='%(asctime)s - %(levelname)s - %(message)s',
