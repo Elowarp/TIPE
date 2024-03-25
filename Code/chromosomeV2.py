@@ -1,12 +1,13 @@
-from random import randint, seed
+from random import randint, seed,  choice
 import logging
+from math import sqrt
 
 from Terrain import FIGURES
 from Models import Athlete, Figure
 from Game import Game
 from Genetic import Chromosome
 from consts import INITIAL_POSITION, NUMBER_OF_CHROMOSOME_TO_KEEP,\
-    EPS, MAX_SCORE, L
+    EPS, MAX_SCORE, L, SIZE_X, SIZE_Y
 
 import json
 import os
@@ -24,7 +25,6 @@ class AthleteChromosome(Chromosome):
     def __init__(self, athlete):
         self.athlete = athlete
         self.genes = from_combo_to_string(athlete.combos)
-        # self.detailedFitness = AthleteChromosome.BaseFitness
         self.detailedFitness = {}
 
         super().__init__(self.genes, self.calc_fitness(), 
@@ -179,11 +179,61 @@ def get_point_communs(a1, a2) -> tuple[int, int]:
     Returns:
         int: indice 
     """
-    for i in range(len(a1.combos)):
-        for j in range(len(a2.combos)):
-            if a1.combos[i] == a2.combos[j]: return (i, j)
+    for i in range(0, len(a1.genes), 6):
+        for j in range(0, len(a1.genes), 6):
+            if a1.genes[i: i+6] == a2.genes[j: j+6]: return (i, j)
     return (-1, -1)
 
+def copy_chromosome(parent):
+    """
+    Duplique littéralement un chromosome en augmentant son age
+
+    Params :
+        parent (AthleteChromosome) : Parent
+
+    Returns:
+        AthleteChromosome: Duplica
+    """
+    child = Athlete(parent.athlete.xp)
+    child.combos = parent.athlete.combos
+    child.setField(parent.athlete.field)
+    
+    childChro = AthleteChromosome(child)
+    childChro.age = parent.age + 1
+    return childChro
+
+def new_children_crossover(p1, p2, cross_prob):
+    """
+    Renvoie deux nouveaux chromosomes enfants des deux parents p1 et p2
+    selon la méthode de croisement et la probabilité de croisement cross_prob
+
+    Params :
+        p1 (AthleteChromosome) : Parent
+        p2 (AthleteChromosome) : Parent
+
+    Returns:
+        (AthleteChromosome, AthleteChromosome): Les enfants 
+    """
+    c1, c2 = get_point_communs(p1, p2)
+
+    if c1 != -1 and c2 != -1\
+                    and randint(0, 100)/100 < cross_prob:
+
+        # Premier enfant, avec un premier croisement des combos
+        child1 = Athlete(p1.athlete.xp)
+        child1.setField(p1.athlete.field)
+        child1.combos = from_string_to_combos(p1.genes[:c1]+p2.genes[c2:])
+        childChro1 = AthleteChromosome(child1)
+                        
+        # Deuxieme enfant, avec le croisement complémentaire au premier
+        child2 = Athlete(p2.athlete.xp)
+        child2.setField(p2.athlete.field)
+        child2.combos = from_string_to_combos(p2.genes[:c2] + p1.genes[c1:])
+        childChro2 = AthleteChromosome(child2)
+        return childChro1, childChro2
+
+    else:
+        return copy_chromosome(p1), copy_chromosome(p2)
 
 def crossover(parents: list, probs) -> list:
     """
@@ -201,63 +251,49 @@ def crossover(parents: list, probs) -> list:
     """
     children = []   
     CROSSOVER_PROB, _ = probs
-
-    for i in range(len(parents)):
-        for j in range(len(parents)):
-            if i!=j:
-                c1, c2 = get_point_communs(parents[i].athlete, parents[j].athlete)
-
-                # Vérification qu'il y ait au moins 2 points en commun pour
-                # faire le croisement et qu'on ait bien la probabilité de le faire
-                if c1 != -1 and c2 != -1\
-                    and randint(0, 100)/100 < CROSSOVER_PROB:
-
-                    # Premier enfant, avec un premier croisement des combos
-                    child1 = Athlete(parents[i].athlete.xp)
-                    child1.combos = parents[i].athlete.combos[:c1] +\
-                                     parents[j].athlete.combos[c2:]
-                    child1.setField(parents[i].athlete.field)
-                    childChro1 = AthleteChromosome(child1)
-                    childChro1.age = parents[i].age + 1
-                    children.append(childChro1)
-                    
-                    # Deuxieme enfant, avec le croisement complémentaire au premier
-                    child2 = Athlete(parents[j].athlete.xp)
-                    child2.combos = parents[j].athlete.combos[:c2] +\
-                                     parents[i].athlete.combos[c1:]
-                    child2.setField(parents[j].athlete.field)
-                    childChro2 = AthleteChromosome(child2)
-                    childChro2.age = parents[j].age + 1
-                    children.append(childChro2)
-                    
-            else:
-                # Premier enfant, copie littérale du parent
-                child = Athlete(parents[i].athlete.xp)
-                child.combos = parents[i].athlete.combos
-                child.setField(parents[i].athlete.field)
-                
-                childChro = AthleteChromosome(child)
-                childChro.age = parents[i].age + 1
-                children.append(childChro)
-
-                # Second enfant, idem
-                child = Athlete(parents[j].athlete.xp)
-                child.combos = parents[j].athlete.combos
-                child.setField(parents[j].athlete.field)
-                childChro = AthleteChromosome(child)
-                childChro.age = parents[j].age + 1
-                children.append(childChro)
+    for i in range(0, len(parents)-1, 2):
+        c1, c2 = new_children_crossover(parents[i], parents[i+1],
+                                            CROSSOVER_PROB)
+        children.append(c1)
+        children.append(c2)
 
     return children
 
-def mutation(population:list, probs) -> list:
+def dist(x1, y1, x2, y2):
+    """Calcule la distance entre 2 points dans le plan"""
+    return sqrt((x2-x1)**2 + (y2-y1)**2)
+
+def coherence_suite_etats(e1, e2, e3):
     """
-    Fait muter la population
-    On choisit un athlète (5% de chance de le muter) et on lui change
-    une figure aléatoire
+    Vérifie la cohérence des l'état e2 provenant de l'état e1 et allant 
+    à l'état e3 
+
+    Params:
+        e1/e2/e3 (str): String de 6 caractères représentant un état
+
+    Returns:
+        (bool): Valide ou non
+    """
+    x1 = int(e1[0:2])
+    x2 = int(e2[0:2])
+    x3 = int(e3[0:2])
+
+    y1 = int(e1[2:4])
+    y2 = int(e2[2:4])
+    y3 = int(e3[2:4])
+
+    return dist(x1, y1, x2, y2) <= 4 and dist(x2, y2, x3, y3) <= 4
+
+def mutation(population:list, probs: tuple) -> list:
+    """
+    Fait muter la population, en ajoutant 1 ou -1 à un gène aléatoire
+    (position x, position y ou l'indentifiant de la figure) selon la 
+    probabilité de mutation et la cohérence de ce changement avec 
+    le modèle
 
     Params:
         population (AthleteChromosome list): liste d'athlètes
+        probs (float tuple): (Probabilité de croisement, probabilité de mutation)
 
     Returns:
         children (AthleteChromosome list): liste d'athlètes enfants
@@ -268,14 +304,64 @@ def mutation(population:list, probs) -> list:
     for athleteChromosome in population:
         # Mutation
         if randint(0, 100)/100 < MUTATION_PROB/L: # Divisé par L comme dit dans l'étude
-            athlete = athleteChromosome.athlete 
-             
-            # On supprime tous les combots à partir d'un index aléatoire
-            index = randint(0, len(athlete.combos) - 1)
-            athlete.combos = athlete.combos[:index]
+            # Indice du gène à modifier 
+            i = randint(0, len(athleteChromosome.genes)-1)//6
             
-            # On fait jouer l'athlète 
-            Game(athlete).play()
+            # Etat associé au gène
+            e = athleteChromosome.genes[i*6: (i+1)*6]
+            
+            # Positions et figure associé à l'état
+            x = int(e[0:2])
+            y = int(e[2:4])
+            f = int(e[4:6])
+
+            modifieur = choice([-1, 1])
+
+            if i == 0 :
+                e1 = e
+            else:
+                e1 = athleteChromosome.genes[(i-1)*6: i*6]
+
+            if i >= len(athleteChromosome.genes)//6 - 1:
+                e3 = e
+            else:
+                e3 = athleteChromosome.genes[(i+1)*6: (i+2)*6]
+
+
+            # Match sur la composante qui va être modifiée
+            match (i%6)//2:
+                case 0 :
+                    e2 = from_combo_to_string(
+                        [((x+modifieur, y), Figure.getFigureById(f), 0)])
+
+                    if x + modifieur >= SIZE_X or x + modifieur < 0\
+                    or not(coherence_suite_etats(e1, e2, e3)) :
+                        x += (-1)*modifieur
+                    else:
+                        x += modifieur
+                
+                case 1:
+                    e2 = from_combo_to_string(
+                        [((x, y+modifieur), Figure.getFigureById(f), 0)])
+
+                    if y + modifieur >= SIZE_Y or y + modifieur < 0\
+                    or not(coherence_suite_etats(e1, e2, e3)) :
+                        y += (-1)*modifieur
+                    else:
+                        y += modifieur
+
+                case 2:
+                    if f + modifieur >= len(FIGURES) or f+modifieur < 0 :
+                        f += (-1)*modifieur
+                    else:
+                        f += modifieur
+            
+            gene = athleteChromosome.genes[0: i*6] +\
+                    from_combo_to_string([((x, y), Figure.getFigureById(f), 0)])+\
+                    athleteChromosome.genes[(i+1)*6:]
+            
+            athleteChromosome.genes = gene
+            athleteChromosome.athlete.combos = from_string_to_combos(gene)
             
         children.append(athleteChromosome)
 
@@ -366,17 +452,9 @@ def save(self, probs, population_number, infos):
     CROSSOVER_PROB, MUTATION_PROB = probs
     for i in range(len(self.populationOverTime)):
         for j in range(min(NUMBER_OF_CHROMOSOME_TO_KEEP, population_number-1)):
-            genes = from_string_to_combos(self.populationOverTime[i][j].genes)
-            genesSerialized = []
-                
-            for k in range(len(genes)):
-                # -1 pour remplacer le tick auquel la figure a été faite
-                # car la modélisation par chaîne de caractère ne tient pas
-                # compte de cette info
-                genesSerialized.append((genes[k][0], genes[k][1].id, -1))
-                    
+      
             dataSerialized.append({
-                "genes": genesSerialized,
+                "genes": self.populationOverTime[i][j].genes,
                 "fitness": self.populationOverTime[i][j].fitness,
                 "detailedFitness": self.populationOverTime[i][j].detailedFitness,
                 "age": self.populationOverTime[i][j].age,
@@ -432,6 +510,8 @@ def save(self, probs, population_number, infos):
     logging.debug("Data saved in {}.json".format(self.filename))
 
 if __name__ == "__main__":    
+    ### Tests
+
     # Vérification que les fonctions de traduction Genes <-> Combo
     # est bijective et ne change pas le score final
     
@@ -455,8 +535,6 @@ if __name__ == "__main__":
     for coords, fig, tick in genes:
         genes_2.append(((coords[0], coords[1]), Figure.getFigureById(fig), tick))
 
-    print(from_combo_to_string(genes_2))
-
     s = from_combo_to_string(genes_2)
     g = from_string_to_combos(s)
 
@@ -467,5 +545,37 @@ if __name__ == "__main__":
 
     a = AthleteChromosome(population[4].athlete)
     a.calc_fitness()
-    print("A-t-on égalité après deux évalutations consécutives des mêmes gènes ?")
-    print(a.fitness==a.calc_fitness())
+    print("A-t-on égalité après deux évalutations consécutives des mêmes gènes ? %s" % 
+          (a.fitness==a.calc_fitness()))
+
+    print()
+
+    # Test du croisement
+    print("Croisement de 073002-083107-073201 et 083107-012601-070002")
+    
+    a1 = AthleteChromosome(population[4].athlete)
+    a2 = AthleteChromosome(population[4].athlete)
+
+    a1.genes = "073002083107073201"
+    a2.genes = "083107012601070002"
+
+    a1.athlete.combos = from_string_to_combos(a1.genes)
+    a2.athlete.combos = from_string_to_combos(a2.genes)
+
+    l = crossover([a1, a2], (1, 1))
+    
+    # Tests
+    t1 = l[0].genes == "073002083107012601070002"
+    t2 = l[1].genes == "083107073201"
+
+
+    print("Donne-t-il 073002-083107-012601-070002 et 083107-073201 ? %s" % 
+          (t1 and t2))
+
+    l = crossover(population, (0.2, 0.3))
+    print("Garde-t-on la même taille de population ? %s" % 
+          (len(population) == len(l)))
+    
+    a1.genes = "012506"
+
+    print("Mutation de 012506 : %s" % (mutation([a1], (0, L))[0].genes))

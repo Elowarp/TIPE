@@ -1,7 +1,7 @@
 '''
  Name : Elowan
  Creation : 02-06-2023 10:59:30
- Last modified : 16-03-2024 21:49:59
+ Last modified : 19-03-2024 20:28:50
 '''
 import datetime
 import logging
@@ -90,9 +90,16 @@ def process(POPULATIONS, iteration):
 
                 # Ajout de paramètres supplémentaires
                 def term(pop): return termination(pop, infos)
-                def cross(pop): return crossover(pop, probs)
                 def mut(pop): return mutation(pop, probs)
                 def s(pop): return save(pop, probs, population_number, infos)
+
+                def cross(pop): 
+                    children = crossover(pop, probs)
+                    
+                    # Duplications des enfants pour generer une population entière
+                    popu = []
+                    for _ in range(population_number//len(children)):popu.extend(children)
+                    return popu[:population_number]
 
                 parkourGenetic = GeneticAlgorithm(population, term, evaluate, 
                                                 selection, cross, mut, s,

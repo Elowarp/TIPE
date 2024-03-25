@@ -927,3 +927,13 @@ Multimodal pcq plusieurs solutions pour un résultat maximum
 
 # 21/02/24
 Voir pour tout mettre en str
+
+# 19/03/24
+Mutation 20% par Practical Genetic Algorithm
+Crossover 100% idem 
+
+Réécriture de la mutation et du croisement selon les strings
+
+TODO : Trouver pq bug avec x out of range 
+Reduire la taille des fichiers en adaptant les nom json à un dictionnaire
+Trouver pq gros pic à la fin

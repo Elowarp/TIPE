@@ -1,7 +1,7 @@
 '''
  Name : Elowan
  Creation : 23-06-2023 10:35:11
- Last modified : 16-03-2024 22:30:33
+ Last modified : 25-03-2024 17:38:16
 '''
 
 from json import dump, load
@@ -17,6 +17,7 @@ import logging
 
 from Models import Figure, FIGURES
 from Terrain import Case
+from chromosomeV2 import from_string_to_combos
 
 from consts import SIZE_X, SIZE_Y, NUMBER_OF_CHROMOSOME_TO_KEEP,\
     POPULATIONS, PROBS_M, PROBS_C, INITIAL_POSITION,\
@@ -102,12 +103,9 @@ def unserializeJson(filename):
                 "size": generation["size"]
             }
 
-            for gene in generation["genes"]:
-                parsed_gene = []
-                parsed_gene.append(((gene[0][0], gene[0][1]), 
-                                    Figure.getFigureById(gene[1]), gene[2]))
-                
-                parsed_generation["genes"].append(parsed_gene)
+            # Todo : Liste emboitée inutile
+            for i in range(len(generation["genes"])//6):
+                parsed_generation["genes"] = [from_string_to_combos(generation["genes"][i*6: (i+1)*6])]
 
             parsed_data["dataGenerations"].append(parsed_generation)
 

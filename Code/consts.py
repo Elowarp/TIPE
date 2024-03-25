@@ -1,7 +1,7 @@
 '''
  Name : Elowan
  Creation : 30-06-2023 23:56:45
- Last modified : 17-03-2024 09:21:39
+ Last modified : 25-03-2024 18:33:36
 '''
 NUMBER_OF_CHROMOSOME_TO_KEEP = 20   # Nombre de chromosomes à garder à 
                                     # chaque génération
@@ -24,9 +24,14 @@ MUTATION_PROB = 0.05                # Probabilité de mutation d'un enfant
 SIZE_X = 10                         # Taille du terrain
 SIZE_Y = 40
 
-# Valeurs utilisées dans l'étude
+# # Valeurs utilisées dans l'étude
 POPULATIONS = [2, 5, 10, 20, 35, 60, 100, 200, 300,
         450, 700, 1000, 1200, 1400, 1800, 2000]
+
+# POPULATIONS = [20, 60, 200, 600]
+
+# Distance en mètre maximal qu'un être humain peut parcourir en courant pendant 1s
+DIST_MAX = 6
 
 # Nombre de bits total sur lequel le problème est codé (le l de l'étude)
 # 17 est le nombre de bit qu'il faut pour coder 104099=le nombre maximum 
