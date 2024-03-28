@@ -56,12 +56,15 @@ class AthleteChromosome(Chromosome):
         tricks = [Figure.figures[int(self.genes[6*i+4: 6*i+6])] 
                   for i in range(nb_figure)]
         field = self.athlete.field
-        cases = [field.getCase(
-            (int(self.genes[6*i:6*i+2]), int(self.genes[6*i+2: 6*i+4]))) 
-            for i in range(nb_figure)]
-        
-        # print(tricks)
-        # print(cases)
+        try:
+            cases = [field.getCase(
+                (int(self.genes[6*i:6*i+2]), int(self.genes[6*i+2: 6*i+4]))) 
+                for i in range(nb_figure)]
+        except IndexError:
+            for i in range(nb_figure): 
+                print((int(self.genes[6*i:6*i+2]), int(self.genes[6*i+2: 6*i+4])))
+                return 0
+
 
         # Calcul de la sureté des figures
         # On coefficiente la sureté par l'xp de l'athlète
@@ -327,28 +330,55 @@ def mutation(population:list, probs: tuple) -> list:
             else:
                 e3 = athleteChromosome.genes[(i+1)*6: (i+2)*6]
 
-
             # Match sur la composante qui va être modifiée
+            # A commenter
             match (i%6)//2:
                 case 0 :
                     e2 = from_combo_to_string(
                         [((x+modifieur, y), Figure.getFigureById(f), 0)])
 
-                    if x + modifieur >= SIZE_X or x + modifieur < 0\
-                    or not(coherence_suite_etats(e1, e2, e3)) :
-                        x += (-1)*modifieur
+                    if x + modifieur >= 0 and x + modifieur < SIZE_X:
+                        if coherence_suite_etats(e1, e2, e3):
+                            x += modifieur
+                            
+                        else:
+                            e2_recovery = from_combo_to_string(
+                                    [((x-modifieur, y), Figure.getFigureById(f), 0)])
+                            
+                            if coherence_suite_etats(e1, e2_recovery, e3): 
+                                x -= modifieur
+
                     else:
-                        x += modifieur
+                        e2_recovery = from_combo_to_string(
+                            [((x-modifieur, y), Figure.getFigureById(f), 0)])
+                            
+                        if coherence_suite_etats(e1, e2_recovery, e3): 
+                            x -= modifieur
+                            
                 
                 case 1:
                     e2 = from_combo_to_string(
                         [((x, y+modifieur), Figure.getFigureById(f), 0)])
 
-                    if y + modifieur >= SIZE_Y or y + modifieur < 0\
-                    or not(coherence_suite_etats(e1, e2, e3)) :
-                        y += (-1)*modifieur
+                    if y + modifieur >= 0 and y + modifieur < SIZE_Y:
+                        if coherence_suite_etats(e1, e2, e3):
+                            y += modifieur
+                            
+
+                        else:
+                            e2_recovery = from_combo_to_string(
+                                    [((x, y-modifieur), Figure.getFigureById(f), 0)])
+                            
+                            if coherence_suite_etats(e1, e2_recovery, e3): 
+                                y -= modifieur
+                            
+
                     else:
-                        y += modifieur
+                        e2_recovery = from_combo_to_string(
+                            [((x, y-modifieur), Figure.getFigureById(f), 0)])
+                            
+                        if coherence_suite_etats(e1, e2_recovery, e3): 
+                            y -= modifieur
 
                 case 2:
                     if f + modifieur >= len(FIGURES) or f+modifieur < 0 :
@@ -377,8 +407,6 @@ def termination(population:list, infos) -> bool:
     Returns:
         (bool): True si l'algorithme doit s'arrêter, False sinon
     """
-    # return infos["generationCount"] > 400 or \
-    #     MAX_SCORE(population[0].athlete.xp) - EPS < infos["maxPopulationFitness"]
     return infos["generationCount"] > infos["terminaison_age"] or \
         MAX_SCORE(population[0].athlete.xp) - EPS < infos["maxPopulationFitness"]
 
@@ -454,11 +482,10 @@ def save(self, probs, population_number, infos):
         for j in range(min(NUMBER_OF_CHROMOSOME_TO_KEEP, population_number-1)):
       
             dataSerialized.append({
-                "genes": self.populationOverTime[i][j].genes,
-                "fitness": self.populationOverTime[i][j].fitness,
-                "detailedFitness": self.populationOverTime[i][j].detailedFitness,
-                "age": self.populationOverTime[i][j].age,
-                "size": self.populationOverTime[i][j].size
+                "g": self.populationOverTime[i][j].genes,
+                "f": self.populationOverTime[i][j].fitness,
+                "a": self.populationOverTime[i][j].age,
+                "s": self.populationOverTime[i][j].size
             })
         
     athleteSerialized = {

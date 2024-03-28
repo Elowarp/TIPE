@@ -937,3 +937,58 @@ Réécriture de la mutation et du croisement selon les strings
 TODO : Trouver pq bug avec x out of range 
 Reduire la taille des fichiers en adaptant les nom json à un dictionnaire
 Trouver pq gros pic à la fin
+
+# 26/03/24
+
+Description du json :
+
+```json
+{
+    dataGenerations: {
+        [
+            {
+                genes: str
+                fitness: float
+                detailedFitness : {
+                    "execution": {
+                        "safety": 3,
+                        "flow": 0,
+                        "mastery": 0,
+                    },
+                    "composition": {
+                        "use_of_space": 0,
+                        "use_of_obstacles": 0,
+                        "connection": 0,
+                    },
+                    "difficulty": {
+                        "variety": 0,
+                        "single_trick": 0,
+                        "whole_run": 0,
+                    },
+                }
+                age: int,
+                size: int,
+            }
+        ],
+        ...
+    }
+}
+```
+
+Into (Suppression de detailedFitness qui n'est pas utilisée)
+
+```json
+{
+    dataGenerations: {
+        [
+            {
+                g: str
+                f: float
+                a: int,
+                s: int,
+            },
+            ...
+        ]
+    }
+}
+```

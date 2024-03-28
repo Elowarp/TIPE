@@ -1,7 +1,7 @@
 '''
  Name : Elowan
  Creation : 23-06-2023 10:35:11
- Last modified : 25-03-2024 17:38:16
+ Last modified : 28-03-2024 13:18:21
 '''
 
 from json import dump, load
@@ -80,32 +80,15 @@ def unserializeJson(filename):
         
         for generation in data["dataGenerations"]:
             # Récupération de la fitness détaillée
-            if "detailedFitness" in generation:
-                detailedFitness = generation["detailedFitness"]
-                
-                for key, value in detailedFitness.items():
-                    if key != "is_injured":
-                        detailedFitness[key] = sum(value.values())
-
-            else:
-                detailedFitness = {
-                    "execution": 0,
-                    "composition": 0,
-                    "difficulty": 0
-                }
-
-
             parsed_generation = {
                 "genes": [],
-                "fitness": generation["fitness"],
-                "detailedFitness": detailedFitness,
-                "age": generation["age"],
-                "size": generation["size"]
+                "fitness": generation["f"],
+                "age": generation["a"],
+                "size": generation["s"]
             }
 
-            # Todo : Liste emboitée inutile
-            for i in range(len(generation["genes"])//6):
-                parsed_generation["genes"] = [from_string_to_combos(generation["genes"][i*6: (i+1)*6])]
+            for i in range(len(generation["g"])//6):
+                parsed_generation["genes"].append(from_string_to_combos(generation["g"][i*6: (i+1)*6]))
 
             parsed_data["dataGenerations"].append(parsed_generation)
 
@@ -165,15 +148,6 @@ def analyse(filename):
     
     ### Evolution de la fitness au cours des générations
     logging.debug("Création de l'évolution de la fitness au cours des générations...")
-    
-    detailed_fitness = {}
-    for fit in ["execution", "composition", "difficulty"]:
-        detailed_fitness[fit] = []
-        for generation in data["dataGenerations"]:
-            detailed_fitness[fit].append(generation["detailedFitness"][fit])
-
-        detailed_fitness[fit] = np.array(detailed_fitness[fit])
-
 
     list_fitness = []
     for generation in data["dataGenerations"]:
@@ -236,7 +210,6 @@ def analyse(filename):
         "terrain_matrice": terrain_matrice,
         "fitness": list_fitness,
         "fitness_moy": list_fitness_moy,
-        "detailed_fitness": detailed_fitness,
         "figures": list_figures,
         "count": list_count,
         "nb_generations": nb_generations,
@@ -257,6 +230,8 @@ def analyseFolder(foldername):
     # Récupération des noms des fichiers
     filenames = [f for f in os.listdir(foldername) if os.path.isfile(os.path.join(foldername, f))]
 
+    filenames.sort(key=lambda x : int(x.split(".")[0]))
+
     file_number = len(filenames)
 
     # Initialisation des données
@@ -264,7 +239,6 @@ def analyseFolder(foldername):
         "nb_generations": 0,
         "fitness": [],
         "fitness_moy": [],
-        "detailed_fitness": {},
         "freq_matrice": np.zeros((SIZE_Y, SIZE_X)),
         "terrain_matrice": np.zeros((SIZE_Y, SIZE_X)),
         "figures": [],
@@ -279,11 +253,6 @@ def analyseFolder(foldername):
     }
 
     fitness_temp = []
-    detailed_fitness_temp = {
-        "execution": [],
-        "composition": [],
-        "difficulty": []
-    }
 
     # Analyse de chaque fichier
     count = 0
@@ -296,11 +265,6 @@ def analyseFolder(foldername):
         data["freq_matrice"] += file_data["freq_matrice"]
         fitness_temp.append(file_data["fitness"])
         data["performance"] += 1 if file_data["is_success"] else 0
-        
-        detailed_fitness_temp["execution"].append(file_data["detailed_fitness"]["execution"])
-        detailed_fitness_temp["composition"].append(file_data["detailed_fitness"]["composition"])
-        detailed_fitness_temp["difficulty"].append(file_data["detailed_fitness"]["difficulty"])
-        
 
         # Variables invariantes face aux excécutions de l'algorithme
         data["terrain_matrice"] = file_data["terrain_matrice"]
@@ -347,8 +311,7 @@ def analyseFolder(foldername):
     return data
 
 
-def makeEvolFitnessImg(athlete, nb_generations, list_fitness, list_fitness_moy,
-                        best_athlete, filename, nb_executions=1):
+def makeEvolFitnessImg(list_fitness, nb_executions=1):
     """
     Crée l'image de l'évolution de la fitness au cours des générations
     """
@@ -363,13 +326,6 @@ def makeEvolFitnessImg(athlete, nb_generations, list_fitness, list_fitness_moy,
                           /NUMBER_OF_CHROMOSOME_TO_KEEP
                         for i in range(0, len(list_fitness), NUMBER_OF_CHROMOSOME_TO_KEEP)]
     
-    # Liste de la moyenne des fitness détaillées par génération
-    detailed_fitness_moy_by_gen = {
-        "execution": [],
-        "composition": [],
-        "difficulty": []
-    }
-
     
     # Affichage de la courbe
     plt.plot(fitness_moy_by_gen, color="blue", label="Score", linewidth=2)
@@ -383,15 +339,9 @@ def makeEvolFitnessImg(athlete, nb_generations, list_fitness, list_fitness_moy,
     plt.axhline(y=mean_fitness, color="red", linestyle="--", 
                 label="Moyenne : {}".format(round(float(mean_fitness), 2)),
                 zorder = 3)
-                
-    x_values = [i for i in range(0, len(fitness_moy_by_gen))]
-            
-    # plt.plot(x_values, list_fitness_moy, color="orange", label="Moyenne par génération", zorder=2)
+                            
     plt.legend()
 
-    # Sauvegarde
-    # plt.savefig("traitement/{}_images/evol_fitness.png".format(filename))
-    # plt.close()
 
 def makeCasesImg(freq_matrice, terrain_matrice, best_athlete, filename):
     """
@@ -466,15 +416,13 @@ def makeCasesImg(freq_matrice, terrain_matrice, best_athlete, filename):
     
     # Marges
     plt.subplots_adjust(right=1.2, bottom=-0.8) 
-    # plt.tight_layout()  
 
     # Sauvegarde
     plt.savefig("traitement/{}_images/cases.png".format(filename), 
                 bbox_inches=Bbox([[0, -4], [9, 5]]),dpi=100)
     plt.close()
 
-def makeFreqImg(athlete, list_figures, list_count, nb_generations, 
-                filename, nb_executions=1):
+def makeFreqImg(list_figures, list_count, nb_executions=1):
     """
     Crée l'histogramme de la fréquence des figures
     """
@@ -490,10 +438,6 @@ def makeFreqImg(athlete, list_figures, list_count, nb_generations,
 
     plt.autoscale(tight=False)
 
-    # Sauvegarde
-    # plt.savefig("traitement/{}_images/freq.png".format(filename), bbox_inches=Bbox([[0, -1.3], [6.4, 5]]))
-    # plt.close()
-
 def constListImage(filename, const_dict):
     """
     Crée l'image de la liste des constantes utilisées pour les données
@@ -508,7 +452,6 @@ def constListImage(filename, const_dict):
     table = plt.table(cellText=const_array, colLabels=["Constante", "Valeur"], loc='center')
     table.auto_set_font_size(False)
     table.set_fontsize(8)  
-    # plt.subplots_adjust(bottom=-0.18, top=1.2)
     
     plt.tight_layout()
     plt.savefig("traitement/{}_images/constantes.png".format(filename), dpi=100)
@@ -546,13 +489,8 @@ def createStats(path=None, data=None):
     logging.info("Traitement des données...")
 
     # Création des images
-    makeEvolFitnessImg(data["athlete"], data["nb_generations"],
-                          data["fitness"], data["fitness_moy"], 
-                          data["best_athlete"], filename, 
-                          data["nb_executions"])
-    
-    makeFreqImg(data["athlete"], data["figures"], data["count"],
-                data["nb_generations"], filename, data["nb_executions"])
+    makeEvolFitnessImg(data["fitness"],data["nb_executions"])
+    makeFreqImg(data["figures"], data["count"], data["nb_executions"])
     
     perf = " performance {}%".format(round(data["performance"]*100,2)) if "performance" in data.keys() \
         else " succès ? {}".format(data["is_success"])
@@ -596,10 +534,11 @@ def createStats(path=None, data=None):
     logging.info("Traitement terminé (en {})!\n".format(
         datetime.datetime.now()-start_time))
     
-def analyseStudy(foldername):
+def analyseStudy(foldername, data):
     """
     Analyse et création des images pour la comparaison avec l'étude
     """
+    
     dataFolder = "data/"+foldername
 
     # Récupération des noms des fichiers
@@ -685,7 +624,7 @@ if __name__ == "__main__":
     # filename = "6xp_frontflip/0.json"
     # main(filename)
 
-    # folder = "10xp/29-08-2023 18h16m09s/"
+    folder = "8xp/27-03-2024 08h58m15s/"
 
     # Afficher les logs dans un fichier
     logging.basicConfig(level=logging.DEBUG, 
@@ -704,7 +643,7 @@ if __name__ == "__main__":
     console.setFormatter(formatter)
     logging.getLogger('').addHandler(console)
 
-    # data = analyseFolder("data/" + folder)
-    # main(path=folder+"/all", data=data)
+    data = analyseFolder("data/" + folder)
+    createStats(path=folder+"/all", data=data)
 
-    analyseStudy("8xp/16-03-2024 21h50m02s")
+    # analyseStudy("8xp/16-03-2024 21h50m02s")

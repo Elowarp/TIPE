@@ -1,11 +1,12 @@
 '''
  Name : Elowan
  Creation : 02-06-2023 10:59:30
- Last modified : 19-03-2024 20:28:50
+ Last modified : 28-03-2024 13:15:02
 '''
 import datetime
 import logging
 from multiprocessing import Process
+import traceback
 
 from Terrain import FIGURES
 from chromosomeV2 import *
@@ -37,10 +38,11 @@ def playAllGames(population:list):
         game.play()
 
 
-def logConstants(athleteLevel):
+def logConstants(athleteLevel, seed):
     """
     Log les constantes de l'algorithme
     """
+    logging.debug("Seed : {}".format(seed))
     logging.debug("Iteration number : {}".format(ITERATION_NUMBER))
     logging.debug("Athlete level : {}".format(athleteLevel))
     logging.debug("Number of chromosomes to keep : {}".format(NUMBER_OF_CHROMOSOME_TO_KEEP))
@@ -119,19 +121,32 @@ def process(POPULATIONS, iteration):
                     else:
                         infos["maxAge"] += 1
 
-                parkourGenetic.run(iteration=iterate)
+                try:
+                    parkourGenetic.run(iteration=iterate)
+                    
+                except Exception as e:
+                    traceback.print_exc(e) 
+                    logging.error("{}/{} probs:{};{} pop: {}" % 
+                                  (i, ITERATION_NUMBER, probs[0], 
+                                   probs[1], population_number))
+                    logging.error(e)
+                    break
+                
+                else:
+                    logging.debug("\nMeilleur athlète de la dernière génération: {}".format(evaluate(parkourGenetic.population)[0]))
+                    logging.info("Temps d'execution : {}".format(datetime.datetime.now() - start_time))
 
-                logging.debug("\nMeilleur athlète de la dernière génération: {}".format(evaluate(parkourGenetic.population)[0]))
-                logging.info("Temps d'execution : {}".format(datetime.datetime.now() - start_time))
-
-                createStats(parkourGenetic.getDirname() + "/" + 
-                                parkourGenetic.getFilename() + ".json")
+                    # createStats(parkourGenetic.getDirname() + "/" + 
+                    #                 parkourGenetic.getFilename() + ".json")
                                         
     return parkourGenetic
 
 
 if __name__ == "__main__":
     # seed(24) # Pour avoir des résultats reproductibles
+    s = int(datetime.datetime.now().timestamp())
+    seed(s)
+    
     athleteLevel = 8
     dirnameSaves = "{}xp/{}".format(athleteLevel, 
                                       datetime.datetime.now()
@@ -155,7 +170,7 @@ if __name__ == "__main__":
     console.setFormatter(formatter)
     logging.getLogger('').addHandler(console)
 
-    logConstants(athleteLevel)
+    logConstants(athleteLevel, s)
 
 
     # Multi-Processing pour accélérer le temps d'exécution
@@ -175,7 +190,7 @@ if __name__ == "__main__":
     data = analyseFolder(dirs)
     createStats(path="{}/all".format(dirs), data=data)
     # Dessine un graphe semblable à l'étude
-    analyseStudy(dirnameSaves)
+    analyseStudy(data)
     
 
     logging.info("Temps d'execution total : {}".format(
