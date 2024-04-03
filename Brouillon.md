@@ -992,3 +992,11 @@ Into (Suppression de detailedFitness qui n'est pas utilisée)
     }
 }
 ```
+
+Nom de fichier de celui qui a réussi : 27-03-2024 11h42m15s
+
+# 02 / 04 / 2024
+
+https://www.egr.msu.edu/~kdeb/papers/k2012016.pdf
+
+La mutation "mutation clock" est la mutation utilisé pour faire l'étude, donc il faudrait l'implémenter pour voir en fait comment eux ils le font

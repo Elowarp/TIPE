@@ -1,7 +1,7 @@
 '''
  Name : Elowan
  Creation : 02-06-2023 10:59:30
- Last modified : 28-03-2024 13:15:02
+ Last modified : 02-04-2024 21:51:44
 '''
 import datetime
 import logging
@@ -189,6 +189,7 @@ if __name__ == "__main__":
     # Analyse du dossier (moyenne sur toutes les itérations)
     data = analyseFolder(dirs)
     createStats(path="{}/all".format(dirs), data=data)
+    
     # Dessine un graphe semblable à l'étude
     analyseStudy(data)
     

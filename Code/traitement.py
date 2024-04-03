@@ -1,7 +1,7 @@
 '''
  Name : Elowan
  Creation : 23-06-2023 10:35:11
- Last modified : 28-03-2024 13:18:21
+ Last modified : 02-04-2024 22:27:06
 '''
 
 from json import dump, load
@@ -86,10 +86,8 @@ def unserializeJson(filename):
                 "age": generation["a"],
                 "size": generation["s"]
             }
-
-            for i in range(len(generation["g"])//6):
-                parsed_generation["genes"].append(from_string_to_combos(generation["g"][i*6: (i+1)*6]))
-
+            
+            parsed_generation["genes"] = from_string_to_combos(generation["g"])
             parsed_data["dataGenerations"].append(parsed_generation)
 
         return parsed_data
@@ -111,11 +109,10 @@ def analyse(filename):
     count = {}
     for generation in data["dataGenerations"]:
         for gene in generation["genes"]:
-            for combo in gene:
-                if str(combo[1]) in count:
-                    count[str(combo[1])] += 1
-                else:
-                    count[str(combo[1])] = 1
+            if str(gene[1]) in count:
+                count[str(gene[1])] += 1
+            else:
+                count[str(gene[1])] = 1
 
     # Ramène les valeurs sous forme de fréquence
     list_figures = []
@@ -171,8 +168,7 @@ def analyse(filename):
     # Comptage du nombre de fois que chaque case est utilisée
     for generation in data["dataGenerations"]:
         for gene in generation["genes"]:
-            for combo in gene:
-                cases[combo[0][1]][combo[0][0]] += 1
+            cases[gene[0][1]][gene[0][0]] += 1
 
     # Récupération la case la plus utilisée
     max_case = max(case for line in cases for case in line)
@@ -362,8 +358,8 @@ def makeCasesImg(freq_matrice, terrain_matrice, best_athlete, filename):
     # Affichage du chemin de l'athlete avec la meilleur fitness avec
     # des chiffres croissants
     for i in range(len(best_athlete["genes"])):
-        plt.text(best_athlete["genes"][i][0][0][0] + 0.5, 
-                 best_athlete["genes"][i][0][0][1] + 0.5,
+        plt.text(best_athlete["genes"][i][0][0] + 0.5, 
+                 best_athlete["genes"][i][0][1] + 0.5,
                 str(i+1), color="black", ha="center", va="center")
 
     # Mise en forme de l'image
@@ -534,7 +530,7 @@ def createStats(path=None, data=None):
     logging.info("Traitement terminé (en {})!\n".format(
         datetime.datetime.now()-start_time))
     
-def analyseStudy(foldername, data):
+def analyseStudy(foldername):
     """
     Analyse et création des images pour la comparaison avec l'étude
     """
@@ -597,13 +593,13 @@ def analyseStudy(foldername, data):
     for key, value in perfsFinales.items():
         pc, pm = key.split("|")
 
-        plt.plot(POPULATIONS, value, label="p_c = {}; p_m = {}".format(pc, pm))
+        plt.plot(POPULATIONS, value, label="p_c = {}; p_m = {}/l".format(pc, pm))
 
     # Sauvegarde du tableau final
     saveDir = "traitement/study/{}".format(foldername)
     os.makedirs(saveDir, exist_ok=True)
 
-    plt.legend()
+    plt.legend(prop={'size': 10})
     plt.xlabel("Taille de la population")
     plt.ylabel("Performances")
     plt.ylim((0, 1))
@@ -621,11 +617,6 @@ def analyseStudy(foldername, data):
 
 
 if __name__ == "__main__":
-    # filename = "6xp_frontflip/0.json"
-    # main(filename)
-
-    folder = "8xp/27-03-2024 08h58m15s/"
-
     # Afficher les logs dans un fichier
     logging.basicConfig(level=logging.DEBUG, 
                     format='%(asctime)s - %(levelname)s - %(message)s',
@@ -642,8 +633,9 @@ if __name__ == "__main__":
     formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
     console.setFormatter(formatter)
     logging.getLogger('').addHandler(console)
+    
+    # folder = "8xp/27-03-2024 11h32m49s/"
+    # data = analyseFolder("data/" + folder)
+    # createStats(path=folder+"/all", data=data)
 
-    data = analyseFolder("data/" + folder)
-    createStats(path=folder+"/all", data=data)
-
-    # analyseStudy("8xp/16-03-2024 21h50m02s")
+    analyseStudy("8xp/27-03-2024 11h42m15s")
