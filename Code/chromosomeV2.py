@@ -1,6 +1,8 @@
 from random import randint, seed,  choice
 import logging
-from math import sqrt
+from math import sqrt, ceil
+import json
+import os
 
 from Terrain import FIGURES
 from Models import Athlete, Figure
@@ -9,10 +11,8 @@ from Genetic import Chromosome
 from consts import INITIAL_POSITION, NUMBER_OF_CHROMOSOME_TO_KEEP,\
     EPS, MAX_SCORE, L, SIZE_X, SIZE_Y
 
-import json
-import os
-import logging
-from Game import Game
+k = 0
+i = 0
 
 class AthleteChromosome(Chromosome):
     """
@@ -277,8 +277,16 @@ def coherence_suite_etats(e1, e2, e3):
     Returns:
         (bool): Valide ou non
     """
+    global k
+    i = (k - k%6)//6
+
     x1 = int(e1[0:2])
-    x2 = int(e2[0:2])
+    try: 
+        x2 = int(e2[0:2])
+    except ValueError:
+        print(k, i, e2)
+        exit()
+
     x3 = int(e3[0:2])
 
     y1 = int(e1[2:4])
@@ -287,115 +295,140 @@ def coherence_suite_etats(e1, e2, e3):
 
     return dist(x1, y1, x2, y2) <= 4 and dist(x2, y2, x3, y3) <= 4
 
-def mutation(population:list, probs: tuple) -> list:
+def mutation_individual(athleteChromosome: AthleteChromosome, k:int):
     """
-    Fait muter la population, en ajoutant 1 ou -1 à un gène aléatoire
-    (position x, position y ou l'indentifiant de la figure) selon la 
-    probabilité de mutation et la cohérence de ce changement avec 
-    le modèle
+    Mutation en place de l'athlete `athleteChromosome` passé en paramètre.
+    Le caractère du gene à modifier est imposé par le paramètre `k` contenu 
+    entre 0 et 419 inclus.
+    """
+    # k = Indice du caractère à modifier 
+    # i = Indice du gene contenant la variable 
+    k = k%len(athleteChromosome.genes)
+    i = (k - k%6)//6
+
+    # Etat associé au gène
+    e = athleteChromosome.genes[i*6: (i+1)*6]
+    
+    # Positions et figure associé à l'état
+    try:
+        x = int(e[0:2])
+    except ValueError: logging.debug("EEEEE %s %s" % (e, k))
+
+    y = int(e[2:4])
+    f = int(e[4:6])
+
+    modifieur = choice([-1, 1])
+
+    # Récupération des états précédant et succédant l'état à l'étude
+    if i == 0 :
+        e1 = e
+    else:
+        e1 = athleteChromosome.genes[(i-1)*6: i*6]
+
+    if i >= len(athleteChromosome.genes)//6 - 1:
+        e3 = e
+    else:
+        e3 = athleteChromosome.genes[(i+1)*6: (i+2)*6]
+
+    # Match sur la composante qui va être modifiée
+    match (k%6)//2:
+        case 0 : # Si on modifie la variable de l'abscisse
+            # Le modifieur étant choisi avant le match, on vérifie que 
+            # la modification apporté à l'abscisse n'enfreint aucune 
+            # des conditions de bons fonctionnements comme : 
+            # 0 <= x < SIZE_X et que le déplacement à cette case depuis 
+            # la case précédente e1 est possible et le deplacement vers e3, 
+            # assuré par le renvoie "true" de la fonction coherence_suite_etats
+            e2 = from_combo_to_string(
+                [((x+modifieur, y), Figure.getFigureById(f), 0)])
+
+            if x + modifieur >= 0 and x + modifieur < SIZE_X:
+                if coherence_suite_etats(e1, e2, e3):
+                    x += modifieur
+                    
+                else:
+                    if x-modifieur >= 0 :
+                        e2_recovery = from_combo_to_string(
+                                [((x-modifieur, y), Figure.getFigureById(f), 0)])
+
+                        if coherence_suite_etats(e1, e2_recovery, e3): 
+                            x -= modifieur
+
+            else:
+                if x-modifieur >= 0 :
+                    e2_recovery = from_combo_to_string(
+                        [((x-modifieur, y), Figure.getFigureById(f), 0)])
+                        
+                    if coherence_suite_etats(e1, e2_recovery, e3): 
+                        x -= modifieur
+                    
+        
+        case 1: # Sensiblement la même chose que précédemment mais pour l'ordonné
+            e2 = from_combo_to_string(
+                [((x, y+modifieur), Figure.getFigureById(f), 0)])
+
+            if y + modifieur >= 0 and y + modifieur < SIZE_Y:
+
+                if coherence_suite_etats(e1, e2, e3):
+                    y += modifieur
+
+                else:
+                    if y-modifieur >= 0 :
+                        e2_recovery = from_combo_to_string(
+                                [((x, y-modifieur), Figure.getFigureById(f), 0)])
+                        
+                        if coherence_suite_etats(e1, e2_recovery, e3): 
+                            y -= modifieur
+                    
+
+            else:
+                if y-modifieur >= 0:
+                    e2_recovery = from_combo_to_string(
+                        [((x, y-modifieur), Figure.getFigureById(f), 0)])
+                    
+                    if coherence_suite_etats(e1, e2_recovery, e3): 
+                        y -= modifieur
+
+        case 2: # Cas du changement de la figure
+            if f + modifieur >= len(FIGURES) or f+modifieur < 0 :
+                f -= modifieur
+            else:
+                f += modifieur
+    
+    # Reconstruction du gène
+    gene = athleteChromosome.genes[0: i*6] +\
+            from_combo_to_string([((x, y), Figure.getFigureById(f), 0)])+\
+            athleteChromosome.genes[(i+1)*6:]
+    
+    # Modification en place de l'athlete
+    athleteChromosome.genes = gene
+    athleteChromosome.athlete.combos = from_string_to_combos(gene)
+
+def mutation(population:list, l: int) -> list:
+    """
+    Fait muter la `population`, en ajoutant 1 ou -1 à un gène aléatoire
+    (position x, position y ou l'indentifiant de la figure) selon le dernier muté
+    et du paramètre `l` (Mutation Clock operation) et la cohérence de 
+    ce changement avec le modèle réel
 
     Params:
         population (AthleteChromosome list): liste d'athlètes
-        probs (float tuple): (Probabilité de croisement, probabilité de mutation)
+        l (int): nombre associé à une probabilité selon la 2nd étude sur les GAs
 
     Returns:
-        children (AthleteChromosome list): liste d'athlètes enfants
+        population (AthleteChromosome list): liste d'athlètes enfants
+                 
     """
-    children = []
-    _, MUTATION_PROB = probs
+    global k, i
 
-    for athleteChromosome in population:
-        # Mutation
-        if randint(0, 100)/100 < MUTATION_PROB/L: # Divisé par L comme dit dans l'étude
-            # Indice du gène à modifier 
-            i = randint(0, len(athleteChromosome.genes)-1)//6
-            
-            # Etat associé au gène
-            e = athleteChromosome.genes[i*6: (i+1)*6]
-            
-            # Positions et figure associé à l'état
-            x = int(e[0:2])
-            y = int(e[2:4])
-            f = int(e[4:6])
+    logging.debug("k : %s; i: %s" % (k, i))
+    logging.debug(str(population[i]))
+    mutation_individual(population[i], k)
 
-            modifieur = choice([-1, 1])
+    k = int((k+l)%L)
+    i = (i + ceil((k+l)/L))%len(population)
 
-            if i == 0 :
-                e1 = e
-            else:
-                e1 = athleteChromosome.genes[(i-1)*6: i*6]
-
-            if i >= len(athleteChromosome.genes)//6 - 1:
-                e3 = e
-            else:
-                e3 = athleteChromosome.genes[(i+1)*6: (i+2)*6]
-
-            # Match sur la composante qui va être modifiée
-            # A commenter
-            match (i%6)//2:
-                case 0 :
-                    e2 = from_combo_to_string(
-                        [((x+modifieur, y), Figure.getFigureById(f), 0)])
-
-                    if x + modifieur >= 0 and x + modifieur < SIZE_X:
-                        if coherence_suite_etats(e1, e2, e3):
-                            x += modifieur
-                            
-                        else:
-                            e2_recovery = from_combo_to_string(
-                                    [((x-modifieur, y), Figure.getFigureById(f), 0)])
-                            
-                            if coherence_suite_etats(e1, e2_recovery, e3): 
-                                x -= modifieur
-
-                    else:
-                        e2_recovery = from_combo_to_string(
-                            [((x-modifieur, y), Figure.getFigureById(f), 0)])
-                            
-                        if coherence_suite_etats(e1, e2_recovery, e3): 
-                            x -= modifieur
-                            
-                
-                case 1:
-                    e2 = from_combo_to_string(
-                        [((x, y+modifieur), Figure.getFigureById(f), 0)])
-
-                    if y + modifieur >= 0 and y + modifieur < SIZE_Y:
-                        if coherence_suite_etats(e1, e2, e3):
-                            y += modifieur
-                            
-
-                        else:
-                            e2_recovery = from_combo_to_string(
-                                    [((x, y-modifieur), Figure.getFigureById(f), 0)])
-                            
-                            if coherence_suite_etats(e1, e2_recovery, e3): 
-                                y -= modifieur
-                            
-
-                    else:
-                        e2_recovery = from_combo_to_string(
-                            [((x, y-modifieur), Figure.getFigureById(f), 0)])
-                            
-                        if coherence_suite_etats(e1, e2_recovery, e3): 
-                            y -= modifieur
-
-                case 2:
-                    if f + modifieur >= len(FIGURES) or f+modifieur < 0 :
-                        f += (-1)*modifieur
-                    else:
-                        f += modifieur
-            
-            gene = athleteChromosome.genes[0: i*6] +\
-                    from_combo_to_string([((x, y), Figure.getFigureById(f), 0)])+\
-                    athleteChromosome.genes[(i+1)*6:]
-            
-            athleteChromosome.genes = gene
-            athleteChromosome.athlete.combos = from_string_to_combos(gene)
-            
-        children.append(athleteChromosome)
-
-    return children
+    return population
 
 def termination(population:list, infos) -> bool:
     """
@@ -538,6 +571,7 @@ def save(self, probs, population_number, infos):
 
 if __name__ == "__main__":    
     ### Tests
+    seed(0)
 
     # Vérification que les fonctions de traduction Genes <-> Combo
     # est bijective et ne change pas le score final
@@ -604,5 +638,7 @@ if __name__ == "__main__":
           (len(population) == len(l)))
     
     a1.genes = "012506"
+    d = mutation([a1], 0)
 
-    print("Mutation de 012506 : %s" % (mutation([a1], (0, L))[0].genes))
+    print("Mutation de 012506 : %s (Valide si égal à 022506)" % d["population"][0].genes)
+    print("Probs : (1, 1, 0, 0) devient (%s, %s, %s, %s)" % d["probs"])

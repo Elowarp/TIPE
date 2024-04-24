@@ -1000,3 +1000,9 @@ Nom de fichier de celui qui a réussi : 27-03-2024 11h42m15s
 https://www.egr.msu.edu/~kdeb/papers/k2012016.pdf
 
 La mutation "mutation clock" est la mutation utilisé pour faire l'étude, donc il faudrait l'implémenter pour voir en fait comment eux ils le font
+
+# 18 / 04 / 2024
+
+> The usual mutation scheme requires n random numbers to be created per individual. To reduce the computational complexity, Goldberg [6] suggested a mutation clock scheme for binary-coded GAs, in which once a bit is mutated, the next bit to be mutated (in the same or in a different individual) is determined by using an exponential probability distribution
+
+Division par 0 lorsque Pm = 0 ??????

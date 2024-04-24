@@ -1,7 +1,7 @@
 '''
  Name : Elowan
  Creation : 02-06-2023 11:00:05
- Last modified : 30-12-2023 11:16:27
+ Last modified : 18-04-2024 22:12:04
 '''
 
 from Terrain import Field
@@ -46,6 +46,16 @@ class Game:
     def end(self):
         """Fonction appelée lorque la competition termine"""
         self.state = 2
+        # # Si la suite de combos ne rempli pas entièrement le nombre de combos
+        # # disponible, on duplique le dernier combo (en supprimant la figure puis le tick)
+        # if len(self.athlete.combos) < 70:
+            
+        #     n = 70 - len(self.athlete.combos)
+            
+        #     pos, _, _ = self.athlete.combos[-1] 
+
+        #     for _ in range(n):
+        #         self.athlete.combos.append((pos, FIGURES["run"], 0))
 
     def play(self, iterate=lambda x: None, callback=lambda x: None):
         """Fait faire une partie entière au jeu

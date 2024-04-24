@@ -1,7 +1,7 @@
 '''
  Name : Elowan
  Creation : 23-06-2023 10:35:11
- Last modified : 02-04-2024 22:27:06
+ Last modified : 18-04-2024 18:34:00
 '''
 
 from json import dump, load
@@ -638,4 +638,4 @@ if __name__ == "__main__":
     # data = analyseFolder("data/" + folder)
     # createStats(path=folder+"/all", data=data)
 
-    analyseStudy("8xp/27-03-2024 11h42m15s")
+    analyseStudy("8xp/18-04-2024 16h37m18s")

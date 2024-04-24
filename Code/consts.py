@@ -1,7 +1,7 @@
 '''
  Name : Elowan
  Creation : 30-06-2023 23:56:45
- Last modified : 27-03-2024 11:42:08
+ Last modified : 18-04-2024 15:38:21
 '''
 NUMBER_OF_CHROMOSOME_TO_KEEP = 20   # Nombre de chromosomes à garder à 
                                     # chaque génération
@@ -33,12 +33,8 @@ POPULATIONS = [2, 5, 10, 20, 35, 60, 100, 200, 300,
 # Distance en mètre maximal qu'un être humain peut parcourir en courant pendant 1s
 DIST_MAX = 6
 
-# Nombre de bits total sur lequel le problème est codé (le l de l'étude)
-# 17 est le nombre de bit qu'il faut pour coder 104099=le nombre maximum 
-#   possible d'atteindre en représentation chaine de caractères d'un état de l'athlète
-# 70 est le nombre de figures maximal qu'il est possible de réaliser, 
-#   donc 70 états au maximum 
-L = 17*70 
+# L le nombre de variables représentant un gène 
+L = 6*70
 
 PROBS_C = [0.0, 0.0, 0.0, 0.9, 0.9] # Probabilité de croisement
 PROBS_M = [0.1, 0.5, 1.0, 0.0, 0.1] # Probabilité de mutation

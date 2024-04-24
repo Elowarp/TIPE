@@ -1,18 +1,18 @@
 '''
  Name : Elowan
  Creation : 02-06-2023 10:59:30
- Last modified : 02-04-2024 21:51:44
+ Last modified : 18-04-2024 21:28:42
 '''
 import datetime
 import logging
 from multiprocessing import Process
 import traceback
 
-from Terrain import FIGURES
 from chromosomeV2 import *
 from Models import Athlete
 from Game import Game
 from Genetic import GeneticAlgorithm
+from utils import computeNextOccurrence
 from traitement import analyseStudy, analyseFolder, createStats
 from consts import NB_EVAL_MAX, PROBS_C, PROBS_M,\
     ITERATION_NUMBER, NUMBER_OF_CHROMOSOME_TO_KEEP,\
@@ -42,7 +42,7 @@ def logConstants(athleteLevel, seed):
     """
     Log les constantes de l'algorithme
     """
-    logging.debug("Seed : {}".format(seed))
+    logging.info("Seed : {}".format(seed))
     logging.debug("Iteration number : {}".format(ITERATION_NUMBER))
     logging.debug("Athlete level : {}".format(athleteLevel))
     logging.debug("Number of chromosomes to keep : {}".format(NUMBER_OF_CHROMOSOME_TO_KEEP))
@@ -87,13 +87,17 @@ def process(POPULATIONS, iteration):
                     "maxAge": 0,
                     "generationCount": 0,
                     "terminaison_age": NB_EVAL_MAX/population_number,
-                    "start_filenumber": iteration*total
+                    "start_filenumber": iteration*total,
                 }
+
+                # Crée la variable l comme dans l'étude sélectionnée
+                u = randint(0, 99)/100
+                l = computeNextOccurrence(u, probs[1])
 
                 # Ajout de paramètres supplémentaires
                 def term(pop): return termination(pop, infos)
-                def mut(pop): return mutation(pop, probs)
                 def s(pop): return save(pop, probs, population_number, infos)
+                def mut(pop): return mutation(pop, l)
 
                 def cross(pop): 
                     children = crossover(pop, probs)
@@ -143,8 +147,8 @@ def process(POPULATIONS, iteration):
 
 
 if __name__ == "__main__":
-    # seed(24) # Pour avoir des résultats reproductibles
-    s = int(datetime.datetime.now().timestamp())
+    s = 1713449159 # Pour avoir des résultats reproductibles
+    # s = int(datetime.datetime.now().timestamp())
     seed(s)
     
     athleteLevel = 8
@@ -178,6 +182,7 @@ if __name__ == "__main__":
     init_time = datetime.datetime.now()    
 
     for i in range(len(POPULATIONS)):
+    # for i in range(1):
         args = (POPULATIONS[i:i+1], i)
         p = Process(target=process, args=args)
         p.start()
@@ -191,7 +196,7 @@ if __name__ == "__main__":
     createStats(path="{}/all".format(dirs), data=data)
     
     # Dessine un graphe semblable à l'étude
-    analyseStudy(data)
+    analyseStudy(dirnameSaves)
     
 
     logging.info("Temps d'execution total : {}".format(
