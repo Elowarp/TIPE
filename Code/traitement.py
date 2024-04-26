@@ -1,7 +1,7 @@
 '''
  Name : Elowan
  Creation : 23-06-2023 10:35:11
- Last modified : 26-04-2024 16:54:41
+ Last modified : 26-04-2024 21:21:42
 '''
 
 from json import dump, load
@@ -14,6 +14,7 @@ import matplotlib as mpl
 import os
 import datetime
 import logging
+from tqdm import tqdm
 
 from Models import Figure, FIGURES
 from Terrain import Case
@@ -252,6 +253,7 @@ def analyseFolder(foldername):
 
     # Analyse de chaque fichier
     count = 0
+    progress_bar = tqdm(total=len(filenames), desc="Analyse des fichiers", unit="file")
     for filename in filenames:
         # Analyse du fichier
         file_data = analyse(os.path.join(foldername, filename))
@@ -279,8 +281,11 @@ def analyseFolder(foldername):
             data["best_athlete"] = file_data["best_athlete"]
 
         count += 1
-        logging.info("Analyse de {} terminée ({}%)".format(filename,
+        progress_bar.update()
+        logging.debug("Analyse de {} terminée ({}%)".format(filename,
             round((count/file_number)*100, 2)))
+
+    progress_bar.close()
 
     # Moyenne des données
     data["freq_matrice"] /= len(filenames)
@@ -337,7 +342,6 @@ def makeEvolFitnessImg(list_fitness, nb_executions=1):
                 zorder = 3)
                             
     plt.legend()
-
 
 def makeCasesImg(freq_matrice, terrain_matrice, best_athlete, filename):
     """
@@ -453,7 +457,6 @@ def constListImage(filename, const_dict):
     plt.savefig("traitement/{}_images/constantes.png".format(filename), dpi=100)
     plt.close()
     
-
 def createStats(path=None, data=None):
     """
     Crée les images statistiques à partir d'un fichier ou de données fournies.
@@ -534,7 +537,6 @@ def analyseStudy(foldername):
     """
     Analyse et création des images pour la comparaison avec l'étude
     """
-    
     dataFolder = "data/"+foldername
 
     # Récupération des noms des fichiers
@@ -559,6 +561,7 @@ def analyseStudy(foldername):
 
     # Analyse de chaque fichier
     count = 0
+    progress_bar = tqdm(total=len(filenames), desc="Analyse des fichiers", unit="file")
     for filename in filenames:
         # Analyse du fichier
         file_data = analyse(os.path.join(dataFolder, filename))
@@ -570,8 +573,11 @@ def analyseStudy(foldername):
         perfs[category].append(1 if file_data["is_success"] else 0)
 
         count += 1
-        logging.info("Analyse de {} terminée ({}%)".format(filename,
+        progress_bar.update()
+        logging.debug("Analyse de {} terminée ({}%)".format(filename,
             round((count/len(filenames))*100, 2)))
+        
+    progress_bar.close()
     
     # Construction du dictionnaire :
     # perfsFinales = {
@@ -579,6 +585,7 @@ def analyseStudy(foldername):
     # }
     perfsFinales = {}
 
+    logging.info("Construction du graphique des succés...")
     for pc, pm in zip(PROBS_C, PROBS_M):
         perfsFinales["{}|{}".format(pc, pm)] = []
         for popu in POPULATIONS:
@@ -638,4 +645,4 @@ if __name__ == "__main__":
     # data = analyseFolder("data/" + folder)
     # createStats(path=folder+"/all", data=data)
 
-    analyseStudy("8xp/18-04-2024 16h37m18s")
+    analyseStudy("8xp/26-04-2024 18h45m31s")

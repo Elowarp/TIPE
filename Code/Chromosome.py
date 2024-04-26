@@ -1,7 +1,7 @@
 '''
  Name : Elowan
  Creation : 23-06-2023 11:42:17
- Last modified : 26-04-2024 16:54:08
+ Last modified : 26-04-2024 21:23:44
 '''
 from random import randint, seed, choice
 import logging
@@ -315,10 +315,7 @@ def mutation_individual(athleteChromosome: AthleteChromosome, k:int):
     e = athleteChromosome.genes[i*6: (i+1)*6]
     
     # Positions et figure associé à l'état
-    try:
-        x = int(e[0:2])
-    except ValueError: logging.debug("EEEEE %s %s" % (e, k))
-
+    x = int(e[0:2])
     y = int(e[2:4])
     f = int(e[4:6])
 
@@ -425,9 +422,6 @@ def mutation(population:list, l: int) -> list:
                  
     """
     global k, i
-
-    logging.debug("k : %s; i: %s" % (k, i))
-    logging.debug(str(population[i]))
     mutation_individual(population[i], k)
 
     k = int((k+l)%L)
@@ -456,7 +450,6 @@ def getBestAthlete(population):
         population (AthleteChromosome list): liste des athlètes
     """
     evalPop = evaluate(population)
-    logging.debug(evalPop[0].athlete, evalPop[0].fitness)
 
 def from_combo_to_string(combos) -> str:
     """

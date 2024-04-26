@@ -1,7 +1,7 @@
 '''
  Name : Elowan
  Creation : 30-06-2023 23:56:45
- Last modified : 18-04-2024 15:38:21
+ Last modified : 26-04-2024 22:37:38
 '''
 NUMBER_OF_CHROMOSOME_TO_KEEP = 20   # Nombre de chromosomes à garder à 
                                     # chaque génération
@@ -27,8 +27,6 @@ SIZE_Y = 40
 # Valeurs utilisées dans l'étude
 POPULATIONS = [2, 5, 10, 20, 35, 60, 100, 200, 300,
         450, 700, 1000, 1200, 1400, 1800, 2000]
-
-# POPULATIONS = [2]
 
 # Distance en mètre maximal qu'un être humain peut parcourir en courant pendant 1s
 DIST_MAX = 6
