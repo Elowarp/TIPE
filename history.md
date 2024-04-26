@@ -1067,3 +1067,9 @@ La mutation "mutation clock" est la mutation utilisé pour faire l'étude, donc 
 > The usual mutation scheme requires n random numbers to be created per individual. To reduce the computational complexity, Goldberg [6] suggested a mutation clock scheme for binary-coded GAs, in which once a bit is mutated, the next bit to be mutated (in the same or in a different individual) is determined by using an exponential probability distribution
 
 Division par 0 lorsque Pm = 0 ??????
+
+## 26/04/2024
+
+Implémentation des barres de progression
+
+A réfléchir : L'utilité de TickStarted vu les dernieres fonctions de mutation et crossover

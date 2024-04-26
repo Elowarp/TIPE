@@ -1,7 +1,7 @@
 '''
  Name : Elowan
  Creation : 23-06-2023 11:42:17
- Last modified : 26-04-2024 21:23:44
+ Last modified : 26-04-2024 23:02:04
 '''
 from random import randint, seed, choice
 import logging
@@ -282,16 +282,8 @@ def coherence_suite_etats(e1, e2, e3):
     Returns:
         (bool): Valide ou non
     """
-    global k
-    i = (k - k%6)//6
-
     x1 = int(e1[0:2])
-    try: 
-        x2 = int(e2[0:2])
-    except ValueError:
-        print(k, i, e2)
-        exit()
-
+    x2 = int(e2[0:2])
     x3 = int(e3[0:2])
 
     y1 = int(e1[2:4])
@@ -450,6 +442,7 @@ def getBestAthlete(population):
         population (AthleteChromosome list): liste des athlètes
     """
     evalPop = evaluate(population)
+    logging.info(evalPop[0])
 
 def from_combo_to_string(combos) -> str:
     """
@@ -480,6 +473,9 @@ def from_combo_to_string(combos) -> str:
     return "".join(chaine)
 
 def from_string_to_combos(genes: str) -> list:
+    """
+    Fonction réciproque de `from_combo_to_string` sans les ticks
+    """
     combos = []
     for i in range(len(genes)//6):
         combos.append(

@@ -1,7 +1,7 @@
-*/__pycache__/
 .trash/
 */data/*
 */traitement/*
 */.venv/*
 */logs/*
 /Code/.venv
+/Code/__pycache__
