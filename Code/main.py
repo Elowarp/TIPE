@@ -1,14 +1,14 @@
 '''
  Name : Elowan
  Creation : 02-06-2023 10:59:30
- Last modified : 18-04-2024 21:28:42
+ Last modified : 24-04-2024 21:27:03
 '''
 import datetime
 import logging
 from multiprocessing import Process
 import traceback
 
-from chromosomeV2 import *
+from Chromosome import *
 from Models import Athlete
 from Game import Game
 from Genetic import GeneticAlgorithm

@@ -1,7 +1,7 @@
 '''
  Name : Elowan
  Creation : 23-06-2023 10:35:11
- Last modified : 18-04-2024 18:34:00
+ Last modified : 24-04-2024 21:26:57
 '''
 
 from json import dump, load
@@ -17,7 +17,7 @@ import logging
 
 from Models import Figure, FIGURES
 from Terrain import Case
-from chromosomeV2 import from_string_to_combos
+from Chromosome import from_string_to_combos
 
 from consts import SIZE_X, SIZE_Y, NUMBER_OF_CHROMOSOME_TO_KEEP,\
     POPULATIONS, PROBS_M, PROBS_C, INITIAL_POSITION,\

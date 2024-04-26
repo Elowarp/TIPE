@@ -1,3 +1,6 @@
-.venv/*
-*.pyc
-.trash
+.venv/
+.trash/
+*/data/*
+*/traitement/*
+*/.venv/*
+*/logs/*
