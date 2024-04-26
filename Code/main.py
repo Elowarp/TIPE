@@ -1,7 +1,7 @@
 '''
  Name : Elowan
  Creation : 02-06-2023 10:59:30
- Last modified : 24-04-2024 21:27:03
+ Last modified : 26-04-2024 16:53:30
 '''
 import datetime
 import logging
@@ -158,6 +158,7 @@ if __name__ == "__main__":
     
     dirs = "data/{}".format(dirnameSaves)
 
+    os.makedirs('logs', exist_ok=True)
     # Initialisation des logs
     logging.basicConfig(level=logging.DEBUG, 
                     format='%(asctime)s - %(levelname)s - %(message)s',

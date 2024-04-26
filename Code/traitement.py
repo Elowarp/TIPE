@@ -1,7 +1,7 @@
 '''
  Name : Elowan
  Creation : 23-06-2023 10:35:11
- Last modified : 24-04-2024 21:26:57
+ Last modified : 26-04-2024 16:54:41
 '''
 
 from json import dump, load
@@ -37,7 +37,7 @@ def unserializeJson(filename):
             },
         dataGenerations : [
             {
-                genes : [[(x,y), Figure, tick],],
+                genes : "xxyyii",
                 fitness,
                 age,
                 size,
