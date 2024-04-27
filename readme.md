@@ -8,4 +8,6 @@ Ce repo contient tout ce dont j'ai utilisé pour créer mon [TIPE](https://www.s
 
 ## Lancement
 
+*Fonctionne sur Linux avec Python3.11*
+
 Après installation des dépendances via `pip install -r requirements.txt`, le lancement de `python main.py` lancera automatique plusieurs processus exécutant des instances d'algorithmes génétiques avec des paramètres différents et produira des graphiques semblables à [l'étude comparée au travers de ce projet](https://www.egr.msu.edu/~kdeb/papers/k99003.pdf)

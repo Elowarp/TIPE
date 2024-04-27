@@ -1,12 +1,13 @@
 '''
  Name : Elowan
  Creation : 02-06-2023 10:59:30
- Last modified : 26-04-2024 22:33:46
+ Last modified : 27-04-2024 20:13:19
 '''
 import datetime
 import logging
 from tqdm import tqdm
-from multiprocessing import Process
+from multiprocessing import Pool, Lock, Manager
+import sys
 
 from Chromosome import *
 from Models import Athlete
@@ -19,6 +20,11 @@ from consts import NB_EVAL_MAX, PROBS_C, PROBS_M,\
     INITIAL_POSITION, MAX_TICK_COUNT, SIZE_X, SIZE_Y,\
     POPULATIONS
 
+# Variables communes à tous les processus pour connaître combien de ligne
+# il faut sauter pour afficher chaque barre de progression
+# Notamment utile pour empecher des sauts de lignes inopinés
+position_Lock = Lock()
+positions_bars = []
 
 def playAllGames(population:list):
     """
@@ -47,19 +53,37 @@ def logConstants(athleteLevel, seed):
     logging.debug("Size of the field : {}".format((SIZE_X, SIZE_Y)))
     logging.debug("Max tick count : {}".format(MAX_TICK_COUNT))
 
+def replace_bars(i):
+    """
+    Descend les barres de progression d'une ligne dès qu'une des barres termine. 
+    """
+    position_Lock.acquire()
 
-def process(population_number, iteration):
+    positions_bars[i] = 0
+    for j in range(i+1, len(positions_bars)):
+        positions_bars[j] -= 1
+
+    position_Lock.release()
+
+def process(args):
     """
     Fonction exécutant l'algorithme génétique pour une population de 
     `population_number` individus et avec toutes les probabilités définies
     par le fichier `const.py`. 
+
+    Params:
+        - args (tuple) : Contient `population_number` ainsi que `iteration` 
+                        représentant le i-ième appel à process
     """
+    population_number, iteration = args
     count = 0
     total = len(PROBS_C)*ITERATION_NUMBER
-    progress_bar = tqdm(total=total, desc=f"Tests des probabilités sur une population de {population_number} individus",
-                        unit="exec", position=iteration, leave=True)
-    progress_bar.refresh()
-    
+
+    text = "Tests des probs sur une population de {0:04} individus".format(population_number)
+
+    pbar = tqdm(total=len(PROBS_C)*ITERATION_NUMBER, unit="exec", 
+                desc=text, file=sys.stdout, position=positions_bars[i])
+
     for probs in zip(PROBS_C, PROBS_M):
         for _ in range(ITERATION_NUMBER):                
             logging.debug("##### ITERATION {}/{} #####".format(count, total))
@@ -101,7 +125,6 @@ def process(population_number, iteration):
             def term(pop): return termination(pop, infos)
             def s(pop): return save(pop, probs, population_number, infos)
             def mut(pop): return mutation(pop, l)
-
             def cross(pop): 
                 children = crossover(pop, probs)
                 
@@ -110,12 +133,7 @@ def process(population_number, iteration):
                 for _ in range(population_number//len(children)):popu.extend(children)
                 return popu[:population_number]
 
-            parkourGenetic = GeneticAlgorithm(population, term, evaluate, 
-                                            selection, cross, mut, s,
-                                            "data/{}".format(dirnameSaves))
-            
             def iterate(population):
-                # getBestAthlete(population)
                 evalPop = evaluate(population)
                 infos["generationCount"] += 1
 
@@ -128,18 +146,30 @@ def process(population_number, iteration):
                 else:
                     infos["maxAge"] += 1
 
-            parkourGenetic.run(iteration=iterate)
-            logging.debug("\nMeilleur athlète de la dernière génération: {}".format(evaluate(parkourGenetic.population)[0]))
-            logging.debug("Temps d'execution : {}".format(datetime.datetime.now() - start_time))
 
-            count+=1
-            progress_bar.update()
+            parkourGenetic = GeneticAlgorithm(population, term, evaluate, 
+                                            selection, cross, mut, s,
+                                            "data/{}".format(dirnameSaves))
+
+            try:
+                parkourGenetic.run(iteration=iterate)
+                logging.debug("\nMeilleur athlète de la dernière génération: {}".format(evaluate(parkourGenetic.population)[0]))
+                logging.debug("Temps d'execution : {}".format(datetime.datetime.now() - start_time))
+
+                count+=1
+                pbar.pos = positions_bars[iteration]
+                pbar.update(1)
+                pbar.refresh()
+
+            except Exception as e :
+                logging.error("Erreur de l'appel à {} {}".format(population_number, iteration))
+                logging.error(e)
+                pbar.close()
+                replace_bars(iteration)
+                return
             
-            # createStats(parkourGenetic.getDirname() + "/" + 
-            #                 parkourGenetic.getFilename() + ".json")
-
-    progress_bar.close()                  
-    return parkourGenetic
+    replace_bars(iteration)
+    
 
 
 if __name__ == "__main__":
@@ -174,17 +204,18 @@ if __name__ == "__main__":
     logConstants(athleteLevel, s)
 
     # Multi-Processing pour accélérer le temps d'exécution
-    processes = []
-    init_time = datetime.datetime.now()    
+    init_time = datetime.datetime.now()  
+    logging.info("Exécutions des algorithmes avec différentes tailles de population")
 
-    for i in range(len(POPULATIONS)):
-        args = (POPULATIONS[i], i)
-        p = Process(target=process, args=args)
-        p.start()
-        processes.append(p)
+    # Initialisation des positions des barres
+    positions_bars = Manager().list([i for i in range(len(POPULATIONS))])
 
-    for p in processes:
-        p.join()
+    # Lancement des processus
+    args = [(POPULATIONS[i], i) for i in range(len(POPULATIONS))]
+    with Pool(initializer=tqdm.set_lock, initargs=(tqdm.get_lock(),)) as p : 
+        p.map(process, args)
+
+    logging.info("Fin des exécutions. Créations des graphiques")
     
     # Analyse du dossier (moyenne sur toutes les itérations)
     data = analyseFolder(dirs)

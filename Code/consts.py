@@ -1,7 +1,7 @@
 '''
  Name : Elowan
  Creation : 30-06-2023 23:56:45
- Last modified : 26-04-2024 22:37:38
+ Last modified : 27-04-2024 20:12:02
 '''
 NUMBER_OF_CHROMOSOME_TO_KEEP = 20   # Nombre de chromosomes à garder à 
                                     # chaque génération

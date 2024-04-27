@@ -5,3 +5,4 @@
 */logs/*
 /Code/.venv
 /Code/__pycache__
+/Code/.venv_debian
