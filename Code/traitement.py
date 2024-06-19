@@ -1,7 +1,8 @@
 '''
  Name : Elowan
  Creation : 23-06-2023 10:35:11
- Last modified : 26-04-2024 23:03:41
+ Last modified : 21-05-2024 21:31:31
+ File : traitement.py
 '''
 
 from json import dump, load
@@ -485,7 +486,7 @@ def createStats(path=None, data=None):
     filename = path.split("data/")[-1] # Nom du fichier sans la partie "data/"
     os.makedirs("traitement/{}_images".format(filename), exist_ok=True)
 
-    logging.info("Traitement des données...")
+    logging.debug("Traitement des données...")
 
     # Création des images
     makeEvolFitnessImg(data["fitness"],data["nb_executions"])
@@ -530,7 +531,7 @@ def createStats(path=None, data=None):
     makeCasesImg(data["freq_matrice"], data["terrain_matrice"], 
                  data["best_athlete"], filename)
 
-    logging.info("Traitement terminé (en {})!\n".format(
+    logging.debug("Traitement terminé (en {})!\n".format(
         datetime.datetime.now()-start_time))
     
 def analyseStudy(foldername):
@@ -585,7 +586,7 @@ def analyseStudy(foldername):
     # }
     perfsFinales = {}
 
-    logging.info("Construction du graphique des succés...")
+    logging.debug("Construction du graphique des succés...")
     for pc, pm in zip(PROBS_C, PROBS_M):
         perfsFinales["{}|{}".format(pc, pm)] = []
         for popu in POPULATIONS:

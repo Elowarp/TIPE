@@ -1,7 +1,8 @@
 '''
  Name : Elowan
  Creation : 30-06-2023 23:56:45
- Last modified : 27-04-2024 20:12:02
+ Last modified : 21-05-2024 12:02:45
+ File : consts.py
 '''
 NUMBER_OF_CHROMOSOME_TO_KEEP = 20   # Nombre de chromosomes à garder à 
                                     # chaque génération
@@ -14,7 +15,7 @@ EPS = 0.5                           # Epsilon interval autour du score max attei
 INITIAL_POSITION = (7, 31)          # Position initiale de l'athlète
 MAX_TICK_COUNT = 70                 # Nombre de tours(=secondes) maximum
 
-ITERATION_NUMBER = 50               # Nombre d'itérations de l'algorithme
+ITERATION_NUMBER = 1               # Nombre d'itérations de l'algorithme
 
 TICK_INTERVAL = 1                   # Interval entre 2 executions de la partie
 

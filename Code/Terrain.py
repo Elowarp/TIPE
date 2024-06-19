@@ -1,7 +1,8 @@
 '''
  Name : Elowan
  Creation : 02-06-2023 11:01:13
- Last modified : 30-08-2023 16:27:29
+ Last modified : 21-05-2024 21:31:26
+ File : Terrain.py
 '''
 from Models import FIGURES
 from consts import SIZE_X, SIZE_Y

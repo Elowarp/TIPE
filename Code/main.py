@@ -1,7 +1,8 @@
 '''
  Name : Elowan
  Creation : 02-06-2023 10:59:30
- Last modified : 27-04-2024 20:13:19
+ Last modified : 18-05-2024 12:32:24
+ File : main.py
 '''
 import datetime
 import logging
@@ -162,7 +163,7 @@ def process(args):
                 pbar.refresh()
 
             except Exception as e :
-                logging.error("Erreur de l'appel à {} {}".format(population_number, iteration))
+                logging.error("Erreur de l'appel avec population = {}; Iteration = {}".format(population_number, iteration))
                 logging.error(e)
                 pbar.close()
                 replace_bars(iteration)

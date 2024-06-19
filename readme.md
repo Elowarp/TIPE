@@ -1,6 +1,8 @@
-# TIPE Parkour
+# TIPE Parkour 2023-24
 
-Ce repo contient tout ce dont j'ai utilisé pour créer mon [TIPE](https://www.scei-concours.fr/tipe.php) pour 2023-2024. Il a notamment pour but d'étudier les effets des probabilités de mutation et de croisement des algorithmes génétiques à travers l'application aux [compétitions Freestyle de Parkour](https://www.ffgym.fr/La_FFGYM/Les_disciplines/Parkour) en python.
+**Un rapport TIPE ENS pour ce TIPE est disponible ici : `rapport/rapportENS.pdf`**
+
+Ce repo contient tout ce dont j'ai utilisé pour créer mon [TIPE](https://www.scei-concours.fr/tipe.php) pour 2023-2024 sur le thème *Sports et Jeux*. Il a notamment pour but d'étudier les effets des probabilités de mutation et de croisement des algorithmes génétiques à travers l'application aux [compétitions Freestyle de Parkour](https://www.ffgym.fr/La_FFGYM/Les_disciplines/Parkour) en python.
 
 - Le dossier `Code` contient tout le code produit à la réalisation de ce TIPE.
 - Le dossier `diapo` contient les fichiers que j'ai utilisé pour construire mes différents diaporamas de présentation pour ce projet.

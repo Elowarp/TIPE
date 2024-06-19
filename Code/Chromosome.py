@@ -1,7 +1,8 @@
 '''
  Name : Elowan
  Creation : 23-06-2023 11:42:17
- Last modified : 26-04-2024 23:02:04
+ Last modified : 21-05-2024 12:02:40
+ File : Chromosome.py
 '''
 from random import randint, seed, choice
 import logging
@@ -14,7 +15,7 @@ from Models import Athlete, Figure
 from Game import Game
 from Genetic import Chromosome
 from consts import INITIAL_POSITION, NUMBER_OF_CHROMOSOME_TO_KEEP,\
-    EPS, MAX_SCORE, L, SIZE_X, SIZE_Y
+    EPS, MAX_SCORE, L, SIZE_X, SIZE_Y, DIST_MAX
 
 k = 0
 i = 0
@@ -290,7 +291,7 @@ def coherence_suite_etats(e1, e2, e3):
     y2 = int(e2[2:4])
     y3 = int(e3[2:4])
 
-    return dist(x1, y1, x2, y2) <= 4 and dist(x2, y2, x3, y3) <= 4
+    return dist(x1, y1, x2, y2) <= DIST_MAX and dist(x2, y2, x3, y3) <= DIST_MAX
 
 def mutation_individual(athleteChromosome: AthleteChromosome, k:int):
     """
@@ -324,6 +325,8 @@ def mutation_individual(athleteChromosome: AthleteChromosome, k:int):
     else:
         e3 = athleteChromosome.genes[(i+1)*6: (i+2)*6]
 
+    has_mutated = True
+
     # Match sur la composante qui va être modifiée
     match (k%6)//2:
         case 0 : # Si on modifie la variable de l'abscisse
@@ -348,13 +351,17 @@ def mutation_individual(athleteChromosome: AthleteChromosome, k:int):
                         if coherence_suite_etats(e1, e2_recovery, e3): 
                             x -= modifieur
 
+                        else: has_mutated = False
+
             else:
-                if x-modifieur >= 0 :
+                if x-modifieur >= 0 and x-modifieur < SIZE_X:
                     e2_recovery = from_combo_to_string(
                         [((x-modifieur, y), Figure.getFigureById(f), 0)])
                         
                     if coherence_suite_etats(e1, e2_recovery, e3): 
                         x -= modifieur
+                    else: has_mutated = False
+                else: has_mutated = False
                     
         
         case 1: # Sensiblement la même chose que précédemment mais pour l'ordonné
@@ -373,15 +380,18 @@ def mutation_individual(athleteChromosome: AthleteChromosome, k:int):
                         
                         if coherence_suite_etats(e1, e2_recovery, e3): 
                             y -= modifieur
+                        else: has_mutated = False
                     
 
             else:
-                if y-modifieur >= 0:
+                if y-modifieur >= 0 and y-modifieur < SIZE_Y:
                     e2_recovery = from_combo_to_string(
                         [((x, y-modifieur), Figure.getFigureById(f), 0)])
                     
                     if coherence_suite_etats(e1, e2_recovery, e3): 
                         y -= modifieur
+                    else: has_mutated = False
+                else: has_mutated = False
 
         case 2: # Cas du changement de la figure
             if f + modifieur >= len(FIGURES) or f+modifieur < 0 :
@@ -397,6 +407,8 @@ def mutation_individual(athleteChromosome: AthleteChromosome, k:int):
     # Modification en place de l'athlete
     athleteChromosome.genes = gene
     athleteChromosome.athlete.combos = from_string_to_combos(gene)
+
+    return has_mutated
 
 def mutation(population:list, l: int) -> list:
     """
@@ -414,10 +426,14 @@ def mutation(population:list, l: int) -> list:
                  
     """
     global k, i
-    mutation_individual(population[i], k)
+    has_mutated = mutation_individual(population[i], k)
 
-    k = int((k+l)%L)
-    i = (i + ceil((k+l)/L))%len(population)
+    if not has_mutated:
+        i = (i+1)%len(population)
+        
+    else:
+        k = int((k+l)%L)
+        i = (i + ceil((k+l)/L))%len(population)
 
     return population
 

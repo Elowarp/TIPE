@@ -1,7 +1,8 @@
 '''
  Name : Elowan
  Creation : 02-06-2023 11:00:02
- Last modified : 13-02-2024 16:37:48
+ Last modified : 21-05-2024 21:31:18
+ File : Models.py
 '''
 from random import choice
 from utils import weighted_random

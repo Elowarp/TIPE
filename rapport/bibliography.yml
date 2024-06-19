@@ -1,0 +1,39 @@
+tabletrick:
+  type: Web
+  title: PK CODE OF POINTS 2022-2024 - TABLE OF TRICKS 2023
+  author: Parkour Commission
+  url: https://www.gymnastics.sport/publicdir/rules/files/en_1.1%20-%20PK%20Code%20of%20Points%202022-2024%20-%20Table%20of%20tricks%202023.pdf
+
+codepointage:
+  type: Web
+  title: CODE DE POINTAGE 2019-2021
+  author: Fédération internationale de Gymnastique
+  url: https://fr.readkong.com/page/code-de-pointage-2019-2021-parkour-f-d-ration-2054990
+
+lilouchemin:
+  type: Video
+  title: 2022 Sofia Parkour World Cup
+  author: Fédération internationale de Gymnastique
+  url: https://www.youtube.com/watch?v=ubQ1w7awah8
+
+lilouscore:
+  type: Performance
+  title: FIG Parkour World Cup Sofia - Results Book
+  author: Fédération internationale de Gymnastique
+  url: https://www.gymnastics.sport/asset.php?id=fidb_11055
+
+GA-article:
+  type: Article
+  title: Understanding Interactions among Genetic Algorithm Parameters
+  author: 
+    - Kalyanmoy Deb
+    - Samir Agrawal
+  url: https://www.egr.msu.edu/~kdeb/papers/k99003.pdf
+
+Mutation-article:
+  type: Article
+  title: Analyzing Mutation Schemes for Real-Parameter Genetic Algorithms
+  author: 
+    - Kalyanmoy Deb
+    - Debayan Deb
+  url: https://www.egr.msu.edu/~kdeb/papers/k2012016.pdf

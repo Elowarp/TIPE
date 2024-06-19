@@ -1,7 +1,8 @@
 '''
  Name : Elowan
  Creation : 08-06-2023 10:00:40
- Last modified : 20-02-2024 16:14:57
+ Last modified : 21-05-2024 21:31:11
+ File : Genetic.py
 '''
 import random 
 

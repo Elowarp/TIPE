@@ -1,7 +1,8 @@
 '''
  Name : Elowan
  Creation : 30-08-2023 15:03:52
- Last modified : 13-02-2024 16:34:57
+ Last modified : 21-05-2024 21:30:56
+ File : customAthletes.py
 '''
 from Models import Athlete, FIGURES
 from Terrain import Field
